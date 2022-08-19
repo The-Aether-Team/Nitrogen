@@ -1,0 +1,150 @@
+buildscript {
+    repositories {
+        maven {
+            name 'Forge'
+            url 'https://maven.minecraftforge.net'
+        }
+        maven {
+            name 'Sponge'
+            url 'https://repo.spongepowered.org/maven'
+        }
+        maven {
+            name 'Gradle'
+            url "https://plugins.gradle.org/m2/"
+        }
+        maven {
+            name 'Parchment'
+            url 'https://maven.parchmentmc.org'
+        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7.+', changing: true
+        classpath group: 'org.parchmentmc', name: 'librarian', version: '1.+', changing: true
+    }
+}
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+
+version = project.mc_version + '-' + project.nitrogen_version
+group = 'com.gildedgames.nitrogen' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'nitrogen'
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17) // Mojang ships Java 8 to end users, so your mod should target Java 8.
+
+minecraft {
+    mappings channel: 'parchment', version: project.mappings
+
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            //Only uncomment this if you actually need the debug logging! If you enable this the log will be full of incredibly useless information spam
+            //property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            //property 'forge.logging.console.level', 'debug'
+
+            mods {
+                aether {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+
+            //property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            //property 'forge.logging.console.level', 'debug'
+
+            mods {
+                aether {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+
+            //property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            //property 'forge.logging.console.level', 'debug'
+
+            args '--mod', 'nitrogen', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/'), '--existing', file('src/generated/resources/')
+
+            environment 'target', 'fmluserdevdata'
+
+            mods {
+                aether {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+sourceSets.main.resources {
+    srcDir 'src/generated/resources'
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${project.mc_version}-${project.forge_version}"
+
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
+
+jar {
+    manifest {
+        attributes([
+                "Specification-Title"     : project.name,
+                "Specification-Vendor"    : "Gilded Games",
+                "Specification-Version"   : "1", // We are version 1 of ourselves
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : "${version}",
+                "Implementation-Vendor"   : "Gilded Games",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "MixinConfigs"            : "nitrogen.mixins.json"
+        ])
+    }
+}
+
+jar.finalizedBy('reobfJar')
+
+reobf.create('jarJar')
+
+def reobfFile = file("$buildDir/reobfJar/output.jar")
+def reobfArtifact = artifacts.add('default', reobfFile) {
+    type 'jar'
+    builtBy 'reobfJar'
+}
+
+tasks.jarJar.configure {
+    archiveClassifier = ""
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact reobfArtifact
+        }
+    }
+    repositories {
+        maven {
+            url "file:///${project.projectDir}/mcmodsrepo"
+        }
+    }
+}
+
+mixin {
+    config "nitrogen.mixins.json"
+    add sourceSets.main, "nitrogen.refmap.json"
+}
+
+build {
+    dependsOn 'jarJar'
+}
