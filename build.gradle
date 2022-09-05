@@ -113,6 +113,15 @@ jar {
     }
 }
 
+task sourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allJava
+}
+
+artifacts {
+    archives sourcesJar
+}
+
 jar.finalizedBy('reobfJar')
 
 reobf.create('jarJar')
@@ -130,12 +139,19 @@ tasks.jarJar.configure {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifact reobfArtifact
+            artifactId project.name
+            artifact jar
+            artifact sourcesJar
         }
     }
     repositories {
         maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/Gilded-Games/Nitrogen"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
         }
     }
 }

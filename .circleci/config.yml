@@ -34,6 +34,7 @@ jobs:
           root: ~/project/build/libs
           paths: 
             - << pipeline.parameters.artifact-name >>-*.jar
+      - run: gradle publish
 
 workflows:
   build-and-deploy:
