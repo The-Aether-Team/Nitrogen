@@ -124,22 +124,16 @@ artifacts {
 
 jar.finalizedBy('reobfJar')
 
-reobf.create('jarJar')
-
 def reobfFile = file("$buildDir/reobfJar/output.jar")
 def reobfArtifact = artifacts.add('default', reobfFile) {
     type 'jar'
     builtBy 'reobfJar'
 }
 
-tasks.jarJar.configure {
-    archiveClassifier = ""
-}
-
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId project.name
+            //artifactId project.name //doesnt fully work for some reason, results in the id being "project"
             artifact jar
             artifact sourcesJar
         }
@@ -159,8 +153,4 @@ publishing {
 mixin {
     config "nitrogen.mixins.json"
     add sourceSets.main, "nitrogen.refmap.json"
-}
-
-build {
-    dependsOn 'jarJar'
 }
