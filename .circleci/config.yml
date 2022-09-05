@@ -1,0 +1,41 @@
+version: 2.1
+
+parameters:
+  artifact-name:
+    type: string
+    default: nitrogen
+
+jobs:
+  build:
+    machine:
+      image: ubuntu-2004:202111-02
+
+    environment:
+      JVM_OPTS: -Xmx3200m
+      _JAVA_OPTIONS: -Xmx3200m
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v4-dependencies-{{ checksum "build.gradle" }}
+            - v4-dependencies-
+
+      - run: gradle dependencies
+      - save_cache:
+          paths:
+            - ~/repo/.gradle
+          key: v4-dependencies-{{ checksum "build.gradle" }}
+      - run: gradle test
+      - run: gradle build
+      - store_artifacts:
+          path: ~/project/build/libs
+      - persist_to_workspace:
+          root: ~/project/build/libs
+          paths: 
+            - << pipeline.parameters.artifact-name >>-*.jar
+
+workflows:
+  build-and-deploy:
+    jobs:
+      - build
