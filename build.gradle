@@ -133,7 +133,7 @@ def reobfArtifact = artifacts.add('default', reobfFile) {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            //artifactId project.name //doesnt fully work for some reason, results in the id being "project"
+            artifactId project.archivesBaseName
             artifact jar
             artifact sourcesJar
         }
