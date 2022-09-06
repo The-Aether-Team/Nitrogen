@@ -9,6 +9,10 @@ public class Nitrogen {
     public static final String MODID = "nitrogen";
     public static final Logger LOGGER = LogUtils.getLogger();
 
+    /**
+     * This is a test JavaDoc, please ignore.
+     * @author bconlon
+     */
     public Nitrogen() {
 
     }
