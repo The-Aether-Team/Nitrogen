@@ -34,10 +34,12 @@ jobs:
           root: ~/project/build/libs
           paths: 
             - << pipeline.parameters.artifact-name >>-*.jar
-      - command: |
-          if [ "${CIRCLE_BRANCH}" == "1.19" ]; then
-             gradle publish
-          fi
+      - run:
+          name: gradle publish
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "1.19" ]; then
+               gradle publish
+            fi
 
 workflows:
   build:
