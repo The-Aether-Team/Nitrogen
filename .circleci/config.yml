@@ -40,8 +40,8 @@ jobs:
           fi
 
 workflows:
-  build-and-publish:
+  build:
     jobs:
-      - build
+      - build:
           context:
             - maven
