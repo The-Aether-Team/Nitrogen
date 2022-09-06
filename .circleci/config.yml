@@ -43,6 +43,8 @@ jobs:
       _JAVA_OPTIONS: -Xmx3200m
       GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
+      - attach_workspace:
+          at: ~/project
       - run: gradle publish
 
 workflows:
