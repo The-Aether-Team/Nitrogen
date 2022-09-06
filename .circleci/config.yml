@@ -34,11 +34,27 @@ jobs:
           root: ~/project/build/libs
           paths: 
             - << pipeline.parameters.artifact-name >>-*.jar
+  publish:
+    machine:
+        image: ubuntu-2004:202201-02
+    resource_class: medium
+    environment:
+      JVM_OPTS: -Xmx3200m
+      _JAVA_OPTIONS: -Xmx3200m
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
+    steps:
       - run: gradle publish
 
 workflows:
-  build-and-deploy:
+  build-and-publish:
     jobs:
-      - build:
+      - build
+      - publish:
           context:
             - maven
+          filters:
+            branches:
+              only: 
+                - "1.19"
+          requires:
+            - build
