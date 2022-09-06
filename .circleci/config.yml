@@ -41,5 +41,6 @@ jobs:
 workflows:
   build-and-deploy:
     jobs:
-      - build
-          context: maven
+      - build:
+          context:
+            - maven
