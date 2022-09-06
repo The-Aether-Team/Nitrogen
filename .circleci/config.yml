@@ -14,8 +14,8 @@ jobs:
       JVM_OPTS: -Xmx3200m
       _JAVA_OPTIONS: -Xmx3200m
       GRADLE_OPTS: -Dorg.gradle.daemon=false
-      GITHUB_ACTOR: -bconlon1
-      GITHUB_TOKEN: -$GITHUB_TOKEN
+      GITHUB_ACTOR: bconlon1
+      GITHUB_TOKEN: $GITHUB_TOKEN
     steps:
       - checkout
       - restore_cache:
@@ -42,3 +42,5 @@ workflows:
   build-and-deploy:
     jobs:
       - build
+          context:
+            - maven
