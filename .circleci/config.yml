@@ -55,4 +55,7 @@ workflows:
           filters:
             tags:
               only: 
-                - /^[0-9].*/
+                - /.*/
+            branches:
+              ignore: 
+                - /.*/
