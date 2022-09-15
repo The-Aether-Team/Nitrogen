@@ -16,18 +16,9 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v4-dependencies-{{ checksum "build.gradle" }}
-            - v4-dependencies-
-
-      - run: gradle dependencies
-      - save_cache:
-          paths:
-            - ~/repo/.gradle
-          key: v4-dependencies-{{ checksum "build.gradle" }}
-      - run: gradle test
-      - run: gradle build
+      - gradle/with_cache:
+          steps: 
+            - run: gradle build --build-cache
       - store_artifacts:
           path: ~/project/build/libs
       - persist_to_workspace:
