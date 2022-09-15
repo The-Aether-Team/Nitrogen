@@ -51,9 +51,6 @@ workflows:
           context:
             - maven
           filters:
-            branches:
-              only:
-                - "1.19"
             tags:
               only: 
                 - /^[0-9].*/
