@@ -18,6 +18,7 @@ jobs:
       _JAVA_OPTIONS: -Xmx3200m
       GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
+      - checkout
       - setup
       - persist_to_workspace:
           root: ~/project/build/libs
@@ -33,7 +34,6 @@ jobs:
 commands:
   setup:
     steps:
-      - checkout
       - gradle/with_cache:
           steps: 
             - run: gradle build --build-cache
