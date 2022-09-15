@@ -18,12 +18,7 @@ jobs:
       _JAVA_OPTIONS: -Xmx3200m
       GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
-      - checkout
-      - gradle/with_cache:
-          steps: 
-            - run: gradle build --build-cache
-      - store_artifacts:
-          path: ~/project/build/libs
+      - setup
       - persist_to_workspace:
           root: ~/project/build/libs
           paths: 
@@ -34,6 +29,16 @@ jobs:
             if [ "${CIRCLE_BRANCH}" == "1.19" ]; then
                gradle publish
             fi
+
+commands:
+  setup:
+    steps:
+      - checkout
+      - gradle/with_cache:
+          steps: 
+            - run: gradle build --build-cache
+      - store_artifacts:
+          path: ~/project/build/libs
 
 workflows:
   build:
