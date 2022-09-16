@@ -8,6 +8,10 @@ Nitrogen is a library mod used by Gilded Games to abstract code that is usable b
 ## :package: Download the latest releases
 ### Packages
 To install this mod through GitHub Packages in Gradle for development, you will need the [Gradle Github Packages Plugin](https://github.com/0ffz/gpr-for-gradle). To use it, make sure you have access to the Gradle plugins maven and the plugin as a buildscript dependency:
+
+<details>
+<summary> Buildscript Code</summary>
+
 ```
 buildscript {
   repositories {
@@ -23,14 +27,28 @@ buildscript {
   }
 }
 ```
+
+</details>
+
 Then you need to specify the package you want to use in your repository:
+
+<details>
+<summary> Repositories Code</summary>
+
 ```
 repositories {
   ...
   maven githubPackage.invoke("Gilded-Games/Nitrogen")
 }
 ```
+
+</details>
+
 Then load it through your dependencies, with `project.nitrogen_version` specified in the `gradle.properties`:
+
+<details>
+<summary> Dependencies Code</summary>
+
 ```
 dependencies {
   ...
@@ -43,3 +61,5 @@ dependencies {
   }
 }
 ```
+
+</details>
