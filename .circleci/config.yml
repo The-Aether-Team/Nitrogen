@@ -31,7 +31,7 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
       - setup
-      - run: sleep 600
+      - run: sleep 560
       - run: gradle publish
 
 commands:
