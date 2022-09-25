@@ -23,4 +23,7 @@ jobs:
 #          repository: my-org/my-tools
 #          path: my-tools
       - run: echo "PR = ${{ github.event.issue.pull_request }}"
+      - run: echo "PR = ${{ github.event.issue.pull_request.head_ref }}"
+      - run: echo "PR = ${{ github.event.issue.pull_request.head.ref }}"
+      - run: echo "PR = ${{ github.event.issue.pull_request.base.ref }}"
       - run: echo "branch = ${{ github.event.issue.pull_request.GITHUB_REF }}"
