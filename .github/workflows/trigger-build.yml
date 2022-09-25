@@ -27,4 +27,5 @@ jobs:
       - run: echo "PR = ${{ github.event.issue.pull_request.head_ref }}"
       - run: echo "PR = ${{ github.event.issue.pull_request.head.ref }}"
       - run: echo "PR = ${{ github.event.issue.pull_request.base.ref }}"
+      - run: echo "PR = ${{ github.event.issue.pull_request.ref }}"
       - run: echo "branch = ${{ github.event.issue.pull_request.GITHUB_REF }}"
