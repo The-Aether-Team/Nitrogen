@@ -22,4 +22,4 @@ jobs:
 #        with:
 #          repository: my-org/my-tools
 #          path: my-tools
-      - run: echo ${{ github.event.issue.pull_request.GITHUB_REF }}"
+      - run: echo ${{ github.event.issue.pull_request.GITHUB_REF }}
