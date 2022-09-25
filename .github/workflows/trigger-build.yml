@@ -1,20 +1,21 @@
 name: Trigger build
 
 on:
-  pull_request_review_comment
-#    types: [created]
+  issue_comment:
+    types: [created]
 
 jobs:
-#  check-user:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions-cool/check-user-permission@v2
-#        id: checkUser
-#        with:
-#          require: 'write'
-#          check-contributor: true
+  check-user:
+    if: ${{ github.event.issue.pull_request }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions-cool/check-user-permission@v2
+        id: checkUser
+        with:
+          require: 'write'
+          check-contributor: true
   trigger-build:
-#    needs: check-user
+    needs: check-user
     runs-on: ubuntu-latest
     steps:
 #      - uses: actions/checkout@v3
