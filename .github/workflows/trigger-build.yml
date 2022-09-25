@@ -22,4 +22,5 @@ jobs:
 #        with:
 #          repository: my-org/my-tools
 #          path: my-tools
-      - run: echo ${{ github.event.issue.pull_request.GITHUB_REF }}
+      - run: echo "PR = ${{ github.event.issue.pull_request }}"
+      - run: echo "branch = ${{ github.event.issue.pull_request.GITHUB_REF }}"
