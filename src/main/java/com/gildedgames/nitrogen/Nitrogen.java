@@ -13,7 +13,5 @@ public class Nitrogen {
      * This is a test JavaDoc, please ignore.
      * @author bconlon
      */
-    public Nitrogen() {
-        
-    }
+    public Nitrogen() { }
 }
