@@ -16,6 +16,7 @@ jobs:
           check-contributor: true
   trigger-build:
     needs: check-user
+    runs-on: ubuntu-latest
     steps:
 #      - uses: actions/checkout@v3
 #        with:
