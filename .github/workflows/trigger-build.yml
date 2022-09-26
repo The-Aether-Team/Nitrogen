@@ -28,5 +28,6 @@ jobs:
       - run: echo "${{ github.event.pull_request.head.ref }}"
       - run: echo "${{ github.event.pull_request.repo }}"
       - run: echo "${{ github.event.pull_request.repo.name }}"
+      - run: echo "${{ github.event.pull_request.repo.full_name }}"
       - run: echo "${{ github.event.pull_request.base }}"
       - run: echo "${{ github.event.pull_request.base.ref }}"
