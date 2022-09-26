@@ -6,12 +6,12 @@ on:
       remote_user:
         description: 'GitHub username of pull request creator'
         required: true
-        default: 'username'
+        default: 'Gilded-Games'
         type: string
-      remote_url:
-        description: 'GitHub URL of the fork that the pull request came from'
+      remote_name:
+        description: 'GitHub name of the fork repository'
         required: true
-        default: 'https://github.com/Gilded-Games/Nitrogen'
+        default: 'Nitrogen'
         type: string
       remote_branch:
         description: 'GitHub branch that the pull request is merging from'
@@ -23,21 +23,19 @@ jobs:
   trigger-build:
     runs-on: ubuntu-latest
     steps:
-#      - uses: actions/checkout@v3
-#        with:
-#          token: ${{ secrets.GIT_TOKEN }}
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
       - name: Trigger build
         env: 
           REMOTE_USER: ${{ inputs.remote_user }}
-          REMOTE_URL: ${{ inputs.remote_url }}
+          REMOTE_URL: ${{ format('git@github.com:{0}/{1}.git', inputs.remote_user, inputs.remote_name) }}
           BRANCH: ${{ inputs.remote_branch }}
           REMOTE_BRANCH: ${{ format('{0}/{1}', inputs.remote_user, inputs.remote_branch) }}
           LOCAL_BRANCH: ${{ format('merge/{0}', inputs.remote_branch) }}
         run: |
             git config --local user.email "machine@gildedgames.com"
             git config --local user.name "Gilded-Games-Bot"
-            
-            git checkout ${{ github.ref }}
             
             git remote add ${REMOTE_USER} ${REMOTE_URL}
             git fetch ${REMOTE_USER}
