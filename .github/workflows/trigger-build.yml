@@ -26,6 +26,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           token: ${{ secrets.GIT_TOKEN }}
+          fetch-depth: 0
       - name: Trigger build
         env: 
           REMOTE_USER: ${{ inputs.remote_user }}
@@ -46,7 +47,7 @@ jobs:
             
             git checkout ${MERGE_BRANCH} 
             
-            git merge --allow-unrelated-histories ${REMOTE_BRANCH} 
+            git merge ${REMOTE_BRANCH} 
             
             git commit --allow-empty -m "chore: Trigger build"
             git push ${REMOTE_USER} HEAD:${BRANCH}
