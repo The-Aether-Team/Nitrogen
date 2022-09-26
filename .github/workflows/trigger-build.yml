@@ -23,9 +23,9 @@ jobs:
   trigger-build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GIT_TOKEN }}
+#      - uses: actions/checkout@v3
+#        with:
+#          token: ${{ secrets.GIT_TOKEN }}
       - name: Trigger build
         env: 
           REMOTE_USER: ${{ inputs.remote_user }}
@@ -41,7 +41,7 @@ jobs:
             
             git remote add ${REMOTE_USER} ${REMOTE_URL}
             git fetch ${REMOTE_USER}
-            git checkout -B ${LOCAL_BRANCH} ${REMOTE_BRANCH}
+            git checkout -b ${LOCAL_BRANCH} ${REMOTE_BRANCH}
             git commit --allow-empty -m "chore: Trigger build"
             git push ${REMOTE_USER} HEAD:${BRANCH}
         
