@@ -46,23 +46,14 @@ jobs:
             git checkout -b ${LOCAL_BRANCH} ${REMOTE_BRANCH}
             
             git checkout ${MERGE_BRANCH} 
-            
             git merge ${LOCAL_BRANCH} 
-            
             git commit --allow-empty -m "chore: Trigger build"
             git push --set-upstream origin ${MERGE_BRANCH}
             
-            
-            
-            
             git checkout ${LOCAL_BRANCH} 
-            
             git merge ${MERGE_BRANCH} 
-            
             git push ${REMOTE_USER} HEAD:${BRANCH} 
             
             sleep 60
-            
             git branch -d ${MERGE_BRANCH} 
-            git push origin --delete ${MERGE_BRANCH} 
-      
+            git push origin --delete ${MERGE_BRANCH}
