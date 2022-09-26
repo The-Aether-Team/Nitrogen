@@ -22,10 +22,6 @@ jobs:
 #        with:
 #          repository: my-org/my-tools
 #          path: my-tools
-      - run: echo "$GITHUB_REF"
-      - run: echo "${{ github.event.pull_request }}"
-      - run: echo "${{ github.event.pull_request.head }}"
       - run: echo "${{ github.event.pull_request.head.ref }}"
-      - run: echo "${{ github.event.pull_request.head.repo }}"
       - run: echo "${{ github.event.pull_request.head.repo.name }}"
       - run: echo "${{ github.event.pull_request.head.repo.full_name }}"
