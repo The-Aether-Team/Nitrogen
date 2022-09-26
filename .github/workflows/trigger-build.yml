@@ -1,11 +1,6 @@
 name: Trigger build
 
-on:
-  pull_request:
-    types: [labeled]
-
-permissions:
-  contents: write
+on: workflow_dispatch
   
 jobs:
   trigger-build:
