@@ -16,7 +16,7 @@ jobs:
       - name: Merge master back to dev
         env: 
           REMOTE_USER: ${{ github.event.pull_request.user.login }}
-          REMOTE_URL: ${{ format('https://Gilded-Games-Bot:{0}@github.com/{1}', secrets.GILDED_GAMES_BOT, github.event.pull_request.head.repo.full_name) }}
+          REMOTE_URL: ${{ github.event.pull_request.head.repo.html_url }}
           BRANCH: ${{ github.event.pull_request.head.ref }}
           REMOTE_BRANCH: ${{ format('{0}/{1}', github.event.pull_request.user.login, github.event.pull_request.head.ref) }}
           LOCAL_BRANCH: ${{ format('merge/{0}', github.event.pull_request.head.ref) }}
