@@ -18,7 +18,6 @@ on:
         required: true
         default: '1.19'
         type: string
-        
   
 jobs:
   trigger-build:
@@ -37,9 +36,15 @@ jobs:
         run: |
             git config --local user.email "machine@gildedgames.com"
             git config --local user.name "Gilded-Games-Bot"
+            
+            
             git remote add ${REMOTE_USER} ${REMOTE_URL}
             git fetch ${REMOTE_USER}
             git checkout -B ${LOCAL_BRANCH} ${REMOTE_BRANCH}
+            
             git merge ${REMOTE_BRANCH}
             git commit --allow-empty -m "chore: Trigger build"
+            git push --set-upstream origin ${LOCAL_BRANCH}
+            git checkout ${REMOTE_BRANCH}
+            git merge ${LOCAL_BRANCH}
             git push ${REMOTE_USER} HEAD
