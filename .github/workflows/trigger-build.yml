@@ -16,8 +16,10 @@ jobs:
       - name: Merge master back to dev
         run: |
             git fetch --unshallow
-            git checkout -b ${{ format('merge/', github.event.pull_request.head.repo.name) }}
+            git checkout -b merge/test
             git pull
+            echo "${{ github.event.pull_request.head.repo.name }}"
+            echo "${{ format('merge/', github.event.pull_request.head.repo.name) }}"
             git merge --no-ff ${{ github.event.pull_request.head.ref }}
             git push
             
