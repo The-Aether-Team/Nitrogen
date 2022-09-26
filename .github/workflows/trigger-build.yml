@@ -60,6 +60,9 @@ jobs:
             git merge ${MERGE_BRANCH} 
             
             git push ${REMOTE_USER} HEAD:${BRANCH}
+            
+            git branch -d ${LOCAL_BRANCH} 
+            git branch -d ${MERGE_BRANCH} 
         
 
 #            git checkout ${REMOTE_BRANCH}
