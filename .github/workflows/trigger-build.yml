@@ -1,15 +1,12 @@
 name: Trigger build
 
 on:
-  pull_request_review:
-    types: [submitted]
-  
-#  issue_comment:
-#    types: [created]
+  pull_request:
+    types: [labeled]
 
 jobs:
   check-user:
-    if: github.event.review.state == 'commented'
+    if: ${{ github.event.label.name == 'status/build-approved' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions-cool/check-user-permission@v2
@@ -25,11 +22,11 @@ jobs:
 #        with:
 #          repository: my-org/my-tools
 #          path: my-tools
-      - run: echo "PR = ${{ github.event.issue.pull_request }}"
-      - run: echo "PR = ${{ github.event.issue.pull_request.url }}"
-      - run: echo "PR = ${{ github.event.issue.pull_request.head_ref }}"
-      - run: echo "PR = ${{ github.event.issue.pull_request.head.ref }}"
-      - run: echo "PR = ${{ github.event.issue.pull_request.base.ref }}"
-      - run: echo "PR = ${{ github.event.issue.pull_request.ref }}"
-      - run: echo "branch = ${{ github.event.issue.pull_request.GITHUB_REF }}"
       - run: echo "$GITHUB_REF"
+      - run: echo "${{ github.event.pull_request }}"
+      - run: echo "${{ github.event.pull_request.head }}"
+      - run: echo "${{ github.event.pull_request.head.ref }}"
+      - run: echo "${{ github.event.pull_request.repo }}"
+      - run: echo "${{ github.event.pull_request.repo.name }}"
+      - run: echo "${{ github.event.pull_request.base }}"
+      - run: echo "${{ github.event.pull_request.base.ref }}"
