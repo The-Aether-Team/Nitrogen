@@ -12,12 +12,8 @@ jobs:
     if: ${{ github.event.label.name == 'status/build-approved' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: oleksiyrudenko/gha-git-credentials@v2
+      - uses: actions/checkout@v3\
         with:
-          name: 'Gilded Games Bot'
-          email: 'machine@gildedgames.com'
-          actor: 'Gilded-Games-Bot'
           token: '${{ secrets.GIT_TOKEN }}'
       - name: Trigger build
         env: 
