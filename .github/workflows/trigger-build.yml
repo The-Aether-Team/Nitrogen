@@ -20,10 +20,9 @@ jobs:
           REMOTE_BRANCH: ${{ format('{0}/{1}', github.event.pull_request.user.login, github.event.pull_request.head.ref) }}
           LOCAL_BRANCH: ${{ format('merge/{0}', github.event.pull_request.head.ref) }}
         run: |
-            git branch ${LOCAL_BRANCH}
             git remote add ${REMOTE_USER} ${REMOTE_URL}
             git fetch ${REMOTE_USER}
-            git checkout -b ${LOCAL_BRANCH} ${REMOTE_BRANCH}
+            git checkout -B ${LOCAL_BRANCH} ${REMOTE_BRANCH}
             git merge ${REMOTE_BRANCH}
             git push --allow-empty -m "chore: Trigger build"
             
