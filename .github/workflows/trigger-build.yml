@@ -1,10 +1,27 @@
 name: Trigger build
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      remote_user:
+        description: 'GitHub username of pull request creator'
+        required: true
+        default: 'username'
+        type: string
+      remote_url:
+        description: 'GitHub URL of the fork that the pull request came from'
+        required: true
+        default: 'https://github.com/Gilded-Games/Nitrogen'
+        type: string
+      remote_branch:
+        description: 'GitHub branch that the pull request is merging from'
+        required: true
+        default: '1.19'
+        type: string
+        
   
 jobs:
   trigger-build:
-    if: ${{ github.event.label.name == 'status/build-approved' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -12,11 +29,11 @@ jobs:
           token: ${{ secrets.GIT_TOKEN }}
       - name: Trigger build
         env: 
-          REMOTE_USER: ${{ github.event.pull_request.user.login }}
-          REMOTE_URL: ${{ github.event.pull_request.head.repo.html_url }}
-          BRANCH: ${{ github.event.pull_request.head.ref }}
-          REMOTE_BRANCH: ${{ format('{0}/{1}', github.event.pull_request.user.login, github.event.pull_request.head.ref) }}
-          LOCAL_BRANCH: ${{ format('merge/{0}', github.event.pull_request.head.ref) }}
+          REMOTE_USER: ${{ inputs.remote_user }}
+          REMOTE_URL: ${{ inputs.remote_url }}
+          BRANCH: ${{ inputs.remote_branch }}
+          REMOTE_BRANCH: ${{ format('{0}/{1}', inputs.remote_user, inputs.remote_branch) }}
+          LOCAL_BRANCH: ${{ format('merge/{0}', inputs.remote_branch) }}
         run: |
             git config --local user.email "machine@gildedgames.com"
             git config --local user.name "Gilded-Games-Bot"
