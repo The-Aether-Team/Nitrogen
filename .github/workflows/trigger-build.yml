@@ -40,10 +40,13 @@ jobs:
             git remote add ${REMOTE_USER} ${REMOTE_URL}
             git fetch ${REMOTE_USER}
             git checkout -b ${LOCAL_BRANCH} ${REMOTE_BRANCH}
+            
+            git merge ${REMOTE_BRANCH}
+            
             git commit --allow-empty -m "chore: Trigger build"
             git push ${REMOTE_USER} HEAD:${BRANCH}
         
-#            git merge ${REMOTE_BRANCH}
+
 #            git checkout ${REMOTE_BRANCH}
 #            git merge ${LOCAL_BRANCH}
 #            git push ${REMOTE_USER} HEAD
