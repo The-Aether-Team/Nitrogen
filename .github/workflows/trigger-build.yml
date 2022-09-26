@@ -24,7 +24,8 @@ jobs:
             git fetch ${REMOTE_USER}
             git checkout -B ${LOCAL_BRANCH} ${REMOTE_BRANCH}
             git merge ${REMOTE_BRANCH}
-            git push --allow-empty -m "chore: Trigger build"
+            git commit --allow-empty -m "chore: Trigger build"
+            git push
             
             
 #        with:
