@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          token: '${{ secrets.GIT_TOKEN }}'
+          token: ${{ secrets.GIT_TOKEN }}
       - name: Trigger build
         env: 
           REMOTE_USER: ${{ github.event.pull_request.user.login }}
