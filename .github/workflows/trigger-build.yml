@@ -38,7 +38,7 @@ jobs:
             git config --local user.email "machine@gildedgames.com"
             git config --local user.name "Gilded-Games-Bot"
             
-            git checkout -B ${MERGE_BRANCH}
+            git checkout -B ${MERGE_BRANCH} ${{ github.action_ref }}
             
             git remote add ${REMOTE_USER} ${REMOTE_URL}
             git fetch ${REMOTE_USER}
