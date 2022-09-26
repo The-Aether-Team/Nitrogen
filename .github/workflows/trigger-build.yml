@@ -42,4 +42,4 @@ jobs:
             git checkout -B ${LOCAL_BRANCH} ${REMOTE_BRANCH}
             git merge ${REMOTE_BRANCH}
             git commit --allow-empty -m "chore: Trigger build"
-            git push ${REMOTE_USER} HEAD:${BRANCH}
+            git push ${REMOTE_USER} HEAD
