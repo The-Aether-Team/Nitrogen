@@ -17,8 +17,8 @@ jobs:
         env: 
           REMOTE_USER: ${{ github.event.pull_request.user.login }}
           REMOTE_URL: ${{ github.event.pull_request.head.repo.html_url }}
-          REMOTE_BRANCH: ${{ format(github.event.pull_request.user.login, github.event.pull_request.head.ref }}
-          LOCAL_BRANCH: ${{ format('merge/', github.event.pull_request.head.ref }}
+          REMOTE_BRANCH: ${{ format(github.event.pull_request.user.login, github.event.pull_request.head.ref) }}
+          LOCAL_BRANCH: ${{ format('merge/', github.event.pull_request.head.ref) }}
         run: |
             git branch ${LOCAL_BRANCH}
             git remote add ${REMOTE_USER} ${REMOTE_URL}
