@@ -15,10 +15,10 @@ jobs:
             git config --local user.name "Gilded-Games-Bot"
       - name: Merge master back to dev
         run: |
-            git fetch --unshallow
-            git checkout -b merge/test
+            echo "${{ github.event.pull_request.head.ref }}"
             echo "${{ github.event.pull_request.head.repo.name }}"
             echo "${{ format('merge/', github.event.pull_request.head.repo.name) }}"
+            git checkout -b merge/test
             git merge --no-ff ${{ github.event.pull_request.head.ref }}
             git push
             
