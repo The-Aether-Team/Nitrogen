@@ -50,7 +50,9 @@ jobs:
             git merge ${LOCAL_BRANCH} 
             
             git commit --allow-empty -m "chore: Trigger build"
-            git push ${REMOTE_USER} HEAD:${BRANCH}
+            git push --set-upstream origin ${MERGE_BRANCH}
+            
+#            git push ${REMOTE_USER} HEAD:${BRANCH}
         
 
 #            git checkout ${REMOTE_BRANCH}
