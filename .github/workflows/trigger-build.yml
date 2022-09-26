@@ -13,7 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Merge master back to dev
+      - uses: oleksiyrudenko/gha-git-credentials@v2
+        with:
+          name: 'Gilded Games Bot'
+          email: 'machine@gildedgames.com'
+          actor: 'Gilded-Games-Bot'
+          token: '${{ secrets.GIT_TOKEN }}'
+      - name: Trigger build
         env: 
           REMOTE_USER: ${{ github.event.pull_request.user.login }}
           REMOTE_URL: ${{ github.event.pull_request.head.repo.html_url }}
@@ -21,17 +27,9 @@ jobs:
           REMOTE_BRANCH: ${{ format('{0}/{1}', github.event.pull_request.user.login, github.event.pull_request.head.ref) }}
           LOCAL_BRANCH: ${{ format('merge/{0}', github.event.pull_request.head.ref) }}
         run: |
-            git config --local user.email "machine@gildedgames.com"
-            git config --local user.name "Gilded-Games-Bot"
             git remote add ${REMOTE_USER} ${REMOTE_URL}
             git fetch ${REMOTE_USER}
             git checkout -B ${LOCAL_BRANCH} ${REMOTE_BRANCH}
             git merge ${REMOTE_BRANCH}
             git commit --allow-empty -m "chore: Trigger build"
             git push ${REMOTE_USER} HEAD:${BRANCH}
-            
-            
-#        with:
-#          repository: ${{ github.event.pull_request.head.repo.full_name }}
-#          ref: 
-#          path: 
