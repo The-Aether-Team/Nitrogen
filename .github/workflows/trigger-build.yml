@@ -57,7 +57,7 @@ jobs:
             
             git checkout ${LOCAL_BRANCH} 
             
-            git merge ${LOCAL_BRANCH} 
+            git merge ${MERGE_BRANCH} 
             
             git push ${REMOTE_USER} HEAD:${BRANCH}
         
@@ -65,3 +65,4 @@ jobs:
 #            git checkout ${REMOTE_BRANCH}
 #            git merge ${LOCAL_BRANCH}
 #            git push ${REMOTE_USER} HEAD
+# todo: ill also need to add code to delete the merge_branch at the end.
