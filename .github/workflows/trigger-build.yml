@@ -10,7 +10,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.ref }}
-          path: ${{ format('merge/', github.event.pull_request.head.repo.name) }}
+      - run: |
+            git config --local user.email "machine@gildedgames.com"
+            git config --local user.name "Gilded-Games-Bot"
+      - name: Merge master back to dev
+        run: |
+            git fetch --unshallow
+            git checkout -b ${{ format('merge/', github.event.pull_request.head.repo.name) }}
+            git pull
+            git merge --no-ff ${{ github.event.pull_request.head.ref }}
+            git push
+            
+            
+#        with:
+#          repository: ${{ github.event.pull_request.head.repo.full_name }}
+#          ref: 
+#          path: 
