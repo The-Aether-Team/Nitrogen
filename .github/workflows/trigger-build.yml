@@ -52,7 +52,14 @@ jobs:
             git commit --allow-empty -m "chore: Trigger build"
             git push --set-upstream origin ${MERGE_BRANCH}
             
-#            git push ${REMOTE_USER} HEAD:${BRANCH}
+            
+            
+            
+            git checkout ${LOCAL_BRANCH} 
+            
+            git merge ${LOCAL_BRANCH} 
+            
+            git push ${REMOTE_USER} HEAD:${BRANCH}
         
 
 #            git checkout ${REMOTE_BRANCH}
