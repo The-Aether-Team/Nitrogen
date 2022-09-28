@@ -22,7 +22,7 @@ jobs:
           root: ~/project/build/libs
           paths: 
             - << pipeline.parameters.artifact-name >>-*.jar
-  deploy:
+  publish:
     machine:
       image: ubuntu-2004:202111-02
     resource_class: medium
@@ -47,9 +47,9 @@ workflows:
   build:
     jobs:
       - build
-  deploy:
+  publish:
     jobs:
-      - deploy:
+      - publish:
           context:
             - maven
           filters:
