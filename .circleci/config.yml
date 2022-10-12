@@ -11,7 +11,7 @@ parameters:
 jobs:
   build:
     machine:
-      image: ubuntu-2004:202111-02
+      image: ubuntu-2204:2022.07.1
     resource_class: medium
     environment:
       _JAVA_OPTIONS: -Xmx3200m
