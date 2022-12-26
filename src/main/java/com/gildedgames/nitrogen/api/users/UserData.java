@@ -1,8 +1,10 @@
 package com.gildedgames.nitrogen.api.users;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.*;
 
-public class RoleData {
+public class UserData {
     public static class Client {
         private static User CLIENT_USER;
 
@@ -29,7 +31,7 @@ public class RoleData {
         }
 
         public static Map<UUID, User> getStoredUsers() {
-            return STORED_USERS;
+            return ImmutableMap.copyOf(STORED_USERS);
         }
     }
 }

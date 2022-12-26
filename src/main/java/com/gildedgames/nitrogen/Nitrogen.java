@@ -1,6 +1,6 @@
 package com.gildedgames.nitrogen;
 
-import com.gildedgames.nitrogen.api.users.RoleData;
+import com.gildedgames.nitrogen.api.users.UserData;
 import com.gildedgames.nitrogen.api.users.User;
 import com.gildedgames.nitrogen.network.PacketDistributor;
 import com.gildedgames.nitrogen.network.NitrogenPacketHandler;
@@ -42,7 +42,7 @@ public class Nitrogen {
     public static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             UUID uuid = serverPlayer.getUUID();
-            Map<UUID, User> userData = RoleData.Server.getStoredUsers();
+            Map<UUID, User> userData = UserData.Server.getStoredUsers();
             if (userData.containsKey(uuid)) {
                 User user = userData.get(uuid);
                 PacketDistributor.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
@@ -52,6 +52,6 @@ public class Nitrogen {
 
     @SubscribeEvent
     public static void serverAboutToStart(ServerAboutToStartEvent event) {
-        RoleData.Server.initializeForTesting();
+        UserData.Server.initializeForTesting();
     }
 }

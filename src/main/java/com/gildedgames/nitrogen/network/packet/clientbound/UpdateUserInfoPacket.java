@@ -1,6 +1,6 @@
 package com.gildedgames.nitrogen.network.packet.clientbound;
 
-import com.gildedgames.nitrogen.api.users.RoleData;
+import com.gildedgames.nitrogen.api.users.UserData;
 import com.gildedgames.nitrogen.api.users.User;
 import com.gildedgames.nitrogen.network.BasePacket;
 import net.minecraft.client.Minecraft;
@@ -21,7 +21,7 @@ public record UpdateUserInfoPacket(User user) implements BasePacket {
     @Override
     public void execute(Player player) {
         if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null) {
-            RoleData.Client.setClientUser(this.user());
+            UserData.Client.setClientUser(this.user());
         }
     }
 }
