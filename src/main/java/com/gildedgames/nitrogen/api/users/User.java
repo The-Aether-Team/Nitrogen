@@ -59,8 +59,14 @@ public class User {
         return this.isRole(Role.Type.DONOR);
     }
 
+    public List<String> getLifetimeSkins() {
+        List<String> skins = new ArrayList<>();
+        this.getRoles().stream().filter((role) -> role instanceof Donor).forEach((role) -> skins.addAll(((Donor) role).getLifetimeSkins()));
+        return skins;
+    }
+
     public boolean hasLifetimeSkin(String skin) {
-        return this.getRoles().stream().anyMatch((role) -> role.getType() == Role.Type.PATRON && ((Patron) role).getLifetimeSkins().contains(skin));
+        return this.getRoles().stream().anyMatch((role) -> role instanceof Donor donor && donor.getLifetimeSkins().contains(skin));
     }
 
     public boolean isBooster() {

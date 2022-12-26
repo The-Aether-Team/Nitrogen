@@ -21,13 +21,15 @@ public class UserData {
         private static final Map<UUID, User> STORED_USERS = new HashMap<>();
 
         public static void initializeForTesting() {
-            List<UUID> uuids = new ArrayList<>();
-            uuids.add(UUID.fromString("380df991-f603-344c-a090-369bad2a924a"));
-            for (UUID uuid : uuids) {
-                User user = new User();
-                user.addRole(new Ranked(Ranked.Rank.GILDED_GAMES));
-                STORED_USERS.put(uuid, user);
-            }
+            User user1 = new User();
+            user1.addRole(new Ranked(Ranked.Rank.GILDED_GAMES));
+            STORED_USERS.put(UUID.fromString("380df991-f603-344c-a090-369bad2a924a"), user1);
+
+            User user2 = new User();
+            Donor donor = new Donor();
+            donor.addLifetimeSkins("blue_moa", "natural_moa_skins", "angel_moa_skins_1");
+            user2.addRole(donor);
+            STORED_USERS.put(UUID.fromString("58a5d694-a8a6-4605-ab33-d6904107ad5f"), user2);
         }
 
         public static Map<UUID, User> getStoredUsers() {
