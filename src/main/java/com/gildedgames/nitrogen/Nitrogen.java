@@ -2,11 +2,15 @@ package com.gildedgames.nitrogen;
 
 import com.gildedgames.nitrogen.api.users.UserData;
 import com.gildedgames.nitrogen.api.users.User;
+import com.gildedgames.nitrogen.data.generators.NitrogenLanguageData;
 import com.gildedgames.nitrogen.network.PacketDistributor;
 import com.gildedgames.nitrogen.network.NitrogenPacketHandler;
 import com.gildedgames.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.mojang.logging.LogUtils;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -32,10 +36,19 @@ public class Nitrogen {
     public Nitrogen() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::dataSetup);
     }
 
     public void commonSetup(FMLCommonSetupEvent event) {
         NitrogenPacketHandler.register();
+    }
+
+    public void dataSetup(GatherDataEvent event) {
+        DataGenerator generator = event.getGenerator();
+        PackOutput packOutput = generator.getPackOutput();
+
+        // Client Data
+        generator.addProvider(event.includeClient(), new NitrogenLanguageData(packOutput));
     }
 
     @SubscribeEvent

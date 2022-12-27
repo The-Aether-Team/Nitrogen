@@ -26,7 +26,7 @@ public class UserData {
             STORED_USERS.put(UUID.fromString("380df991-f603-344c-a090-369bad2a924a"), user1);
 
             User user2 = new User();
-            Donor donor = new Donor("blue_moa", "natural_moa_skins", "angel_moa_skins_1");
+            Donor donor = new Donor("blue_moa", "natural_moa_skins", "lifetime_angel_moa_skins");
             user2.addRole(donor);
             STORED_USERS.put(UUID.fromString("58a5d694-a8a6-4605-ab33-d6904107ad5f"), user2);
         }

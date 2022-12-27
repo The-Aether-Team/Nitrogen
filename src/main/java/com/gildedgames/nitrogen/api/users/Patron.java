@@ -1,6 +1,7 @@
 package com.gildedgames.nitrogen.api.users;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,19 +56,25 @@ public class Patron extends Donor {
     }
 
     public enum Tier {
-        HUMAN(0),
-        ANGEL(1),
-        VALKYRIE(2),
-        ARKENZUS(3);
+        HUMAN(0, Component.translatable("nitrogen.patreon.tier.human")),
+        ANGEL(1, Component.translatable("nitrogen.patreon.tier.angel")),
+        VALKYRIE(2, Component.translatable("nitrogen.patreon.tier.valkyrie")),
+        ARKENZUS(3, Component.translatable("nitrogen.patreon.tier.arkenzus"));
 
         private final int level;
+        private final Component displayName;
 
-        Tier(int level) {
+        Tier(int level, Component displayName) {
             this.level = level;
+            this.displayName = displayName;
         }
 
         public int getLevel() {
             return this.level;
+        }
+
+        public Component getDisplayName() {
+            return this.displayName;
         }
     }
 }
