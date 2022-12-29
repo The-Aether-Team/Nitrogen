@@ -9,7 +9,7 @@ import java.util.Optional;
 public class User {
     private final List<Role> roles = new ArrayList<>();
 
-    public User() { }
+    protected User() { }
 
     public List<Role> getRoles() {
         return this.roles;
