@@ -14,6 +14,6 @@ public class NitrogenLanguageData extends NitrogenLanguageProvider {
         this.addPatreonTier("human", "Human");
         this.addPatreonTier("angel", "Angel");
         this.addPatreonTier("valkyrie", "Valkyrie");
-        this.addPatreonTier("Arkenzus", "Arkenzus");
+        this.addPatreonTier("arkenzus", "Arkenzus");
     }
 }
