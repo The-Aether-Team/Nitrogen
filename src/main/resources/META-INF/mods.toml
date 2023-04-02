@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[44,)"
+loaderVersion = "[45,)"
 license = "Assets: All Rights Reserved; Code: LGPL-3.0"
 
 [[mods]]
@@ -15,12 +15,12 @@ description = '''
 [[dependencies.nitrogen]]
     modId = "forge"
     mandatory = true
-    versionRange = "[44.0.36,)"
+    versionRange = "[45.0.40,)"
     ordering = "NONE"
     side = "BOTH"
 [[dependencies.nitrogen]]
     modId = "minecraft"
     mandatory = true
-    versionRange = "[1.19.3]"
+    versionRange = "[1.19.4]"
     ordering = "NONE"
     side = "BOTH"
