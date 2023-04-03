@@ -1,61 +1,16 @@
 version: 2.1
 
+setup: true
+
 orbs:
-  gradle: circleci/gradle@3.0.0
-
-parameters:
-  artifact-name:
-    type: string
-    default: nitrogen
-
-jobs:
-  build:
-    machine:
-      image: ubuntu-2204:2022.07.1
-    resource_class: medium
-    environment:
-      _JAVA_OPTIONS: -Xmx3200m
-      GRADLE_OPTS: -Dorg.gradle.daemon=false
-    steps:
-      - setup
-      - persist_to_workspace:
-          root: ~/project/build/libs
-          paths: 
-            - << pipeline.parameters.artifact-name >>-*.jar
-  publish:
-    machine:
-      image: ubuntu-2004:202111-02
-    resource_class: medium
-    environment:
-      _JAVA_OPTIONS: -Xmx3200m
-      GRADLE_OPTS: -Dorg.gradle.daemon=false
-    steps:
-      - setup
-      - run: gradle publish
-
-commands:
-  setup:
-    steps:
-      - checkout
-      - gradle/with_cache:
-          steps: 
-            - run: gradle build --build-cache
-      - store_artifacts:
-          path: ~/project/build/libs
+  path-filtering: circleci/path-filtering@0.1.1
 
 workflows:
-  build:
+  start:
     jobs:
-      - build
-  publish:
-    jobs:
-      - publish:
-          context:
-            - maven
-          filters:
-            tags:
-              only: 
-                - /.*/
-            branches:
-              ignore: 
-                - /.*/
+      - path-filtering/filter:
+          name: filter
+          mapping: |
+            ^((?!docs|.github).)*$ allow-build true
+          base-revision: << pipeline.git.branch >>
+          config-path: .circleci/continue_config.yml
