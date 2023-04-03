@@ -1,4 +1,4 @@
-package com.gildedgames.nitrogen.network;
+package com.aetherteam.nitrogen.network;
 
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;

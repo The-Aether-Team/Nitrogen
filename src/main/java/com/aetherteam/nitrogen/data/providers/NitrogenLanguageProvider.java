@@ -1,4 +1,4 @@
-package com.gildedgames.nitrogen.data.providers;
+package com.aetherteam.nitrogen.data.providers;
 
 import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.LanguageProvider;

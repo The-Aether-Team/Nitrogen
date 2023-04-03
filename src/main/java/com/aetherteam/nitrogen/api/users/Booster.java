@@ -1,4 +1,4 @@
-package com.gildedgames.nitrogen.api.users;
+package com.aetherteam.nitrogen.api.users;
 
 public class Booster implements Role {
     @Override

@@ -1,11 +1,11 @@
-package com.gildedgames.nitrogen;
+package com.aetherteam.nitrogen;
 
-import com.gildedgames.nitrogen.api.users.UserData;
-import com.gildedgames.nitrogen.api.users.User;
-import com.gildedgames.nitrogen.data.generators.NitrogenLanguageData;
-import com.gildedgames.nitrogen.network.PacketDistributor;
-import com.gildedgames.nitrogen.network.NitrogenPacketHandler;
-import com.gildedgames.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
+import com.aetherteam.nitrogen.api.users.UserData;
+import com.aetherteam.nitrogen.api.users.User;
+import com.aetherteam.nitrogen.data.generators.NitrogenLanguageData;
+import com.aetherteam.nitrogen.network.PacketDistributor;
+import com.aetherteam.nitrogen.network.NitrogenPacketHandler;
+import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.mojang.logging.LogUtils;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;

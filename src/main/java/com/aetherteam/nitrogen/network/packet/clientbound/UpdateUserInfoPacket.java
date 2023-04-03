@@ -1,8 +1,8 @@
-package com.gildedgames.nitrogen.network.packet.clientbound;
+package com.aetherteam.nitrogen.network.packet.clientbound;
 
-import com.gildedgames.nitrogen.api.users.UserData;
-import com.gildedgames.nitrogen.api.users.User;
-import com.gildedgames.nitrogen.network.BasePacket;
+import com.aetherteam.nitrogen.api.users.UserData;
+import com.aetherteam.nitrogen.api.users.User;
+import com.aetherteam.nitrogen.network.BasePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;

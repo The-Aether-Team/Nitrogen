@@ -1,4 +1,4 @@
-package com.gildedgames.nitrogen.api.users;
+package com.aetherteam.nitrogen.api.users;
 
 import com.google.common.collect.ImmutableMap;
 

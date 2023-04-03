@@ -1,7 +1,7 @@
-package com.gildedgames.nitrogen.network;
+package com.aetherteam.nitrogen.network;
 
-import com.gildedgames.nitrogen.Nitrogen;
-import com.gildedgames.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
+import com.aetherteam.nitrogen.Nitrogen;
+import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;

@@ -1,4 +1,4 @@
-package com.gildedgames.nitrogen.network;
+package com.aetherteam.nitrogen.network;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;

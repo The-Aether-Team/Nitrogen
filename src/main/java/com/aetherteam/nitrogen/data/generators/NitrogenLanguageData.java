@@ -1,7 +1,7 @@
-package com.gildedgames.nitrogen.data.generators;
+package com.aetherteam.nitrogen.data.generators;
 
-import com.gildedgames.nitrogen.Nitrogen;
-import com.gildedgames.nitrogen.data.providers.NitrogenLanguageProvider;
+import com.aetherteam.nitrogen.Nitrogen;
+import com.aetherteam.nitrogen.data.providers.NitrogenLanguageProvider;
 import net.minecraft.data.PackOutput;
 
 public class NitrogenLanguageData extends NitrogenLanguageProvider {

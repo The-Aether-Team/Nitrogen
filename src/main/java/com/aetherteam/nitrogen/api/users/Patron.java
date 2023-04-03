@@ -1,4 +1,4 @@
-package com.gildedgames.nitrogen.api.users;
+package com.aetherteam.nitrogen.api.users;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
