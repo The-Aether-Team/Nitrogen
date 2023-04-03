@@ -4,6 +4,31 @@ setup: true
 
 orbs:
   path-filtering: circleci/path-filtering@0.1.1
+  gradle: circleci/gradle@3.0.0
+
+jobs:
+  publish:
+    machine:
+      image: ubuntu-2204:2023.02.1
+    resource_class: medium
+    environment:
+      _JAVA_OPTIONS: -Xmx3200m
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
+    steps:
+      - setup
+      - run: |
+          gradle publish
+
+commands:
+  setup:
+    steps:
+      - checkout
+      - gradle/with_cache:
+          cache_key: 'v1'
+          steps:
+            - run: gradle build --parallel --build-cache --console=plain
+      - store_artifacts:
+          path: ~/project/build/libs
 
 workflows:
   start:
@@ -14,3 +39,15 @@ workflows:
             ^((?!docs|.github).)*$ allow-build true
           base-revision: << pipeline.git.branch >>
           config-path: .circleci/continue_config.yml
+  publish:
+    jobs:
+      - publish:
+          context:
+            - maven
+          filters:
+            tags:
+              only:
+                - /.*/
+            branches:
+              ignore:
+                - /.*/

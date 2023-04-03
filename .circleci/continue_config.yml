@@ -33,18 +33,6 @@ jobs:
          steps:
            - run: echo "Condition not met."
 
-  publish:
-    machine:
-      image: ubuntu-2204:2023.02.1
-    resource_class: large
-    environment:
-      _JAVA_OPTIONS: -Xmx3200m
-      GRADLE_OPTS: -Dorg.gradle.daemon=false
-    steps:
-      - setup
-      - run: |
-          gradle publish
-
 commands:
   setup:
     steps:
@@ -60,15 +48,3 @@ workflows:
   build:
     jobs:
       - build
-  publish:
-    jobs:
-      - publish:
-          context:
-            - maven
-          filters:
-            tags:
-              only:
-                - /.*/
-            branches:
-              ignore:
-                - /.*/
