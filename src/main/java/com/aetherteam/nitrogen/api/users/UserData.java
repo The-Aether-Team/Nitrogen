@@ -22,7 +22,7 @@ public class UserData {
 
         public static void initializeForTesting() {
             User user1 = new User();
-            user1.addRole(new Ranked(Ranked.Rank.GILDED_GAMES));
+            user1.addRole(new Ranked(Ranked.Rank.THE_AETHER_TEAM));
             STORED_USERS.put(UUID.fromString("380df991-f603-344c-a090-369bad2a924a"), user1);
 
             User user2 = new User();

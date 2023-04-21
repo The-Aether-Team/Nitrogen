@@ -50,7 +50,7 @@ public class Ranked implements Role {
     }
 
     public enum Rank {
-        GILDED_GAMES,
+        THE_AETHER_TEAM,
         MODDING_LEGACY,
         CONTRIBUTOR,
         LEGACY_CONTRIBUTOR,
