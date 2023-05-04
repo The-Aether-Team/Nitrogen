@@ -12,7 +12,7 @@ public class NitrogenLanguageData extends NitrogenLanguageProvider {
     @Override
     protected void addTranslations() {
         this.addPatreonTier("human", "Human");
-        this.addPatreonTier("angel", "Angel");
+        this.addPatreonTier("ascentan", "Ascentan");
         this.addPatreonTier("valkyrie", "Valkyrie");
         this.addPatreonTier("arkenzus", "Arkenzus");
     }

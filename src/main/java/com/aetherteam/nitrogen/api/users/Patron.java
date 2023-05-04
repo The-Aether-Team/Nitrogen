@@ -57,7 +57,7 @@ public class Patron extends Donor {
 
     public enum Tier {
         HUMAN(0, Component.translatable("nitrogen.patreon.tier.human")),
-        ANGEL(1, Component.translatable("nitrogen.patreon.tier.angel")),
+        ASCENTAN(1, Component.translatable("nitrogen.patreon.tier.ascentan")),
         VALKYRIE(2, Component.translatable("nitrogen.patreon.tier.valkyrie")),
         ARKENZUS(3, Component.translatable("nitrogen.patreon.tier.arkenzus"));
 
