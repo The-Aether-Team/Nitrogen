@@ -1,103 +1,144 @@
 package com.aetherteam.nitrogen.api.users;
 
 import net.minecraft.network.FriendlyByteBuf;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import net.minecraft.network.chat.Component;
 
 public class User {
-    private final List<Role> roles = new ArrayList<>();
+    private Tier highestPastTier;
+    private Tier currentTier;
+    private String renewalDate;
+    private Group highestGroup;
 
-    protected User() { }
-
-    public List<Role> getRoles() {
-        return this.roles;
+    protected User(Tier highestPastTier, Tier currentTier, String renewalDate, Group highestGroup) {
+        this.highestPastTier = highestPastTier;
+        this.currentTier = currentTier;
+        this.renewalDate = renewalDate;
+        this.highestGroup = highestGroup;
     }
 
-    protected void addRoles(Role... roles) {
-        for (Role role : roles) {
-            if (!this.isRole(role.getType())) { // Makes sure this User doesn't already have a role.
-                this.getRoles().add(role);
-            }
-        }
+    public Tier getHighestPastTier() {
+        return this.highestPastTier;
     }
 
-    protected void addRole(Role role) {
-        if (!this.isRole(role.getType())) { // Makes sure this User doesn't already have a role.
-            this.getRoles().add(role);
-        }
+    protected void updateHighestPastTier(Tier highestPastTier) {
+        this.highestPastTier = currentTier;
     }
 
-    public boolean hasRank(Ranked.Rank rank) {
-        return this.getRoles().stream().anyMatch((role) -> role.getType() == Role.Type.RANKED && ((Ranked) role).getRanks().contains(rank));
-    }
-
-    public boolean isPatron() {
-        return this.isRole(Role.Type.PATRON);
-    }
-
-    public boolean isPledging() {
-        return this.getRoles().stream().anyMatch((role) -> role.getType() == Role.Type.PATRON && ((Patron) role).isPledging());
-    }
-
-    public boolean hasPatreonTier(Patron.Tier tier) {
-        return this.getRoles().stream().anyMatch((role) -> role.getType() == Role.Type.PATRON && ((Patron) role).getTier() == tier);
-    }
-
-    public Patron.Tier getPatreonTier() {
-        Optional<Role> roleOptional = this.getRoles().stream().filter((role) -> role.getType() == Role.Type.PATRON).findFirst();
-        return roleOptional.map(roleValue -> ((Patron) roleValue).getTier()).orElse(null);
-    }
-
-    public int getPatronTierLevel() {
-        Patron.Tier tier = this.getPatreonTier();
+    public int getHighestPastTierLevel() {
+        Tier tier = this.getHighestPastTier();
         return tier != null ? tier.getLevel() : 0;
     }
 
-    public boolean isDonor() {
-        return this.isRole(Role.Type.DONOR);
+    public Tier getCurrentTier() {
+        return this.currentTier;
     }
 
-    public List<String> getLifetimeSkins() {
-        List<String> skins = new ArrayList<>();
-        this.getRoles().stream().filter((role) -> role instanceof Donor).forEach((role) -> skins.addAll(((Donor) role).getLifetimeSkins()));
-        return skins;
+    protected void updateCurrentTier(Tier currentTier) {
+        this.currentTier = currentTier;
     }
 
-    public boolean hasLifetimeSkin(String skin) {
-        return this.getRoles().stream().anyMatch((role) -> role instanceof Donor donor && donor.getLifetimeSkins().contains(skin));
+    public int getCurrentTierLevel() {
+        Tier tier = this.getCurrentTier();
+        return tier != null ? tier.getLevel() : 0;
     }
 
-    public boolean isBooster() {
-        return this.isRole(Role.Type.BOOSTER);
+    public String getRenewalDate() {
+        return this.renewalDate;
     }
 
-    public boolean isRole(Role.Type type) {
-        return this.getRoles().stream().anyMatch(role -> role.getType() == type);
+    protected void updateRenewalDate(String renewalDate) {
+        this.renewalDate = renewalDate;
+    }
+
+    public Group getHighestGroup() {
+        return this.highestGroup;
+    }
+
+    protected void updateHighestGroup(Group highestGroup) {
+        this.highestGroup = highestGroup;
     }
 
     public static User read(FriendlyByteBuf buffer) {
-        User user = new User();
-        int size = buffer.readInt();
-        for (int i = 0; i < size; i++) {
-            String name = buffer.readUtf();
-            Role.Type type = Role.Type.valueOf(name);
-            switch(type) {
-                case BOOSTER -> user.addRole(new Booster());
-                case DONOR -> user.addRole(Donor.read(buffer));
-                case PATRON -> user.addRole(Patron.read(buffer));
-                case RANKED -> user.addRole(Ranked.read(buffer));
-            }
-        }
-        return user;
+        Tier highestPastTier = Tier.valueOf(buffer.readUtf());
+        Tier currentTier = Tier.valueOf(buffer.readUtf());
+        String renewalDate = buffer.readUtf();
+        Group highestGroup = Group.valueOf(buffer.readUtf());
+        return new User(highestPastTier, currentTier, renewalDate, highestGroup);
     }
 
     public static void write(FriendlyByteBuf buffer, User user) {
-        List<Role> roles = user.getRoles();
-        buffer.writeInt(roles.size());
-        for (Role role : roles) {
-            role.write(buffer);
+        buffer.writeUtf(user.getHighestPastTier().name());
+        buffer.writeUtf(user.getCurrentTier().name());
+        buffer.writeUtf(user.getRenewalDate());
+        buffer.writeUtf(user.getHighestGroup().name());
+    }
+
+    public enum Tier {
+        HUMAN(0, 2429462, Component.translatable("nitrogen.patreon.tier.human")),
+        ASCENTAN(1, 616325, Component.translatable("nitrogen.patreon.tier.ascentan")),
+        VALKYRIE(2, 616326, Component.translatable("nitrogen.patreon.tier.valkyrie")),
+        ARKENZUS(3, 616327, Component.translatable("nitrogen.patreon.tier.arkenzus"));
+
+        private final int level;
+        private final int id;
+        private final Component displayName;
+
+        Tier(int level, int id, Component displayName) {
+            this.level = level;
+            this.id = id;
+            this.displayName = displayName;
+        }
+
+        public int getLevel() {
+            return this.level;
+        }
+
+        public int getId() {
+            return this.id;
+        }
+
+        public Component getDisplayName() {
+            return this.displayName;
+        }
+
+        public static Tier byId(int id) {
+            switch(id) {
+                case 2429462 -> {
+                    return HUMAN;
+                }
+                case 616325 -> {
+                    return ASCENTAN;
+                }
+                case 616326 -> {
+                    return VALKYRIE;
+                }
+                case 616327 -> {
+                    return ARKENZUS;
+                }
+                default -> {
+                    return null;
+                }
+            }
+        }
+    }
+
+    public enum Group {
+        AETHER_TEAM(7),
+        MODDING_LEGACY(6),
+        CONTRIBUTOR(5),
+        LEGACY_CONTRIBUTOR(4),
+        STAFF(3),
+        CELEBRITY(2),
+        TRANSLATOR(1);
+
+        private final int level;
+
+        Group(int level) {
+            this.level = level;
+        }
+
+        public int getLevel() {
+            return this.level;
         }
     }
 }

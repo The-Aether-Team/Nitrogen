@@ -10,9 +10,10 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -52,19 +53,26 @@ public class Nitrogen {
     }
 
     @SubscribeEvent
-    public static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            UUID uuid = serverPlayer.getUUID();
-            Map<UUID, User> userData = UserData.Server.getStoredUsers();
-            if (userData.containsKey(uuid)) {
-                User user = userData.get(uuid);
-                PacketDistributor.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
-            }
-        }
+    public static void serverAboutToStart(ServerStartingEvent event) {
+        UserData.Server.initializeFromCache(event.getServer());
     }
 
     @SubscribeEvent
-    public static void serverAboutToStart(ServerAboutToStartEvent event) {
-        UserData.Server.initializeForTesting();
+    public static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        Player player = event.getEntity();
+        if (player instanceof ServerPlayer serverPlayer) {
+            UUID uuid = serverPlayer.getGameProfile().getId();
+            Map<UUID, User> userData = UserData.Server.getStoredUsers();
+            User user;
+            if (userData.containsKey(uuid)) {
+                user = userData.get(uuid);
+            } else {
+                user = UserData.Server.queryUser(serverPlayer.getServer(), uuid);
+            }
+            //todo timestamp check
+            if (user != null) {
+                PacketDistributor.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
+            }
+        }
     }
 }
