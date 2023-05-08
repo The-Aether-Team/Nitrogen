@@ -41,13 +41,13 @@ public class UserData {
                 reader.close();
 
                 JsonElement jsonElement = JsonParser.parseString(query);
-                if (jsonElement != null && jsonElement.isJsonObject()) {
+                if (jsonElement != null && !jsonElement.isJsonNull() && jsonElement.isJsonObject()) {
                     JsonObject json = jsonElement.getAsJsonObject();
 
                     User.Tier currentTier = null;
                     try {
                         JsonElement currentTierElement = json.get("currentTier");
-                        if (currentTierElement != null) {
+                        if (currentTierElement != null && !currentTierElement.isJsonNull()) {
                             int currentTierId = currentTierElement.getAsInt();
                             if (currentTierId != -1) {
                                 currentTier = User.Tier.byId(currentTierId);
@@ -59,7 +59,7 @@ public class UserData {
 
                     User.Tier highestPastTier = null;
                     JsonElement pastTiersElement = json.get("pastTiers");
-                    if (pastTiersElement != null && pastTiersElement.isJsonArray()) {
+                    if (pastTiersElement != null && !pastTiersElement.isJsonNull() && pastTiersElement.isJsonArray()) {
                         JsonArray pastTiersArray = pastTiersElement.getAsJsonArray();
                         int pastTierLevel = 0;
                         try {
@@ -81,7 +81,7 @@ public class UserData {
 
                     String renewalDate = null;
                     JsonElement renewalDateElement = json.get("renewsAt");
-                    if (renewalDateElement != null) {
+                    if (renewalDateElement != null && !renewalDateElement.isJsonNull()) {
                         try {
                             renewalDate = renewalDateElement.getAsString();
                         } catch (AssertionError e) {
@@ -91,7 +91,7 @@ public class UserData {
 
                     User.Group highestGroup = null;
                     JsonElement groupsElement = json.get("groups");
-                    if (groupsElement != null && groupsElement.isJsonArray()) {
+                    if (groupsElement != null && !groupsElement.isJsonNull() && groupsElement.isJsonArray()) {
                         JsonArray groupsArray = groupsElement.getAsJsonArray();
                         int groupLevel = 0;
                         try {
@@ -105,13 +105,14 @@ public class UserData {
                         } catch (NumberFormatException e) {
                             Nitrogen.LOGGER.info(e.getMessage());
                         }
-
                     }
 
-                    User user = new User(currentTier, highestPastTier, renewalDate, highestGroup);
-                    modifySavedData(server, uuid, user);
-                    STORED_USERS.put(uuid, user);
-                    return user;
+                    if (currentTier != null || highestPastTier != null || highestGroup != null) {
+                        User user = new User(currentTier, highestPastTier, renewalDate, highestGroup);
+                        modifySavedData(server, uuid, user);
+                        STORED_USERS.put(uuid, user);
+                        return user;
+                    }
                 }
             } catch (IOException e) {
                 Nitrogen.LOGGER.info(e.getMessage());

@@ -59,18 +59,22 @@ public class User {
     }
 
     public static User read(FriendlyByteBuf buffer) {
-        Tier highestPastTier = Tier.valueOf(buffer.readUtf());
-        Tier currentTier = Tier.valueOf(buffer.readUtf());
+        String highestPastTierName = buffer.readUtf();
+        Tier highestPastTier = highestPastTierName.equals("null") ? null : Tier.valueOf(highestPastTierName);
+        String currentTierName = buffer.readUtf();
+        Tier currentTier = currentTierName.equals("null") ? null : Tier.valueOf(currentTierName);
         String renewalDate = buffer.readUtf();
-        Group highestGroup = Group.valueOf(buffer.readUtf());
+        renewalDate = renewalDate.equals("null") ? null : renewalDate;
+        String highestGroupName = buffer.readUtf();
+        Group highestGroup = highestGroupName.equals("null") ? null : Group.valueOf(highestGroupName);
         return new User(highestPastTier, currentTier, renewalDate, highestGroup);
     }
 
     public static void write(FriendlyByteBuf buffer, User user) {
-        buffer.writeUtf(user.getHighestPastTier().name());
-        buffer.writeUtf(user.getCurrentTier().name());
-        buffer.writeUtf(user.getRenewalDate());
-        buffer.writeUtf(user.getHighestGroup().name());
+        buffer.writeUtf(user.getHighestPastTier() == null ? "null" : user.getHighestPastTier().name());
+        buffer.writeUtf(user.getCurrentTier() == null ? "null" : user.getCurrentTier().name());
+        buffer.writeUtf(user.getRenewalDate() == null ? "null" : user.getRenewalDate());
+        buffer.writeUtf(user.getHighestGroup() == null ? "null" : user.getHighestGroup().name());
     }
 
     public enum Tier {

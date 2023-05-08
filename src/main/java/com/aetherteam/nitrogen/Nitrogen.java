@@ -21,6 +21,10 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.UUID;
 
@@ -69,9 +73,17 @@ public class Nitrogen {
             } else {
                 user = UserData.Server.queryUser(serverPlayer.getServer(), uuid);
             }
-            //todo timestamp check
             if (user != null) {
-                PacketDistributor.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
+                boolean pastRenewalTime = false;
+                if (user.getRenewalDate() != null) {
+                    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                    ZonedDateTime renewalDateTime = LocalDateTime.parse(user.getRenewalDate(), format).atZone(ZoneId.of("UTC"));
+                    ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
+                    pastRenewalTime = currentDateTime.isAfter(renewalDateTime);
+                }
+                if (!pastRenewalTime) {
+                    PacketDistributor.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
+                }
             }
         }
     }
