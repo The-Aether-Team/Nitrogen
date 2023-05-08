@@ -2,10 +2,7 @@ package com.aetherteam.nitrogen.api.users;
 
 import com.aetherteam.nitrogen.Nitrogen;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import net.minecraft.server.MinecraftServer;
 
 import java.io.BufferedReader;
@@ -44,41 +41,71 @@ public class UserData {
                 reader.close();
 
                 JsonElement jsonElement = JsonParser.parseString(query);
-                if (jsonElement != null) {
+                if (jsonElement != null && jsonElement.isJsonObject()) {
                     JsonObject json = jsonElement.getAsJsonObject();
 
-                    int currentTierId = json.get("currentTier").getAsInt();
                     User.Tier currentTier = null;
-                    if (currentTierId != -1) {
-                        currentTier = User.Tier.byId(currentTierId);
-                    }
-
-                    JsonArray pastTiersArray = json.getAsJsonArray("pastTiers");
-                    User.Tier highestPastTier = null;
-                    int pastTierLevel = 0;
-                    for (int pastTierId : pastTiersArray.asList().stream().map((JsonElement::getAsInt)).toList()) {
-                        if (pastTierId != -1) {
-                            User.Tier pastTier = User.Tier.byId(pastTierId);
-                            if (pastTier != null) {
-                                if (pastTier.getLevel() > pastTierLevel) {
-                                    pastTierLevel = pastTier.getLevel();
-                                    highestPastTier = pastTier;
-                                }
+                    try {
+                        JsonElement currentTierElement = json.get("currentTier");
+                        if (currentTierElement != null) {
+                            int currentTierId = currentTierElement.getAsInt();
+                            if (currentTierId != -1) {
+                                currentTier = User.Tier.byId(currentTierId);
                             }
                         }
+                    } catch (NumberFormatException e) {
+                        Nitrogen.LOGGER.info(e.getMessage());
                     }
 
-                    String renewalDate = json.get("renewsAt").getAsString();
-
-                    JsonArray groupsArray = json.getAsJsonArray("groups");
-                    User.Group highestGroup = null;
-                    int groupLevel = 0;
-                    for (String groupName : groupsArray.asList().stream().map((JsonElement::getAsString)).toList()) {
-                        User.Group group = User.Group.valueOf(groupName.toUpperCase(Locale.ROOT));
-                        if (group.getLevel() > groupLevel) {
-                            groupLevel = group.getLevel();
-                            highestGroup = group;
+                    User.Tier highestPastTier = null;
+                    JsonElement pastTiersElement = json.get("pastTiers");
+                    if (pastTiersElement != null && pastTiersElement.isJsonArray()) {
+                        JsonArray pastTiersArray = pastTiersElement.getAsJsonArray();
+                        int pastTierLevel = 0;
+                        try {
+                            for (int pastTierId : pastTiersArray.asList().stream().map((JsonElement::getAsInt)).toList()) {
+                                if (pastTierId != -1) {
+                                    User.Tier pastTier = User.Tier.byId(pastTierId);
+                                    if (pastTier != null) {
+                                        if (pastTier.getLevel() > pastTierLevel) {
+                                            pastTierLevel = pastTier.getLevel();
+                                            highestPastTier = pastTier;
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (NumberFormatException e) {
+                            Nitrogen.LOGGER.info(e.getMessage());
                         }
+                    }
+
+                    String renewalDate = null;
+                    JsonElement renewalDateElement = json.get("renewsAt");
+                    if (renewalDateElement != null) {
+                        try {
+                            renewalDate = renewalDateElement.getAsString();
+                        } catch (AssertionError e) {
+                            Nitrogen.LOGGER.info(e.getMessage());
+                        }
+                    }
+
+                    User.Group highestGroup = null;
+                    JsonElement groupsElement = json.get("groups");
+                    if (groupsElement != null && groupsElement.isJsonArray()) {
+                        JsonArray groupsArray = groupsElement.getAsJsonArray();
+                        int groupLevel = 0;
+                        try {
+                            for (String groupName : groupsArray.asList().stream().map((JsonElement::getAsString)).toList()) {
+                                User.Group group = User.Group.valueOf(groupName.toUpperCase(Locale.ROOT));
+                                if (group.getLevel() > groupLevel) {
+                                    groupLevel = group.getLevel();
+                                    highestGroup = group;
+                                }
+                            }
+                        } catch (NumberFormatException e) {
+                            Nitrogen.LOGGER.info(e.getMessage());
+                        }
+
                     }
 
                     User user = new User(currentTier, highestPastTier, renewalDate, highestGroup);
