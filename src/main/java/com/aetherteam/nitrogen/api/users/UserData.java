@@ -37,15 +37,11 @@ public class UserData {
 
         public static User queryUser(MinecraftServer server, UUID uuid) {
             try {
-                Nitrogen.LOGGER.info(String.valueOf(uuid));
-
                 URL url = new URL("https://www.aether-mod.net/api/verify/" + uuid);
                 URLConnection connection = url.openConnection();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 String query = reader.readLine();
                 reader.close();
-
-                Nitrogen.LOGGER.info(query);
 
                 JsonElement jsonElement = JsonParser.parseString(query);
                 if (jsonElement != null) {
