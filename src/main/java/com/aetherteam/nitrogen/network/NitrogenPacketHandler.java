@@ -2,6 +2,7 @@ package com.aetherteam.nitrogen.network;
 
 import com.aetherteam.nitrogen.Nitrogen;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
+import com.aetherteam.nitrogen.network.packet.serverbound.TriggerUpdateInfoPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
@@ -23,6 +24,7 @@ public class NitrogenPacketHandler {
         register(UpdateUserInfoPacket.class, UpdateUserInfoPacket::decode);
 
         // SERVER
+        register(TriggerUpdateInfoPacket.class, TriggerUpdateInfoPacket::decode);
     }
 
     private static <MSG extends BasePacket> void register(final Class<MSG> packet, Function<FriendlyByteBuf, MSG> decoder) {

@@ -73,18 +73,15 @@ public class Nitrogen {
             } else {
                 user = UserData.Server.queryUser(serverPlayer.getServer(), uuid);
             }
-            if (user != null) {
-                boolean pastRenewalTime = false;
-                if (user.getRenewalDate() != null) {
-                    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-                    ZonedDateTime renewalDateTime = LocalDateTime.parse(user.getRenewalDate(), format).atZone(ZoneId.of("UTC"));
-                    ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
-                    pastRenewalTime = currentDateTime.isAfter(renewalDateTime);
-                }
-                if (!pastRenewalTime) {
-                    PacketDistributor.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
+            if (user != null && user.getRenewalDate() != null) {
+                DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                ZonedDateTime renewalDateTime = LocalDateTime.parse(user.getRenewalDate(), format).atZone(ZoneId.of("UTC"));
+                ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
+                if (currentDateTime.isAfter(renewalDateTime)) {
+                    user = UserData.Server.queryUser(serverPlayer.getServer(), uuid);
                 }
             }
+            PacketDistributor.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
         }
     }
 }
