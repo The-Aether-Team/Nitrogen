@@ -1,15 +1,19 @@
 package com.aetherteam.nitrogen.api.users;
 
 import com.aetherteam.nitrogen.Nitrogen;
+import com.aetherteam.nitrogen.network.NitrogenPacketHandler;
+import com.aetherteam.nitrogen.network.PacketDistributor;
+import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.*;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.*;
 
 public class UserData {
@@ -32,92 +36,98 @@ public class UserData {
             STORED_USERS.putAll(getSavedMap(server));
         }
 
-        public static User queryUser(MinecraftServer server, UUID uuid) {
-            try {
-                URL url = new URL("https://www.aether-mod.net/api/verify/" + uuid);
-                URLConnection connection = url.openConnection();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String query = reader.readLine();
-                reader.close();
+        public static void sendUserRequest(MinecraftServer server, ServerPlayer serverPlayer, UUID uuid) {
+            HttpClient client = HttpClient.newBuilder()
+                    .version(HttpClient.Version.HTTP_1_1)
+                    .followRedirects(HttpClient.Redirect.NORMAL)
+                    .connectTimeout(Duration.ofSeconds(20))
+                    .build();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://www.aether-mod.net/api/verify/" + uuid))
+                    .timeout(Duration.ofMinutes(2))
+                    .header("Content-Type", "application/json")
+                    .build();
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenApply(HttpResponse::body)
+                    .thenAccept((response) -> parseUserData(server, serverPlayer, uuid, response));
+        }
 
-                JsonElement jsonElement = JsonParser.parseString(query);
-                if (jsonElement != null && !jsonElement.isJsonNull() && jsonElement.isJsonObject()) {
-                    JsonObject json = jsonElement.getAsJsonObject();
+        private static void parseUserData(MinecraftServer server, ServerPlayer serverPlayer, UUID uuid, String response) {
+            JsonElement jsonElement = JsonParser.parseString(response);
+            if (jsonElement != null && !jsonElement.isJsonNull() && jsonElement.isJsonObject()) {
+                JsonObject json = jsonElement.getAsJsonObject();
 
-                    User.Tier currentTier = null;
+                User.Tier currentTier = null;
+                try {
+                    JsonElement currentTierElement = json.get("currentTier");
+                    if (currentTierElement != null && !currentTierElement.isJsonNull()) {
+                        int currentTierId = currentTierElement.getAsInt();
+                        if (currentTierId != -1) {
+                            currentTier = User.Tier.byId(currentTierId);
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                    Nitrogen.LOGGER.info(e.getMessage());
+                }
+
+                User.Tier highestPastTier = null;
+                JsonElement pastTiersElement = json.get("pastTiers");
+                if (pastTiersElement != null && !pastTiersElement.isJsonNull() && pastTiersElement.isJsonArray()) {
+                    JsonArray pastTiersArray = pastTiersElement.getAsJsonArray();
+                    int pastTierLevel = 0;
                     try {
-                        JsonElement currentTierElement = json.get("currentTier");
-                        if (currentTierElement != null && !currentTierElement.isJsonNull()) {
-                            int currentTierId = currentTierElement.getAsInt();
-                            if (currentTierId != -1) {
-                                currentTier = User.Tier.byId(currentTierId);
+                        for (int pastTierId : pastTiersArray.asList().stream().map((JsonElement::getAsInt)).toList()) {
+                            if (pastTierId != -1) {
+                                User.Tier pastTier = User.Tier.byId(pastTierId);
+                                if (pastTier != null) {
+                                    if (pastTier.getLevel() > pastTierLevel) {
+                                        pastTierLevel = pastTier.getLevel();
+                                        highestPastTier = pastTier;
+                                    }
+                                }
                             }
                         }
                     } catch (NumberFormatException e) {
                         Nitrogen.LOGGER.info(e.getMessage());
                     }
+                }
 
-                    User.Tier highestPastTier = null;
-                    JsonElement pastTiersElement = json.get("pastTiers");
-                    if (pastTiersElement != null && !pastTiersElement.isJsonNull() && pastTiersElement.isJsonArray()) {
-                        JsonArray pastTiersArray = pastTiersElement.getAsJsonArray();
-                        int pastTierLevel = 0;
-                        try {
-                            for (int pastTierId : pastTiersArray.asList().stream().map((JsonElement::getAsInt)).toList()) {
-                                if (pastTierId != -1) {
-                                    User.Tier pastTier = User.Tier.byId(pastTierId);
-                                    if (pastTier != null) {
-                                        if (pastTier.getLevel() > pastTierLevel) {
-                                            pastTierLevel = pastTier.getLevel();
-                                            highestPastTier = pastTier;
-                                        }
-                                    }
-                                }
-                            }
-                        } catch (NumberFormatException e) {
-                            Nitrogen.LOGGER.info(e.getMessage());
-                        }
-                    }
-
-                    String renewalDate = null;
-                    JsonElement renewalDateElement = json.get("renewsAt");
-                    if (renewalDateElement != null && !renewalDateElement.isJsonNull()) {
-                        try {
-                            renewalDate = renewalDateElement.getAsString();
-                        } catch (AssertionError e) {
-                            Nitrogen.LOGGER.info(e.getMessage());
-                        }
-                    }
-
-                    User.Group highestGroup = null;
-                    JsonElement groupsElement = json.get("groups");
-                    if (groupsElement != null && !groupsElement.isJsonNull() && groupsElement.isJsonArray()) {
-                        JsonArray groupsArray = groupsElement.getAsJsonArray();
-                        int groupLevel = 0;
-                        try {
-                            for (String groupName : groupsArray.asList().stream().map((JsonElement::getAsString)).toList()) {
-                                User.Group group = User.Group.valueOf(groupName.toUpperCase(Locale.ROOT));
-                                if (group.getLevel() > groupLevel) {
-                                    groupLevel = group.getLevel();
-                                    highestGroup = group;
-                                }
-                            }
-                        } catch (NumberFormatException e) {
-                            Nitrogen.LOGGER.info(e.getMessage());
-                        }
-                    }
-
-                    if (currentTier != null || highestPastTier != null || highestGroup != null) {
-                        User user = new User(currentTier, highestPastTier, renewalDate, highestGroup);
-                        modifySavedData(server, uuid, user);
-                        STORED_USERS.put(uuid, user);
-                        return user;
+                String renewalDate = null;
+                JsonElement renewalDateElement = json.get("renewsAt");
+                if (renewalDateElement != null && !renewalDateElement.isJsonNull()) {
+                    try {
+                        renewalDate = renewalDateElement.getAsString();
+                    } catch (AssertionError e) {
+                        Nitrogen.LOGGER.info(e.getMessage());
                     }
                 }
-            } catch (IOException e) {
-                Nitrogen.LOGGER.info(e.getMessage());
+
+                User.Group highestGroup = null;
+                JsonElement groupsElement = json.get("groups");
+                if (groupsElement != null && !groupsElement.isJsonNull() && groupsElement.isJsonArray()) {
+                    JsonArray groupsArray = groupsElement.getAsJsonArray();
+                    int groupLevel = 0;
+                    try {
+                        for (String groupName : groupsArray.asList().stream().map((JsonElement::getAsString)).toList()) {
+                            User.Group group = User.Group.valueOf(groupName.toUpperCase(Locale.ROOT));
+                            if (group.getLevel() > groupLevel) {
+                                groupLevel = group.getLevel();
+                                highestGroup = group;
+                            }
+                        }
+                    } catch (NumberFormatException e) {
+                        Nitrogen.LOGGER.info(e.getMessage());
+                    }
+                }
+
+                if (currentTier != null || highestPastTier != null || highestGroup != null) {
+                    User user = new User(currentTier, highestPastTier, renewalDate, highestGroup);
+                    modifySavedData(server, uuid, user);
+                    STORED_USERS.put(uuid, user);
+                    Nitrogen.LOGGER.info(String.valueOf(user));
+                    PacketDistributor.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
+                }
             }
-            return null;
         }
 
         public static Map<UUID, User> getStoredUsers() {

@@ -70,18 +70,21 @@ public class Nitrogen {
             User user;
             if (userData.containsKey(uuid)) {
                 user = userData.get(uuid);
-            } else {
-                user = UserData.Server.queryUser(serverPlayer.getServer(), uuid);
-            }
-            if (user != null && user.getRenewalDate() != null) {
-                DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-                ZonedDateTime renewalDateTime = LocalDateTime.parse(user.getRenewalDate(), format).atZone(ZoneId.of("UTC"));
-                ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
-                if (currentDateTime.isAfter(renewalDateTime)) {
-                    user = UserData.Server.queryUser(serverPlayer.getServer(), uuid);
+                if (user != null && user.getRenewalDate() != null && isAfterRenewalTime(user)) {
+                    UserData.Server.sendUserRequest(serverPlayer.getServer(), serverPlayer, uuid);
+                } else {
+                    PacketDistributor.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
                 }
+            } else {
+                UserData.Server.sendUserRequest(serverPlayer.getServer(), serverPlayer, uuid);
             }
-            PacketDistributor.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
         }
+    }
+
+    private static boolean isAfterRenewalTime(User user) {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        ZonedDateTime renewalDateTime = LocalDateTime.parse(user.getRenewalDate(), format).atZone(ZoneId.of("UTC"));
+        ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
+        return currentDateTime.isAfter(renewalDateTime);
     }
 }
