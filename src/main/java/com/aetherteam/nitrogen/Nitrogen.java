@@ -82,8 +82,7 @@ public class Nitrogen {
     }
 
     private static boolean isAfterRenewalTime(User user) {
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        ZonedDateTime renewalDateTime = LocalDateTime.parse(user.getRenewalDate(), format).atZone(ZoneId.of("UTC"));
+        ZonedDateTime renewalDateTime = LocalDateTime.parse(user.getRenewalDate(), User.DATE_FORMAT).atZone(ZoneId.of("UTC"));
         ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
         return currentDateTime.isAfter(renewalDateTime);
     }

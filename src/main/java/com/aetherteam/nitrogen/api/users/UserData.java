@@ -14,6 +14,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 public class UserData {
@@ -92,16 +94,6 @@ public class UserData {
                     }
                 }
 
-                String renewalDate = null;
-                JsonElement renewalDateElement = json.get("renewsAt");
-                if (renewalDateElement != null && !renewalDateElement.isJsonNull()) {
-                    try {
-                        renewalDate = renewalDateElement.getAsString();
-                    } catch (AssertionError e) {
-                        Nitrogen.LOGGER.info(e.getMessage());
-                    }
-                }
-
                 User.Group highestGroup = null;
                 JsonElement groupsElement = json.get("groups");
                 if (groupsElement != null && !groupsElement.isJsonNull() && groupsElement.isJsonArray()) {
@@ -121,7 +113,7 @@ public class UserData {
                 }
 
                 if (currentTier != null || highestPastTier != null || highestGroup != null) {
-                    User user = new User(currentTier, highestPastTier, renewalDate, highestGroup);
+                    User user = new User(currentTier, highestPastTier, ZonedDateTime.now(ZoneId.of("UTC")).plusDays(1).format(User.DATE_FORMAT), highestGroup);
                     modifySavedData(server, uuid, user);
                     STORED_USERS.put(uuid, user);
                     Nitrogen.LOGGER.info(String.valueOf(user));

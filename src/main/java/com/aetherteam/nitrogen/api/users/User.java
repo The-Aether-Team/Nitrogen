@@ -3,7 +3,10 @@ package com.aetherteam.nitrogen.api.users;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 
+import java.time.format.DateTimeFormatter;
+
 public class User {
+    public static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     private Tier highestPastTier;
     private Tier currentTier;
     private String renewalDate;
