@@ -69,7 +69,7 @@ public class UserData {
                         }
                     }
                 } catch (NumberFormatException e) {
-                    Nitrogen.LOGGER.info(e.getMessage());
+                    Nitrogen.LOGGER.error(e.getMessage());
                 }
 
                 User.Tier highestPastTier = null;
@@ -90,7 +90,7 @@ public class UserData {
                             }
                         }
                     } catch (NumberFormatException e) {
-                        Nitrogen.LOGGER.info(e.getMessage());
+                        Nitrogen.LOGGER.error(e.getMessage());
                     }
                 }
 
@@ -108,7 +108,7 @@ public class UserData {
                             }
                         }
                     } catch (NumberFormatException e) {
-                        Nitrogen.LOGGER.info(e.getMessage());
+                        Nitrogen.LOGGER.error(e.getMessage());
                     }
                 }
 
@@ -116,7 +116,6 @@ public class UserData {
                     User user = new User(currentTier, highestPastTier, ZonedDateTime.now(ZoneId.of("UTC")).plusDays(1).format(User.DATE_FORMAT), highestGroup);
                     modifySavedData(server, uuid, user);
                     STORED_USERS.put(uuid, user);
-                    Nitrogen.LOGGER.info(String.valueOf(user));
                     PacketDistributor.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
                 }
             }
