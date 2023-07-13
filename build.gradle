@@ -30,9 +30,9 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = project.mc_version + '-' + project.nitrogen_version
+version = "${project.mc_version}-${project.mod_version}-forge"
 group = 'com.aetherteam.nitrogen' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'nitrogen'
+archivesBaseName = project.mod_id
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17) // Mojang ships Java 8 to end users, so your mod should target Java 8.
 
@@ -50,7 +50,7 @@ minecraft {
             //property 'forge.logging.console.level', 'debug'
 
             mods {
-                aether {
+                "${project.mod_id}" {
                     source sourceSets.main
                 }
             }
@@ -63,7 +63,7 @@ minecraft {
             //property 'forge.logging.console.level', 'debug'
 
             mods {
-                aether {
+                "${project.mod_id}" {
                     source sourceSets.main
                 }
             }
@@ -75,12 +75,12 @@ minecraft {
             //property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             //property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'nitrogen', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/'), '--existing', file('src/generated/resources/')
+            args '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/'), '--existing', file('src/generated/resources/')
 
             environment 'target', 'fmluserdevdata'
 
             mods {
-                aether {
+                "${project.mod_id}" {
                     source sourceSets.main
                 }
             }
@@ -101,14 +101,13 @@ dependencies {
 jar {
     manifest {
         attributes([
-                "Specification-Title"     : "Nitrogen",
+                "Specification-Title"     : project.mod_name,
                 "Specification-Vendor"    : "The Aether Team",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
-                "Implementation-Title"    : "Nitrogen",
-                "Implementation-Version"  : "${version}",
+                "Implementation-Title"    : project.mod_name,
+                "Implementation-Version"  : project.jar.archiveVersion,
                 "Implementation-Vendor"   : "The Aether Team",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                "MixinConfigs"            : "nitrogen.mixins.json"
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 }
@@ -151,6 +150,6 @@ publishing {
 }
 
 mixin {
-    config "nitrogen.mixins.json"
-    add sourceSets.main, "nitrogen.refmap.json"
+    config "${project.mod_id}.mixins.json"
+    add sourceSets.main, "${project.mod_id}.refmap.json"
 }
