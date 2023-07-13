@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class UserSavedData extends SavedData {
+public final class UserSavedData extends SavedData {
     public static final String FILE_NAME = "users";
     private final Map<UUID, User> storedUsers = new HashMap<>();
 

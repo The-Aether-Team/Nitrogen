@@ -5,7 +5,7 @@ import com.aetherteam.nitrogen.network.BasePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.util.LazyOptional;
 import oshi.util.tuples.Quartet;
@@ -13,7 +13,7 @@ import oshi.util.tuples.Quartet;
 import java.util.UUID;
 
 public abstract class SyncPacket<T extends INBTSynchable<CompoundTag>> implements BasePacket {
-    private final int playerID;
+    private final int entityID;
     private final String key;
     private final INBTSynchable.Type type;
     private final Object value;
@@ -22,8 +22,8 @@ public abstract class SyncPacket<T extends INBTSynchable<CompoundTag>> implement
         this(values.getA(), values.getB(), values.getC(), values.getD());
     }
 
-    public SyncPacket(int playerID, String key, INBTSynchable.Type type, Object value) {
-        this.playerID = playerID;
+    public SyncPacket(int entityID, String key, INBTSynchable.Type type, Object value) {
+        this.entityID = entityID;
         this.key = key;
         this.type = type;
         this.value = value;
@@ -31,7 +31,7 @@ public abstract class SyncPacket<T extends INBTSynchable<CompoundTag>> implement
 
     @Override
     public void encode(FriendlyByteBuf buf) {
-        buf.writeInt(this.playerID);
+        buf.writeInt(this.entityID);
         buf.writeUtf(this.key);
         buf.writeInt(this.type.ordinal());
         if (this.value != null) {
@@ -49,7 +49,7 @@ public abstract class SyncPacket<T extends INBTSynchable<CompoundTag>> implement
     }
 
     public static Quartet<Integer, String, INBTSynchable.Type, Object> decoded(FriendlyByteBuf buf) {
-        int playerID = buf.readInt();
+        int entityID = buf.readInt();
         String key = buf.readUtf();
         int typeId = buf.readInt();
         INBTSynchable.Type type = INBTSynchable.Type.values()[typeId];
@@ -64,19 +64,25 @@ public abstract class SyncPacket<T extends INBTSynchable<CompoundTag>> implement
                 case UUID -> value = buf.readUUID();
             }
         }
-        return new Quartet<>(playerID, key, type, value);
+        return new Quartet<>(entityID, key, type, value);
     }
 
     @Override
     public void execute(Player playerEntity) {
-        if (playerEntity != null && playerEntity.getServer() != null && playerEntity.getLevel().getEntity(this.playerID) instanceof ServerPlayer serverPlayer && this.value != null) {
-            this.getCapability(serverPlayer).ifPresent((synchable) -> synchable.getSynchableFunctions().get(this.key).getMiddle().accept(this.value));
+        if (playerEntity != null && playerEntity.getServer() != null && this.value != null) {
+            Entity entity = playerEntity.getLevel().getEntity(this.entityID);
+            if (entity != null && !entity.getLevel().isClientSide()) {
+                this.getCapability(entity).ifPresent((synchable) -> synchable.getSynchableFunctions().get(this.key).getMiddle().accept(this.value));
+            }
         } else {
-            if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null && Minecraft.getInstance().level.getEntity(this.playerID) instanceof Player player && this.value != null) {
-                this.getCapability(player).ifPresent((synchable) -> synchable.getSynchableFunctions().get(this.key).getMiddle().accept(this.value));
+            if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null && this.value != null) {
+                Entity entity = Minecraft.getInstance().level.getEntity(this.entityID);
+                if (entity != null && entity.getLevel().isClientSide()) {
+                    this.getCapability(entity).ifPresent((synchable) -> synchable.getSynchableFunctions().get(this.key).getMiddle().accept(this.value));
+                }
             }
         }
     }
 
-    protected abstract LazyOptional<T> getCapability(Player player);
+    protected abstract LazyOptional<T> getCapability(Entity entity);
 }

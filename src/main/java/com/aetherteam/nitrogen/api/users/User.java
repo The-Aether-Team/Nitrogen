@@ -5,14 +5,14 @@ import net.minecraft.network.chat.Component;
 
 import java.time.format.DateTimeFormatter;
 
-public class User {
+public final class User {
     public static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     private Tier highestPastTier;
     private Tier currentTier;
     private String renewalDate;
     private Group highestGroup;
 
-    protected User(Tier highestPastTier, Tier currentTier, String renewalDate, Group highestGroup) {
+    User(Tier highestPastTier, Tier currentTier, String renewalDate, Group highestGroup) {
         this.highestPastTier = highestPastTier;
         this.currentTier = currentTier;
         this.renewalDate = renewalDate;
@@ -23,7 +23,7 @@ public class User {
         return this.highestPastTier;
     }
 
-    protected void updateHighestPastTier(Tier highestPastTier) {
+    private void updateHighestPastTier(Tier highestPastTier) {
         this.highestPastTier = currentTier;
     }
 
@@ -36,7 +36,7 @@ public class User {
         return this.currentTier;
     }
 
-    protected void updateCurrentTier(Tier currentTier) {
+    private void updateCurrentTier(Tier currentTier) {
         this.currentTier = currentTier;
     }
 
@@ -49,7 +49,7 @@ public class User {
         return this.renewalDate;
     }
 
-    protected void updateRenewalDate(String renewalDate) {
+    private void updateRenewalDate(String renewalDate) {
         this.renewalDate = renewalDate;
     }
 
@@ -57,7 +57,7 @@ public class User {
         return this.highestGroup;
     }
 
-    protected void updateHighestGroup(Group highestGroup) {
+    private void updateHighestGroup(Group highestGroup) {
         this.highestGroup = highestGroup;
     }
 

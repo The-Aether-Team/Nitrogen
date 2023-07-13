@@ -18,7 +18,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-public class UserData {
+public final class UserData {
     public static class Client {
         private static User CLIENT_USER;
 
@@ -126,19 +126,19 @@ public class UserData {
         }
     }
 
-    protected static Map<UUID, User> getSavedMap(MinecraftServer server) {
+    private static Map<UUID, User> getSavedMap(MinecraftServer server) {
         return getSavedData(server).getStoredUsers();
     }
 
-    protected static void modifySavedData(MinecraftServer server, UUID uuid, User user) {
+    private static void modifySavedData(MinecraftServer server, UUID uuid, User user) {
         getSavedData(server).modifyStoredUsers(uuid, user);
     }
 
-    protected static void removeSavedData(MinecraftServer server, UUID uuid) {
+    private static void removeSavedData(MinecraftServer server, UUID uuid) {
         getSavedData(server).removeStoredUsers(uuid);
     }
 
-    protected static UserSavedData getSavedData(MinecraftServer server) {
+    private static UserSavedData getSavedData(MinecraftServer server) {
         return UserSavedData.compute(server.overworld().getDataStorage());
     }
 }
