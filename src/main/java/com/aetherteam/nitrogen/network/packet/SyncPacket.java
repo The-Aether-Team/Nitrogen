@@ -78,5 +78,5 @@ public abstract class SyncPacket<T extends INBTSynchable<CompoundTag>> implement
         }
     }
 
-    abstract LazyOptional<T> getCapability(Player player);
+    protected abstract LazyOptional<T> getCapability(Player player);
 }
