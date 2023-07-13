@@ -3,7 +3,7 @@ package com.aetherteam.nitrogen;
 import com.aetherteam.nitrogen.api.users.UserData;
 import com.aetherteam.nitrogen.api.users.User;
 import com.aetherteam.nitrogen.data.generators.NitrogenLanguageData;
-import com.aetherteam.nitrogen.network.PacketDistributor;
+import com.aetherteam.nitrogen.network.PacketRelay;
 import com.aetherteam.nitrogen.network.NitrogenPacketHandler;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.mojang.logging.LogUtils;
@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.UUID;
 
@@ -73,7 +72,7 @@ public class Nitrogen {
                 if (user != null && user.getRenewalDate() != null && isAfterRenewalTime(user)) {
                     UserData.Server.sendUserRequest(serverPlayer.getServer(), serverPlayer, uuid);
                 } else {
-                    PacketDistributor.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
+                    PacketRelay.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
                 }
             } else {
                 UserData.Server.sendUserRequest(serverPlayer.getServer(), serverPlayer, uuid);

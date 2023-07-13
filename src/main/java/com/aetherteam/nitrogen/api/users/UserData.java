@@ -2,7 +2,7 @@ package com.aetherteam.nitrogen.api.users;
 
 import com.aetherteam.nitrogen.Nitrogen;
 import com.aetherteam.nitrogen.network.NitrogenPacketHandler;
-import com.aetherteam.nitrogen.network.PacketDistributor;
+import com.aetherteam.nitrogen.network.PacketRelay;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.*;
@@ -116,7 +116,7 @@ public class UserData {
                     User user = new User(currentTier, highestPastTier, ZonedDateTime.now(ZoneId.of("UTC")).plusDays(1).format(User.DATE_FORMAT), highestGroup);
                     modifySavedData(server, uuid, user);
                     STORED_USERS.put(uuid, user);
-                    PacketDistributor.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
+                    PacketRelay.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
                 }
             }
         }
