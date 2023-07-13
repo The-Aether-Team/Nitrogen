@@ -2,28 +2,21 @@ package com.aetherteam.nitrogen.network.packet;
 
 import com.aetherteam.nitrogen.capability.INBTSynchable;
 import com.aetherteam.nitrogen.network.BasePacket;
-import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.util.LazyOptional;
-import oshi.util.tuples.Quartet;
+import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.UUID;
 
-public abstract class SyncPacket<T extends INBTSynchable<CompoundTag>> implements BasePacket {
-    private final int entityID;
-    private final String key;
-    private final INBTSynchable.Type type;
-    private final Object value;
+public abstract class SyncPacket implements BasePacket {
+    protected final String key;
+    protected final INBTSynchable.Type type;
+    protected final Object value;
 
-    public SyncPacket(Quartet<Integer, String, INBTSynchable.Type, Object> values) {
-        this(values.getA(), values.getB(), values.getC(), values.getD());
+    public SyncPacket(Triple<String, INBTSynchable.Type, Object> values) {
+        this(values.getLeft(), values.getMiddle(), values.getRight());
     }
 
-    public SyncPacket(int entityID, String key, INBTSynchable.Type type, Object value) {
-        this.entityID = entityID;
+    public SyncPacket(String key, INBTSynchable.Type type, Object value) {
         this.key = key;
         this.type = type;
         this.value = value;
@@ -31,7 +24,6 @@ public abstract class SyncPacket<T extends INBTSynchable<CompoundTag>> implement
 
     @Override
     public void encode(FriendlyByteBuf buf) {
-        buf.writeInt(this.entityID);
         buf.writeUtf(this.key);
         buf.writeInt(this.type.ordinal());
         if (this.value != null) {
@@ -48,8 +40,7 @@ public abstract class SyncPacket<T extends INBTSynchable<CompoundTag>> implement
         }
     }
 
-    public static Quartet<Integer, String, INBTSynchable.Type, Object> decoded(FriendlyByteBuf buf) {
-        int entityID = buf.readInt();
+    public static Triple<String, INBTSynchable.Type, Object> decodeValues(FriendlyByteBuf buf) {
         String key = buf.readUtf();
         int typeId = buf.readInt();
         INBTSynchable.Type type = INBTSynchable.Type.values()[typeId];
@@ -64,25 +55,6 @@ public abstract class SyncPacket<T extends INBTSynchable<CompoundTag>> implement
                 case UUID -> value = buf.readUUID();
             }
         }
-        return new Quartet<>(entityID, key, type, value);
+        return Triple.of(key, type, value);
     }
-
-    @Override
-    public void execute(Player playerEntity) {
-        if (playerEntity != null && playerEntity.getServer() != null && this.value != null) {
-            Entity entity = playerEntity.getLevel().getEntity(this.entityID);
-            if (entity != null && !entity.getLevel().isClientSide()) {
-                this.getCapability(entity).ifPresent((synchable) -> synchable.getSynchableFunctions().get(this.key).getMiddle().accept(this.value));
-            }
-        } else {
-            if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null && this.value != null) {
-                Entity entity = Minecraft.getInstance().level.getEntity(this.entityID);
-                if (entity != null && entity.getLevel().isClientSide()) {
-                    this.getCapability(entity).ifPresent((synchable) -> synchable.getSynchableFunctions().get(this.key).getMiddle().accept(this.value));
-                }
-            }
-        }
-    }
-
-    protected abstract LazyOptional<T> getCapability(Entity entity);
 }
