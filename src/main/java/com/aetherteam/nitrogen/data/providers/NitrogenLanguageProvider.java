@@ -11,4 +11,8 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
     public void addPatreonTier(String key, String name) {
         this.add("nitrogen.patreon.tier." + key, name);
     }
+
+    public void addMenuTitle(String key, String name) {
+        this.add("nitrogen.menu_title." + key, name);
+    }
 }

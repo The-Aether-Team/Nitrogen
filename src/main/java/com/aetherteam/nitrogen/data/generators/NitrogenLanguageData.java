@@ -11,6 +11,8 @@ public class NitrogenLanguageData extends NitrogenLanguageProvider {
 
     @Override
     protected void addTranslations() {
+        this.addMenuTitle("minecraft", "Minecraft");
+
         this.addPatreonTier("human", "Human");
         this.addPatreonTier("ascentan", "Ascentan");
         this.addPatreonTier("valkyrie", "Valkyrie");
