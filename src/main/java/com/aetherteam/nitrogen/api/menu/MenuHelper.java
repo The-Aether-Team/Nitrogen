@@ -18,7 +18,7 @@ public class MenuHelper {
     }
 
     public TitleScreen applyMenu(Menu menu, TitleScreen originalScreen, boolean shouldFade) {
-        if (menu.getCondition().get()) {
+        if (menu.getCondition().getAsBoolean()) {
             return this.forceMenu(menu, originalScreen, shouldFade);
         }
         return originalScreen;
