@@ -12,26 +12,26 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.Music;
 import net.minecraft.sounds.Musics;
 
-import java.util.function.Supplier;
+import java.util.function.BooleanSupplier;
 
 public class Menu {
     private final ResourceLocation icon;
     private final Component name;
     private final TitleScreen screen;
-    private final Supplier<Boolean> condition;
+    private final BooleanSupplier condition;
     private final Runnable apply;
     private final Music music;
     private final Background background;
 
-    public Menu(ResourceLocation icon, Component name, TitleScreen screen, Supplier<Boolean> condition) {
+    public Menu(ResourceLocation icon, Component name, TitleScreen screen, BooleanSupplier condition) {
         this(icon, name, screen, condition, new Properties());
     }
 
-    public Menu(ResourceLocation icon, Component name, TitleScreen screen, Supplier<Boolean> condition, Properties properties) {
+    public Menu(ResourceLocation icon, Component name, TitleScreen screen, BooleanSupplier condition, Properties properties) {
         this(icon, name, screen, condition, properties.apply, properties.music, properties.background);
     }
 
-    public Menu(ResourceLocation icon, Component name, TitleScreen screen, Supplier<Boolean> condition, Runnable apply, Music music, Background background) {
+    public Menu(ResourceLocation icon, Component name, TitleScreen screen, BooleanSupplier condition, Runnable apply, Music music, Background background) {
         this.icon = icon;
         this.name = name;
         this.screen = screen;
@@ -53,7 +53,7 @@ public class Menu {
         return this.screen;
     }
 
-    public Supplier<Boolean> getCondition() {
+    public BooleanSupplier getCondition() {
         return this.condition;
     }
 

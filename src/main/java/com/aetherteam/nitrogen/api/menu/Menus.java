@@ -9,6 +9,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 public class Menus {
@@ -17,7 +18,7 @@ public class Menus {
 
     public static final ResourceLocation MINECRAFT_ICON = new ResourceLocation("textures/block/grass_block_side");
     public static final Component MINECRAFT_NAME = Component.translatable("nitrogen.menu_title.minecraft");
-    public static final Supplier<Boolean> MINECRAFT_CONDITION = () -> true;
+    public static final BooleanSupplier MINECRAFT_CONDITION = () -> true;
 
     public static final RegistryObject<Menu> MINECRAFT = MENUS.register("minecraft", () -> new Menu(MINECRAFT_ICON, MINECRAFT_NAME, new TitleScreen(true), MINECRAFT_CONDITION));
 
