@@ -8,11 +8,11 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
         super(output, id, "en_us");
     }
 
-    public void addPatreonTier(String key, String name) {
-        this.add("nitrogen.patreon.tier." + key, name);
-    }
-
     public void addMenuTitle(String key, String name) {
         this.add("nitrogen.menu_title." + key, name);
+    }
+
+    public void addPatreonTier(String key, String name) {
+        this.add("nitrogen.patreon.tier." + key, name);
     }
 }
