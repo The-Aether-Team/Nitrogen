@@ -1,4 +1,5 @@
 {
+  "config.nitrogen.client.menu.active_menu": "Sets the current active menu title screen",
   "nitrogen.menu_title.minecraft": "Minecraft",
   "nitrogen.patreon.tier.arkenzus": "Arkenzus",
   "nitrogen.patreon.tier.ascentan": "Ascentan",

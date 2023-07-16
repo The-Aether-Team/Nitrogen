@@ -1,5 +1,6 @@
 package com.aetherteam.nitrogen.api.menu;
 
+import com.aetherteam.nitrogen.NitrogenConfig;
 import com.aetherteam.nitrogen.mixin.mixins.client.accessor.TitleScreenAccessor;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.sounds.Music;
@@ -35,6 +36,9 @@ public class MenuHelper {
             defaultMenuAccessor.nitrogen$setFadeInStart(0L);
         }
         this.migrateSplash(originalScreen, screen);
+        if (!NitrogenConfig.CLIENT.active_menu.get().equals(menu.toString())) {
+            NitrogenConfig.CLIENT.active_menu.set(menu.toString());
+        }
         return screen;
     }
 

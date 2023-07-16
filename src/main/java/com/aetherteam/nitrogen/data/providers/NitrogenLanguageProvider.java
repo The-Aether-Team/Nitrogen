@@ -15,4 +15,8 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
     public void addPatreonTier(String key, String name) {
         this.add("nitrogen.patreon.tier." + key, name);
     }
+
+    public void addClientConfig(String prefix, String key, String name) {
+        this.add("config.nitrogen.client." + prefix + "." + key, name);
+    }
 }

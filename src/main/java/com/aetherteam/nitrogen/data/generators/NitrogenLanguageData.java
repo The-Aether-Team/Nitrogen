@@ -17,5 +17,7 @@ public class NitrogenLanguageData extends NitrogenLanguageProvider {
         this.addPatreonTier("ascentan", "Ascentan");
         this.addPatreonTier("valkyrie", "Valkyrie");
         this.addPatreonTier("arkenzus", "Arkenzus");
+
+        this.addClientConfig("menu", "active_menu", "Sets the current active menu title screen");
     }
 }

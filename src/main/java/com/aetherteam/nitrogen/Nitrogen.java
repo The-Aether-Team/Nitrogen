@@ -22,7 +22,9 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
@@ -41,7 +43,6 @@ public class Nitrogen {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static final ResourceKey<Registry<Menu>> MENU_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation(Nitrogen.MODID, "menu"));
-    public static final MenuHelper MENU_HELPER = new MenuHelper();
 
     /**
      * This is a test JavaDoc, please ignore.
@@ -59,14 +60,12 @@ public class Nitrogen {
         for (DeferredRegister<?> register : registers) {
             register.register(modEventBus);
         }
+
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, NitrogenConfig.CLIENT_SPEC);
     }
 
     public void commonSetup(FMLCommonSetupEvent event) {
         NitrogenPacketHandler.register();
-
-        event.enqueueWork(() -> {
-            Nitrogen.MENU_HELPER.setActiveMenu(Menus.MINECRAFT.get());
-        });
     }
 
     public void dataSetup(GatherDataEvent event) {
