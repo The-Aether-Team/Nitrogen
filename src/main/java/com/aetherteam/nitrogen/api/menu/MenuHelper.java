@@ -38,6 +38,7 @@ public class MenuHelper {
         this.migrateSplash(originalScreen, screen);
         if (!NitrogenConfig.CLIENT.active_menu.get().equals(menu.toString())) {
             NitrogenConfig.CLIENT.active_menu.set(menu.toString());
+            NitrogenConfig.CLIENT.active_menu.save();
         }
         return screen;
     }
