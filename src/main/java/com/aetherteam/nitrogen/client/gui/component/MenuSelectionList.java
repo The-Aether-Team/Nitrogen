@@ -1,10 +1,10 @@
 package com.aetherteam.nitrogen.client.gui.component;
 
-import com.aetherteam.nitrogen.api.menu.Menu;
-import com.aetherteam.nitrogen.client.gui.screen.MenuSelectionScreen;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.components.ObjectSelectionList;
-import net.minecraft.network.chat.Component;
+//import com.aetherteam.nitrogen.api.menu.Menu;
+//import com.aetherteam.nitrogen.client.gui.screen.MenuSelectionScreen;
+//import com.mojang.blaze3d.vertex.PoseStack;
+//import net.minecraft.client.gui.components.ObjectSelectionList;
+//import net.minecraft.network.chat.Component;
 
 //public class MenuSelectionList extends ObjectSelectionList<MenuSelectionList.MenuEntry> {
 //    private MenuSelectionScreen parent;
