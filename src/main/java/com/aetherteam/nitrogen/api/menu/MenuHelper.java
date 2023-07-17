@@ -19,6 +19,10 @@ public class MenuHelper {
     }
 
     public TitleScreen applyMenu(Menu menu, TitleScreen originalScreen, boolean shouldFade) {
+        if (!NitrogenConfig.CLIENT.active_menu.get().equals(menu.toString())) {
+            NitrogenConfig.CLIENT.active_menu.set(menu.toString());
+            NitrogenConfig.CLIENT.active_menu.save();
+        }
         if (menu.getCondition().getAsBoolean()) {
             return this.forceMenu(menu, originalScreen, shouldFade);
         }
@@ -36,10 +40,6 @@ public class MenuHelper {
             defaultMenuAccessor.nitrogen$setFadeInStart(0L);
         }
         this.migrateSplash(originalScreen, screen);
-        if (!NitrogenConfig.CLIENT.active_menu.get().equals(menu.toString())) {
-            NitrogenConfig.CLIENT.active_menu.set(menu.toString());
-            NitrogenConfig.CLIENT.active_menu.save();
-        }
         return screen;
     }
 
