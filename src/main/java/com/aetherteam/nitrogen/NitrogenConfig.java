@@ -7,6 +7,8 @@ public class NitrogenConfig {
     public static class Client {
         public final ForgeConfigSpec.ConfigValue<String> active_menu;
 
+        //todo: config for displaying nitrogen menu selection screen; off by default
+        //  will be able to be checked by aether to determine whether to display its menu toggle-related buttons
         public Client(ForgeConfigSpec.Builder builder) {
             builder.push("Menu");
             active_menu = builder

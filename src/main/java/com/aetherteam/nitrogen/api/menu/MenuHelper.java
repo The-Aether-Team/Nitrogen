@@ -12,7 +12,9 @@ import java.util.function.Predicate;
 
 public class MenuHelper {
     private Menu activeMenu = null;
-    private TitleScreen fallbackTitleScreen = null;
+    private TitleScreen fallbackTitleScreen = null; //todo: give fallback an entry in the menu switcher gui
+    //todo need fallback backgrounds too
+    //todo the fallback title screen system doesnt work.
 
     public MenuHelper() { }
 
@@ -20,23 +22,21 @@ public class MenuHelper {
         return this.activeMenu;
     }
 
-    public TitleScreen applyMenu(Menu menu, TitleScreen originalScreen, boolean shouldFade) {
+    public void prepareMenu(Menu menu) {
         if (menu.getCondition().getAsBoolean()) {
-            return this.forceMenu(menu, originalScreen, shouldFade);
+            this.setActiveMenu(menu);
         }
-        return originalScreen;
     }
 
-    public TitleScreen forceMenu(Menu menu, TitleScreen originalScreen, boolean shouldFade) {
+    public TitleScreen applyMenu(Menu menu, TitleScreen originalScreen, boolean shouldFade) {
         menu.getApply().run();
-        this.setActiveMenu(menu);
-        this.applyBackgrounds(menu.getBackground());
         TitleScreen screen = menu.getScreen();
         if (shouldFade) {
             TitleScreenAccessor defaultMenuAccessor = (TitleScreenAccessor) screen;
             defaultMenuAccessor.nitrogen$setFading(true);
             defaultMenuAccessor.nitrogen$setFadeInStart(0L);
         }
+        this.applyBackgrounds(menu.getBackground());
         this.migrateSplash(originalScreen, screen);
         return screen;
     }
