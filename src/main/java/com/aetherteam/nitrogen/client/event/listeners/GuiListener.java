@@ -12,13 +12,9 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public class GuiListener {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onGuiPreInitialize(ScreenEvent.Init.Pre event) {
-        GuiHooks.prepareCustomMenus(NitrogenClient.MENU_HELPER);
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onGuiOpen(ScreenEvent.Opening event) {
         Screen screen = event.getScreen();
+        GuiHooks.prepareCustomMenus(NitrogenClient.MENU_HELPER);
         GuiHooks.trackFallbackMenu(screen);
         GuiHooks.trackMinecraftTitleScreen(screen);
     }
