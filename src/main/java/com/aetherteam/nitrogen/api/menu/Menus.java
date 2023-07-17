@@ -1,6 +1,7 @@
 package com.aetherteam.nitrogen.api.menu;
 
 import com.aetherteam.nitrogen.Nitrogen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -9,8 +10,10 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class Menus {
     public static final DeferredRegister<Menu> MENUS = DeferredRegister.create(Nitrogen.MENU_REGISTRY_KEY, Nitrogen.MODID);
@@ -24,5 +27,9 @@ public class Menus {
 
     public static Menu get(String id) {
         return MENU_REGISTRY.get().getValue(new ResourceLocation(id));
+    }
+
+    public static List<Screen> getMenuScreens() {
+        return MENU_REGISTRY.get().getValues().stream().map(Menu::getScreen).collect(Collectors.toList());
     }
 }

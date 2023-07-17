@@ -1,16 +1,18 @@
 package com.aetherteam.nitrogen.api.menu;
 
-import com.aetherteam.nitrogen.NitrogenConfig;
 import com.aetherteam.nitrogen.mixin.mixins.client.accessor.TitleScreenAccessor;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.sounds.Music;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Predicate;
 
 public class MenuHelper {
     private Menu activeMenu = null;
+    private TitleScreen fallbackTitleScreen = null;
 
     public MenuHelper() { }
 
@@ -55,6 +57,14 @@ public class MenuHelper {
         return this.getActiveMenu().getMusic();
     }
 
+    public TitleScreen getFallbackTitleScreen() {
+        return this.fallbackTitleScreen;
+    }
+
+    public void setFallbackTitleScreen(TitleScreen fallbackTitleScreen) {
+        this.fallbackTitleScreen = fallbackTitleScreen;
+    }
+
     public void migrateSplash(TitleScreen originalScreen, TitleScreen newScreen) {
         TitleScreenAccessor originalScreenAccessor = (TitleScreenAccessor) originalScreen;
         TitleScreenAccessor newScreenAccessor = (TitleScreenAccessor) newScreen;
@@ -72,5 +82,17 @@ public class MenuHelper {
 
     public void applyBackgrounds(Menu.Background background) {
         Menu.Background.apply(background);
+    }
+
+    public boolean doesScreenMatchMenu(TitleScreen titleScreen) {
+        boolean matches = false;
+        List<Screen> menuScreens = Menus.getMenuScreens();
+        for (Screen screen : menuScreens) {
+            if (titleScreen.getClass().equals(screen.getClass())) {
+                matches = true;
+                break;
+            }
+        }
+        return matches;
     }
 }
