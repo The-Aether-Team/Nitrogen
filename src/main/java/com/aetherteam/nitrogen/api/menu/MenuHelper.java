@@ -36,7 +36,6 @@ public class MenuHelper {
             TitleScreenAccessor defaultMenuAccessor = (TitleScreenAccessor) screen;
             defaultMenuAccessor.nitrogen$setFading(true);
             defaultMenuAccessor.nitrogen$setFadeInStart(0L);
-            this.setShouldFade(false);
         }
         Menu.Background background = this.checkFallbackBackground(menu, screen, menu.getBackground());
         this.applyBackgrounds(background);

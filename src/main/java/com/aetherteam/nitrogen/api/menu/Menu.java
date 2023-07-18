@@ -136,12 +136,7 @@ public class Menu {
         }
 
         public static void reset() {
-            GuiComponentAccessor.nitrogen$setBackgroundLocation(DEFAULT_REGULAR_BACKGROUND);
-            RealmsPlayerScreenAccessor.nitrogen$setOptionsBackground(DEFAULT_REGULAR_BACKGROUND);
-            GuiComponentAccessor.nitrogen$setLightDirtBackground(DEFAULT_DARK_BACKGROUND);
-            CreateWorldScreenAccessor.nitrogen$setHeaderSeparator(DEFAULT_HEADER_SEPARATOR);
-            CreateWorldScreenAccessor.nitrogen$setFooterSeparator(DEFAULT_FOOTER_SEPARATOR);
-            TabButtonAccessor.nitrogen$setTextureLocation(DEFAULT_TAB_BUTTON);
+            apply(MINECRAFT);
         }
 
         public Background regularBackground(ResourceLocation regularBackground) {

@@ -28,4 +28,9 @@ public class MenuListener {
             event.setNewScreen(titleScreen);
         }
     }
+
+    @SubscribeEvent
+    public static void onGuiDraw(ScreenEvent.Render event) {
+        MenuHooks.resetFade(NitrogenClient.MENU_HELPER);
+    }
 }
