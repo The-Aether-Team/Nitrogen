@@ -13,7 +13,9 @@ import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 
 public class MenuHooks {
     public static void setLastSplash(Screen screen, MenuHelper menuHelper) {
-        menuHelper.setLastSplash(((TitleScreenAccessor) screen).nitrogen$getSplash());
+        if (screen instanceof TitleScreen titleScreen) {
+            menuHelper.setLastSplash(((TitleScreenAccessor) titleScreen).nitrogen$getSplash());
+        }
     }
 
     public static void prepareCustomMenus(MenuHelper menuHelper) {
