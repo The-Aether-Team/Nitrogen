@@ -13,10 +13,9 @@ import java.util.function.Predicate;
 public class MenuHelper {
     private Menu activeMenu = null;
     private TitleScreen fallbackTitleScreen = null;
-    private TitleScreen minecraftTitleScreen = null;
-    //todo: give fallback an entry in the menu switcher gui
-    //todo need fallback backgrounds too
-    //todo the fallback title screen system doesnt work.
+    private Menu.Background fallbackBackground = null;
+    private boolean shouldFade = true;
+    //todo: give fallback an entry in the menu switcher gui?
 
     public MenuHelper() { }
 
@@ -30,28 +29,33 @@ public class MenuHelper {
         }
     }
 
-    public TitleScreen applyMenu(Menu menu, TitleScreen originalScreen, boolean shouldFade) {
+    public TitleScreen applyMenu(Menu menu, TitleScreen originalScreen) {
         menu.getApply().run();
-        TitleScreen screen = menu.getScreen();
-        screen = checkSpecialCases(menu, screen);
-        if (shouldFade) {
+        TitleScreen screen = this.checkFallbackScreen(menu, menu.getScreen());
+        if (this.shouldFade()) {
             TitleScreenAccessor defaultMenuAccessor = (TitleScreenAccessor) screen;
             defaultMenuAccessor.nitrogen$setFading(true);
             defaultMenuAccessor.nitrogen$setFadeInStart(0L);
+            this.setShouldFade(false);
         }
-        this.applyBackgrounds(menu.getBackground());
+        Menu.Background background = this.checkFallbackBackground(menu, screen, menu.getBackground());
+        this.applyBackgrounds(background);
         this.migrateSplash(originalScreen, screen);
         return screen;
     }
 
-    private TitleScreen checkSpecialCases(Menu menu, TitleScreen screen) {
-        if (screen.getClass() == TitleScreen.class) {
-            screen = this.getMinecraftTitleScreen();
-        }
-        if (menu == Menus.MINECRAFT.get() && this.getFallbackTitleScreen() != null) {
+    private TitleScreen checkFallbackScreen(Menu menu, TitleScreen screen) {
+        if ((screen.getClass() == TitleScreen.class || menu == Menus.MINECRAFT.get()) && this.getFallbackTitleScreen() != null) {
             screen = this.getFallbackTitleScreen();
         }
         return screen;
+    }
+
+    private Menu.Background checkFallbackBackground(Menu menu, TitleScreen screen, Menu.Background background) {
+        if ((screen.getClass() == TitleScreen.class || menu == Menus.MINECRAFT.get()) && this.getFallbackBackground() != null) {
+            background = this.getFallbackBackground();
+        }
+        return background;
     }
 
     public void setActiveMenu(Menu activeMenu) {
@@ -78,12 +82,12 @@ public class MenuHelper {
         this.fallbackTitleScreen = fallbackTitleScreen;
     }
 
-    public TitleScreen getMinecraftTitleScreen() {
-        return this.minecraftTitleScreen;
+    public Menu.Background getFallbackBackground() {
+        return this.fallbackBackground;
     }
 
-    public void setMinecraftTitleScreen(TitleScreen minecraftTitleScreen) {
-        this.minecraftTitleScreen = minecraftTitleScreen;
+    public void setFallbackBackground(Menu.Background fallbackBackground) {
+        this.fallbackBackground = fallbackBackground;
     }
 
     public void migrateSplash(TitleScreen originalScreen, TitleScreen newScreen) {
@@ -105,6 +109,10 @@ public class MenuHelper {
         Menu.Background.apply(background);
     }
 
+    public void resetBackgrounds() {
+        Menu.Background.reset();
+    }
+
     public boolean doesScreenMatchMenu(TitleScreen titleScreen) {
         boolean matches = false;
         List<Screen> menuScreens = Menus.getMenuScreens();
@@ -115,5 +123,13 @@ public class MenuHelper {
             }
         }
         return matches;
+    }
+
+    public boolean shouldFade() {
+        return this.shouldFade;
+    }
+
+    public void setShouldFade(boolean shouldFade) {
+        this.shouldFade = shouldFade;
     }
 }

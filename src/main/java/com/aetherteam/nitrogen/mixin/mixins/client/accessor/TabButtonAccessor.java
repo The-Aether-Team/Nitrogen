@@ -13,4 +13,10 @@ public interface TabButtonAccessor {
     static void nitrogen$setTextureLocation(ResourceLocation location) {
         throw new AssertionError();
     }
+
+    @Mutable
+    @Accessor("TEXTURE_LOCATION")
+    static ResourceLocation nitrogen$getTextureLocation() {
+        throw new AssertionError();
+    }
 }

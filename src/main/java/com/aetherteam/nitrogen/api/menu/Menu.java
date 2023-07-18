@@ -111,7 +111,7 @@ public class Menu {
         private static final ResourceLocation DEFAULT_DARK_BACKGROUND = GuiComponent.LIGHT_DIRT_BACKGROUND;
         private static final ResourceLocation DEFAULT_HEADER_SEPARATOR = CreateWorldScreen.HEADER_SEPERATOR;
         private static final ResourceLocation DEFAULT_FOOTER_SEPARATOR = CreateWorldScreen.FOOTER_SEPERATOR;
-        private static final ResourceLocation DEFAULT_TAB_BUTTON = new ResourceLocation("textures/gui/tab_button.png");
+        private static final ResourceLocation DEFAULT_TAB_BUTTON = TabButtonAccessor.nitrogen$getTextureLocation();
 
         private ResourceLocation regularBackground = DEFAULT_REGULAR_BACKGROUND;
         private ResourceLocation darkBackground = DEFAULT_DARK_BACKGROUND;
@@ -133,6 +133,15 @@ public class Menu {
             CreateWorldScreenAccessor.nitrogen$setHeaderSeparator(background.getHeaderSeparator());
             CreateWorldScreenAccessor.nitrogen$setFooterSeparator(background.getFooterSeparator());
             TabButtonAccessor.nitrogen$setTextureLocation(background.getTabButton());
+        }
+
+        public static void reset() {
+            GuiComponentAccessor.nitrogen$setBackgroundLocation(DEFAULT_REGULAR_BACKGROUND);
+            RealmsPlayerScreenAccessor.nitrogen$setOptionsBackground(DEFAULT_REGULAR_BACKGROUND);
+            GuiComponentAccessor.nitrogen$setLightDirtBackground(DEFAULT_DARK_BACKGROUND);
+            CreateWorldScreenAccessor.nitrogen$setHeaderSeparator(DEFAULT_HEADER_SEPARATOR);
+            CreateWorldScreenAccessor.nitrogen$setFooterSeparator(DEFAULT_FOOTER_SEPARATOR);
+            TabButtonAccessor.nitrogen$setTextureLocation(DEFAULT_TAB_BUTTON);
         }
 
         public Background regularBackground(ResourceLocation regularBackground) {
