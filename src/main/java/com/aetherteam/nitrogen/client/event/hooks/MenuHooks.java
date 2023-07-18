@@ -31,8 +31,8 @@ public class MenuHooks {
     }
 
     public static Screen setupCustomMenu(Screen screen, MenuHelper menuHelper) {
-        if (screen instanceof TitleScreen titleScreen) {
-            return menuHelper.applyMenu(menuHelper.getActiveMenu(), titleScreen);
+        if (screen instanceof TitleScreen) {
+            return menuHelper.applyMenu(menuHelper.getActiveMenu());
         }
         return screen;
     }

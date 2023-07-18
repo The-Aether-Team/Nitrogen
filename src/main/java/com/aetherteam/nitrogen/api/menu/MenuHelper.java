@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 
 public class MenuHelper {
     private Menu activeMenu = null;
+    private Menu lastMenu = null;
     private TitleScreen fallbackTitleScreen = null;
     private Menu.Background fallbackBackground = null;
     private boolean shouldFade = true;
@@ -25,11 +26,12 @@ public class MenuHelper {
 
     public void prepareMenu(Menu menu) {
         if (menu.getCondition().getAsBoolean()) {
+            this.setLastMenu(this.getActiveMenu());
             this.setActiveMenu(menu);
         }
     }
 
-    public TitleScreen applyMenu(Menu menu, TitleScreen originalScreen) {
+    public TitleScreen applyMenu(Menu menu) {
         menu.getApply().run();
         TitleScreen screen = this.checkFallbackScreen(menu, menu.getScreen());
         if (this.shouldFade()) {
@@ -39,7 +41,7 @@ public class MenuHelper {
         }
         Menu.Background background = this.checkFallbackBackground(menu, screen, menu.getBackground());
         this.applyBackgrounds(background);
-        this.migrateSplash(originalScreen, screen);
+        this.migrateSplash(this.getLastMenu().getScreen(), screen);
         return screen;
     }
 
@@ -73,6 +75,14 @@ public class MenuHelper {
         return this.getActiveMenu().getMusic();
     }
 
+    public Menu getLastMenu() {
+        return this.lastMenu;
+    }
+
+    public void setLastMenu(Menu lastMenu) {
+        this.lastMenu = lastMenu;
+    }
+
     public TitleScreen getFallbackTitleScreen() {
         return this.fallbackTitleScreen;
     }
@@ -90,9 +100,11 @@ public class MenuHelper {
     }
 
     public void migrateSplash(TitleScreen originalScreen, TitleScreen newScreen) {
-        TitleScreenAccessor originalScreenAccessor = (TitleScreenAccessor) originalScreen;
-        TitleScreenAccessor newScreenAccessor = (TitleScreenAccessor) newScreen;
-        newScreenAccessor.nitrogen$setSplash(originalScreenAccessor.nitrogen$getSplash());
+        if (originalScreen != null) {
+            TitleScreenAccessor originalScreenAccessor = (TitleScreenAccessor) originalScreen;
+            TitleScreenAccessor newScreenAccessor = (TitleScreenAccessor) newScreen;
+            newScreenAccessor.nitrogen$setSplash(originalScreenAccessor.nitrogen$getSplash());
+        }
     }
 
     public void setCustomSplash(TitleScreen screen, Predicate<Calendar> condition, String splash) {
