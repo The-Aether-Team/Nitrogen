@@ -26,7 +26,6 @@ public class MenuHelper {
 
     public void prepareMenu(Menu menu) {
         if (menu.getCondition().getAsBoolean()) {
-            this.setLastSplash(((TitleScreenAccessor) menu.getScreen()).nitrogen$getSplash());
             this.setActiveMenu(menu);
         }
     }

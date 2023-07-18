@@ -22,6 +22,7 @@ public class MenuListener {
     public static void onGuiOpenLow(ScreenEvent.Opening event) {
         Screen screen = event.getScreen();
         Screen newScreen = event.getNewScreen();
+        MenuHooks.setLastSplash(screen, NitrogenClient.MENU_HELPER);
         MenuHooks.trackFallbacks(newScreen);
         Screen titleScreen = MenuHooks.setupCustomMenu(screen, NitrogenClient.MENU_HELPER);
         if (titleScreen != null) {
