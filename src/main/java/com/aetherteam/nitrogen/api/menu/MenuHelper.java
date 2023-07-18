@@ -41,7 +41,9 @@ public class MenuHelper {
         }
         Menu.Background background = this.checkFallbackBackground(menu, screen, menu.getBackground());
         this.applyBackgrounds(background);
-        this.migrateSplash(this.getLastMenu().getScreen(), screen);
+        if (this.getLastMenu() != null) {
+            this.migrateSplash(this.getLastMenu().getScreen(), screen);
+        }
         return screen;
     }
 
@@ -100,11 +102,9 @@ public class MenuHelper {
     }
 
     public void migrateSplash(TitleScreen originalScreen, TitleScreen newScreen) {
-        if (originalScreen != null) {
-            TitleScreenAccessor originalScreenAccessor = (TitleScreenAccessor) originalScreen;
-            TitleScreenAccessor newScreenAccessor = (TitleScreenAccessor) newScreen;
-            newScreenAccessor.nitrogen$setSplash(originalScreenAccessor.nitrogen$getSplash());
-        }
+        TitleScreenAccessor originalScreenAccessor = (TitleScreenAccessor) originalScreen;
+        TitleScreenAccessor newScreenAccessor = (TitleScreenAccessor) newScreen;
+        newScreenAccessor.nitrogen$setSplash(originalScreenAccessor.nitrogen$getSplash());
     }
 
     public void setCustomSplash(TitleScreen screen, Predicate<Calendar> condition, String splash) {
