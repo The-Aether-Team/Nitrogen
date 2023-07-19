@@ -17,7 +17,6 @@ public class MenuHelper {
     private Menu.Background fallbackBackground = null;
     private String lastSplash = null;
     private boolean shouldFade = true;
-    //todo: give fallback an entry in the menu switcher gui?
 
     public MenuHelper() { }
 
