@@ -54,10 +54,10 @@ Then load it through your dependencies, with `project.nitrogen_version` specifie
 ```
 dependencies {
   ...
-  compileOnly "com.aetherteam.nitrogen:nitrogen:${project.nitrogen_version}"
-  runtimeOnly fg.deobf("com.aetherteam.nitrogen:nitrogen:${project.nitrogen_version}")
+  compileOnly "com.aetherteam.nitrogen:aether_nitrogen:${project.nitrogen_version}"
+  runtimeOnly fg.deobf("com.aetherteam.nitrogen:aether_nitrogen:${project.nitrogen_version}")
   ...
-  jarJar fg.deobf("com.aetherteam.nitrogen:nitrogen:${project.nitrogen_version}") {
+  jarJar fg.deobf("com.aetherteam.nitrogen:aether_nitrogen:${project.nitrogen_version}") {
     jarJar.ranged(it, "[${project.nitrogen_version},)")
     jarJar.pin(it, "${project.nitrogen_version}")
   }

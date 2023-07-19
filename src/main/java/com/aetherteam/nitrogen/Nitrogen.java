@@ -1,7 +1,6 @@
 package com.aetherteam.nitrogen;
 
 import com.aetherteam.nitrogen.api.menu.Menu;
-import com.aetherteam.nitrogen.api.menu.MenuHelper;
 import com.aetherteam.nitrogen.api.menu.Menus;
 import com.aetherteam.nitrogen.api.users.UserData;
 import com.aetherteam.nitrogen.api.users.User;
@@ -39,7 +38,7 @@ import java.util.UUID;
 @Mod(Nitrogen.MODID)
 @Mod.EventBusSubscriber(modid = Nitrogen.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class Nitrogen {
-    public static final String MODID = "nitrogen";
+    public static final String MODID = "aether_nitrogen";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static final ResourceKey<Registry<Menu>> MENU_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation(Nitrogen.MODID, "menu"));

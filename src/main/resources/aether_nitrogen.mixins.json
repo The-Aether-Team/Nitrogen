@@ -3,7 +3,7 @@
   "package": "com.aetherteam.nitrogen.mixin.mixins",
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_17",
-  "refmap": "nitrogen.refmap.json",
+  "refmap": "aether_nitrogen.refmap.json",
   "mixins": [],
   "injectors": {
     "defaultRequire": 1

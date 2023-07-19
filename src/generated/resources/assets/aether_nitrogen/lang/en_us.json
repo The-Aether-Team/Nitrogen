@@ -1,0 +1,13 @@
+{
+  "aether_nitrogen.menu_title.minecraft": "Minecraft",
+  "aether_nitrogen.patreon.tier.arkenzus": "Arkenzus",
+  "aether_nitrogen.patreon.tier.ascentan": "Ascentan",
+  "aether_nitrogen.patreon.tier.human": "Human",
+  "aether_nitrogen.patreon.tier.valkyrie": "Valkyrie",
+  "config.aether_nitrogen.client.menu.active_menu": "Sets the current active menu title screen",
+  "config.aether_nitrogen.client.menu.enable_menu_api": "Determines whether the Menu API is enabled or not",
+  "config.aether_nitrogen.client.menu.enable_menu_list_button": "Adds a button to the top right of the main menu screen to open a menu selection screen",
+  "gui.aether_nitrogen.button.menu_launch": "Launch Menu",
+  "gui.aether_nitrogen.button.menu_list": "Menu List",
+  "gui.aether_nitrogen.title.menu_selection": "Choose a Main Menu"
+}

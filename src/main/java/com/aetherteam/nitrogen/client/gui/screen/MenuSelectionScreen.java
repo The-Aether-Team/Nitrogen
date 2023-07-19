@@ -55,7 +55,7 @@ public class MenuSelectionScreen extends Screen {
         this.menuList.setLeftPos((this.width / 2) - (this.frameWidth / 2) + EXTERIOR_WIDTH_PADDING);
         this.addRenderableWidget(this.menuList);
 
-        this.launchButton = Button.builder(Component.translatable("gui.nitrogen.button.menu_launch"), press -> {
+        this.launchButton = Button.builder(Component.translatable("gui.aether_nitrogen.button.menu_launch"), press -> {
             if (this.selected != null) {
                 NitrogenConfig.CLIENT.active_menu.set(this.selected.getMenu().toString());
                 NitrogenConfig.CLIENT.active_menu.save();
@@ -96,7 +96,7 @@ public class MenuSelectionScreen extends Screen {
     private void renderListFrame(PoseStack poseStack) {
         RenderSystem.setShaderTexture(0, LIST_FRAME);
         blit(poseStack, (this.width / 2) - (this.frameWidth / 2), this.height / 2 - (this.frameHeight / 2), 0.0F, 0.0F, 141, 168, 256, 256);
-        drawCenteredString(poseStack, this.getFontRenderer(), Component.translatable("gui.nitrogen.title.menu_selection"), this.width / 2, ((this.height / 2) - (this.frameHeight / 2)) + 11, 0xFFFFFF);
+        drawCenteredString(poseStack, this.getFontRenderer(), Component.translatable("gui.aether_nitrogen.title.menu_selection"), this.width / 2, ((this.height / 2) - (this.frameHeight / 2)) + 11, 0xFFFFFF);
     }
 
     public <T extends ObjectSelectionList.Entry<T>> void buildMenuList(Consumer<T> menuListViewConsumer, Function<Menu, T> newEntry) {
