@@ -14,7 +14,7 @@ public class NitrogenConfig {
             enable_menu_api = builder
                     .comment("Determines whether the Menu API is enabled or not")
                     .translation("config.nitrogen.client.menu.enable_menu_api")
-                    .define("Enable Menu API", false);
+                    .define("Enable Menu API", true);
             active_menu = builder
                     .comment("Sets the current active menu title screen")
                     .translation("config.nitrogen.client.menu.active_menu")
