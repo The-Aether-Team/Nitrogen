@@ -34,10 +34,14 @@ public class MenuHooks {
     }
 
     public static void trackFallbacks(Screen screen) {
-        if (NitrogenConfig.CLIENT.enable_menu_api.get() && screen instanceof TitleScreen titleScreen) {
-            if (!NitrogenClient.MENU_HELPER.doesScreenMatchMenu(titleScreen) || screen.getClass() == TitleScreen.class) {
+        if (screen instanceof TitleScreen titleScreen) {
+            if (NitrogenConfig.CLIENT.enable_menu_api.get()) {
+                if (!NitrogenClient.MENU_HELPER.doesScreenMatchMenu(titleScreen) || screen.getClass() == TitleScreen.class) {
+                    NitrogenClient.MENU_HELPER.setFallbackTitleScreen(titleScreen);
+                    NitrogenClient.MENU_HELPER.setFallbackBackground(new Menu.Background().regularBackground(GuiComponent.BACKGROUND_LOCATION).darkBackground(GuiComponent.LIGHT_DIRT_BACKGROUND).headerSeparator(CreateWorldScreen.HEADER_SEPERATOR).footerSeparator(CreateWorldScreen.FOOTER_SEPERATOR).tabButton(TabButtonAccessor.nitrogen$getTextureLocation()));
+                }
+            } else if (screen.getClass() == TitleScreen.class) {
                 NitrogenClient.MENU_HELPER.setFallbackTitleScreen(titleScreen);
-                NitrogenClient.MENU_HELPER.setFallbackBackground(new Menu.Background().regularBackground(GuiComponent.BACKGROUND_LOCATION).darkBackground(GuiComponent.LIGHT_DIRT_BACKGROUND).headerSeparator(CreateWorldScreen.HEADER_SEPERATOR).footerSeparator(CreateWorldScreen.FOOTER_SEPERATOR).tabButton(TabButtonAccessor.nitrogen$getTextureLocation()));
             }
         }
     }

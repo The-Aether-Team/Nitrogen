@@ -1,5 +1,6 @@
 package com.aetherteam.nitrogen.api.menu;
 
+import com.aetherteam.nitrogen.NitrogenConfig;
 import com.aetherteam.nitrogen.mixin.mixins.client.accessor.TitleScreenAccessor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -31,19 +32,22 @@ public class MenuHelper {
     }
 
     public TitleScreen applyMenu(Menu menu) {
-        menu.getApply().run();
-        TitleScreen screen = this.checkFallbackScreen(menu, menu.getScreen());
-        if (this.shouldFade()) {
-            TitleScreenAccessor defaultMenuAccessor = (TitleScreenAccessor) screen;
-            defaultMenuAccessor.nitrogen$setFading(true);
-            defaultMenuAccessor.nitrogen$setFadeInStart(0L);
+        if (NitrogenConfig.CLIENT.enable_menu_api.get()) {
+            menu.getApply().run();
+            TitleScreen screen = this.checkFallbackScreen(menu, menu.getScreen());
+            if (this.shouldFade()) {
+                TitleScreenAccessor defaultMenuAccessor = (TitleScreenAccessor) screen;
+                defaultMenuAccessor.nitrogen$setFading(true);
+                defaultMenuAccessor.nitrogen$setFadeInStart(0L);
+            }
+            Menu.Background background = this.checkFallbackBackground(menu, screen, menu.getBackground());
+            this.applyBackgrounds(background);
+            if (this.getLastSplash() != null) {
+                this.migrateSplash(this.getLastSplash(), screen);
+            }
+            return screen;
         }
-        Menu.Background background = this.checkFallbackBackground(menu, screen, menu.getBackground());
-        this.applyBackgrounds(background);
-        if (this.getLastSplash() != null) {
-            this.migrateSplash(this.getLastSplash(), screen);
-        }
-        return screen;
+        return this.getFallbackTitleScreen();
     }
 
     private TitleScreen checkFallbackScreen(Menu menu, TitleScreen screen) {
