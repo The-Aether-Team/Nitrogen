@@ -6,7 +6,7 @@ orbs:
 parameters:
   artifact-name:
     type: string
-    default: nitrogen
+    default: aether_nitrogen
   allow-build:
     type: boolean
     default: false
