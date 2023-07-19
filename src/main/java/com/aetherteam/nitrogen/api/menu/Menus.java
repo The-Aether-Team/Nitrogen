@@ -19,7 +19,7 @@ public class Menus {
     public static final DeferredRegister<Menu> MENUS = DeferredRegister.create(Nitrogen.MENU_REGISTRY_KEY, Nitrogen.MODID);
     public static final Supplier<IForgeRegistry<Menu>> MENU_REGISTRY = MENUS.makeRegistry(RegistryBuilder::new);
 
-    public static final ResourceLocation MINECRAFT_ICON = new ResourceLocation("textures/block/grass_block_side");
+    public static final ResourceLocation MINECRAFT_ICON = new ResourceLocation("textures/block/grass_block_side.png");
     public static final Component MINECRAFT_NAME = Component.translatable("nitrogen.menu_title.minecraft");
     public static final BooleanSupplier MINECRAFT_CONDITION = () -> true;
 
@@ -29,7 +29,11 @@ public class Menus {
         return MENU_REGISTRY.get().getValue(new ResourceLocation(id));
     }
 
+    public static List<Menu> getMenus() {
+        return MENU_REGISTRY.get().getValues().stream().toList();
+    }
+
     public static List<Screen> getMenuScreens() {
-        return MENU_REGISTRY.get().getValues().stream().map(Menu::getScreen).collect(Collectors.toList());
+        return getMenus().stream().map(Menu::getScreen).collect(Collectors.toList());
     }
 }

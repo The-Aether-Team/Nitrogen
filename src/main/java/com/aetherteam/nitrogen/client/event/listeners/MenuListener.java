@@ -2,7 +2,9 @@ package com.aetherteam.nitrogen.client.event.listeners;
 
 import com.aetherteam.nitrogen.client.NitrogenClient;
 import com.aetherteam.nitrogen.client.event.hooks.MenuHooks;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -33,5 +35,16 @@ public class MenuListener {
     @SubscribeEvent
     public static void onGuiDraw(ScreenEvent.Render event) {
         MenuHooks.resetFade(NitrogenClient.MENU_HELPER);
+    }
+
+    @SubscribeEvent
+    public static void onGuiInitialize(ScreenEvent.Init.Post event) {
+        Screen screen = event.getScreen();
+        if (screen instanceof TitleScreen) {
+            Button menuSwitchButton = MenuHooks.setupMenuScreenButton(screen);
+            if (menuSwitchButton != null) {
+                event.addListener(menuSwitchButton);
+            }
+        }
     }
 }

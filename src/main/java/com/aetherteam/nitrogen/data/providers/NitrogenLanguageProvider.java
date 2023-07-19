@@ -8,6 +8,10 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
         super(output, id, "en_us");
     }
 
+    public void addGuiText(String key, String name) {
+        this.add("gui.nitrogen." + key, name);
+    }
+
     public void addMenuTitle(String key, String name) {
         this.add("nitrogen.menu_title." + key, name);
     }

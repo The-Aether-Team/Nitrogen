@@ -1,5 +1,9 @@
 {
   "config.nitrogen.client.menu.active_menu": "Sets the current active menu title screen",
+  "config.nitrogen.client.menu.enable_menu_list_button": "Adds a button to the top right of the main menu screen to open a menu selection screen",
+  "gui.nitrogen.button.menu_launch": "Launch Menu",
+  "gui.nitrogen.button.menu_list": "Menu List",
+  "gui.nitrogen.title.menu_selection": "Choose a Main Menu",
   "nitrogen.menu_title.minecraft": "Minecraft",
   "nitrogen.patreon.tier.arkenzus": "Arkenzus",
   "nitrogen.patreon.tier.ascentan": "Ascentan",

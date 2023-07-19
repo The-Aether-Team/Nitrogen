@@ -11,6 +11,10 @@ public class NitrogenLanguageData extends NitrogenLanguageProvider {
 
     @Override
     protected void addTranslations() {
+        this.addGuiText("button.menu_list", "Menu List");
+        this.addGuiText("button.menu_launch", "Launch Menu");
+        this.addGuiText("title.menu_selection", "Choose a Main Menu");
+
         this.addMenuTitle("minecraft", "Minecraft");
 
         this.addPatreonTier("human", "Human");
@@ -18,6 +22,8 @@ public class NitrogenLanguageData extends NitrogenLanguageProvider {
         this.addPatreonTier("valkyrie", "Valkyrie");
         this.addPatreonTier("arkenzus", "Arkenzus");
 
+        this.addClientConfig("menu", "enable_menu_api", "Determines whether the Menu API is enabled or not");
         this.addClientConfig("menu", "active_menu", "Sets the current active menu title screen");
+        this.addClientConfig("menu", "enable_menu_list_button", "Adds a button to the top right of the main menu screen to open a menu selection screen");
     }
 }
