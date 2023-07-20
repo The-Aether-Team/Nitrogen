@@ -96,6 +96,13 @@ dependencies {
     minecraft "net.minecraftforge:forge:${project.mc_version}-${project.forge_version}"
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+    compileOnly "mezz.jei:jei-${project.mc_version}-common:${project.jei_version}"
+    compileOnly "mezz.jei:jei-${project.mc_version}-forge:${project.jei_version}"
+}
+
+repositories {
+    maven { url = "https://maven.blamejared.com" }
 }
 
 jar {
