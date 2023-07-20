@@ -17,7 +17,7 @@ public class NitrogenPlacedFeatureBuilders {
     /**
      * Based on {@link net.minecraft.data.worldgen.placement.VegetationPlacements#treePlacementBase(PlacementModifier)}
      */
-    public static ImmutableList.Builder<PlacementModifier> treePlacementBase(PlacementModifier count) {
+    private static ImmutableList.Builder<PlacementModifier> treePlacementBase(PlacementModifier count) {
         return ImmutableList.<PlacementModifier>builder()
                 .add(count)
                 .add(SurfaceWaterDepthFilter.forMaxDepth(0))
