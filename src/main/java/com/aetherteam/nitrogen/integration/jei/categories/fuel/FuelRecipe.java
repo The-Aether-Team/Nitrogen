@@ -1,8 +1,6 @@
 package com.aetherteam.nitrogen.integration.jei.categories.fuel;
 
-import com.aetherteam.nitrogen.Nitrogen;
 import com.google.common.base.Preconditions;
-import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 
@@ -10,8 +8,6 @@ import java.util.Collection;
 import java.util.List;
 
 public class FuelRecipe {
-    public static final RecipeType<FuelRecipe> RECIPE_TYPE = RecipeType.create(Nitrogen.MODID, "fuel", FuelRecipe.class);
-
     private final List<ItemStack> inputs;
     private final int burnTime;
     private final Block usage;
