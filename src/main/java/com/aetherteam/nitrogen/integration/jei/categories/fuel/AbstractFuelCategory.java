@@ -58,7 +58,7 @@ public abstract class AbstractFuelCategory implements IRecipeCategory<FuelRecipe
         return this.icon;
     }
 
-    abstract ResourceLocation getTexture();
+    public abstract ResourceLocation getTexture();
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, FuelRecipe recipe, IFocusGroup focuses) {
