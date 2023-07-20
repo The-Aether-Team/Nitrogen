@@ -1,6 +1,7 @@
 package com.aetherteam.nitrogen.data.resources.builders;
 
 import com.google.common.collect.ImmutableList;
+import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.world.level.levelgen.placement.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class NitrogenPlacedFeatureBuilders {
         return ImmutableList.<PlacementModifier>builder()
                 .add(count)
                 .add(SurfaceWaterDepthFilter.forMaxDepth(0))
+                .add(PlacementUtils.HEIGHTMAP_OCEAN_FLOOR)
                 .add(BiomeFilter.biome());
     }
 
