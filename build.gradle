@@ -87,7 +87,7 @@ minecraft {
         }
 
         data {
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/'), '--existing', file('src/generated/resources/'), '--existing-mod', 'aether_nitrogen'
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/'), '--existing', file('src/generated/resources/')
 
             environment 'target', 'fmluserdevdata'
         }
