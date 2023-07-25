@@ -22,7 +22,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 apply plugin: 'org.moddingx.modgradle.sourcejar'
 
 minecraft {
-    mappings channel: 'parchment', version: project.mappings
+    mappings channel: 'sugarcane', version: project.mappings
 
     // When true, this property will have all Eclipse/IntelliJ IDEA run configurations run the "prepareX" task for the given run configuration before launching the game.
     // In most cases, it is not necessary to enable.
