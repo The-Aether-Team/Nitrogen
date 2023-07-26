@@ -9,12 +9,17 @@ import com.aetherteam.nitrogen.network.PacketRelay;
 import com.aetherteam.nitrogen.network.NitrogenPacketHandler;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.mojang.logging.LogUtils;
+import net.minecraft.SharedConstants;
 import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.metadata.PackMetadataGenerator;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -73,6 +78,12 @@ public class Nitrogen {
 
         // Client Data
         generator.addProvider(event.includeClient(), new NitrogenLanguageData(packOutput));
+
+        // pack.mcmeta
+        PackMetadataGenerator packMeta = new PackMetadataGenerator(packOutput);
+        Map<PackType, Integer> packTypes = Map.of(PackType.SERVER_DATA, SharedConstants.getCurrentVersion().getPackVersion(PackType.SERVER_DATA));
+        packMeta.add(PackMetadataSection.TYPE, new PackMetadataSection(Component.translatable("pack.aether_nitrogen.mod.description"), SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES), packTypes));
+        generator.addProvider(true, packMeta);
     }
 
     @SubscribeEvent
