@@ -13,15 +13,15 @@ public class NitrogenConfig {
             builder.push("Menu");
             enable_menu_api = builder
                     .comment("Determines whether the Menu API is enabled or not")
-                    .translation("config.aether_nitrogen.client.menu.enable_menu_api")
+                    .translation("config.nitrogen_internals.client.menu.enable_menu_api")
                     .define("Enable Menu API", true);
             active_menu = builder
                     .comment("Sets the current active menu title screen")
-                    .translation("config.aether_nitrogen.client.menu.active_menu")
-                    .define("Active Menu", "aether_nitrogen:minecraft");
+                    .translation("config.nitrogen_internals.client.menu.active_menu")
+                    .define("Active Menu", "nitrogen_internals:minecraft");
             enable_menu_list_button = builder
                     .comment("Adds a button to the top right of the main menu screen to open a menu selection screen")
-                    .translation("config.aether_nitrogen.client.menu.enable_menu_list_button")
+                    .translation("config.nitrogen_internals.client.menu.enable_menu_list_button")
                     .define("Enables menu selection button", false);
             builder.pop();
         }

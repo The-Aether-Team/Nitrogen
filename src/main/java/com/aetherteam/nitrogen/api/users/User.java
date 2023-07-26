@@ -91,10 +91,10 @@ public final class User {
     }
 
     public enum Tier {
-        HUMAN(0, 2429462, Component.translatable("aether_nitrogen.patreon.tier.human")),
-        ASCENTAN(1, 616325, Component.translatable("aether_nitrogen.patreon.tier.ascentan")),
-        VALKYRIE(2, 616326, Component.translatable("aether_nitrogen.patreon.tier.valkyrie")),
-        ARKENZUS(3, 616327, Component.translatable("aether_nitrogen.patreon.tier.arkenzus"));
+        HUMAN(0, 2429462, Component.translatable("nitrogen_internals.patreon.tier.human")),
+        ASCENTAN(1, 616325, Component.translatable("nitrogen_internals.patreon.tier.ascentan")),
+        VALKYRIE(2, 616326, Component.translatable("nitrogen_internals.patreon.tier.valkyrie")),
+        ARKENZUS(3, 616327, Component.translatable("nitrogen_internals.patreon.tier.arkenzus"));
 
         private final int level;
         private final int id;

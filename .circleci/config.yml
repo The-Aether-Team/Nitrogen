@@ -25,7 +25,7 @@ commands:
     steps:
       - checkout
       - gradle/with_cache:
-          cache_key: 'v2'
+          cache_key: 'v1'
           steps:
             - run:
                 name: chmod permissions
@@ -39,8 +39,6 @@ workflows:
     jobs:
       - path-filtering/filter:
           name: filter
-          mapping: |
-            ^((?!docs|.github).)*$ allow-build true
           base-revision: << pipeline.git.branch >>
           config-path: .circleci/continue_config.yml
   publish:
@@ -48,6 +46,7 @@ workflows:
       - publish:
           context:
             - maven
+            - publishing
           filters:
             tags:
               only:

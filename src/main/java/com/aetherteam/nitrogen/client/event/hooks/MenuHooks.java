@@ -59,7 +59,7 @@ public class MenuHooks {
 
     public static Button setupMenuScreenButton(Screen screen) {
         if (NitrogenConfig.CLIENT.enable_menu_api.get() && NitrogenConfig.CLIENT.enable_menu_list_button.get() && screen instanceof TitleScreen) {
-            return Button.builder(Component.translatable("gui.aether_nitrogen.button.menu_list"), (pressed) -> Minecraft.getInstance().setScreen(new MenuSelectionScreen(screen))).bounds(screen.width - 62, 4, 58, 20).build();
+            return Button.builder(Component.translatable("gui.nitrogen_internals.button.menu_list"), (pressed) -> Minecraft.getInstance().setScreen(new MenuSelectionScreen(screen))).bounds(screen.width - 62, 4, 58, 20).build();
         }
         return null;
     }

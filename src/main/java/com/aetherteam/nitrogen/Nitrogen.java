@@ -43,7 +43,7 @@ import java.util.UUID;
 @Mod(Nitrogen.MODID)
 @Mod.EventBusSubscriber(modid = Nitrogen.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class Nitrogen {
-    public static final String MODID = "aether_nitrogen";
+    public static final String MODID = "nitrogen_internals";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static final ResourceKey<Registry<Menu>> MENU_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation(Nitrogen.MODID, "menu"));
@@ -82,7 +82,7 @@ public class Nitrogen {
         // pack.mcmeta
         PackMetadataGenerator packMeta = new PackMetadataGenerator(packOutput);
         Map<PackType, Integer> packTypes = Map.of(PackType.SERVER_DATA, SharedConstants.getCurrentVersion().getPackVersion(PackType.SERVER_DATA));
-        packMeta.add(PackMetadataSection.TYPE, new PackMetadataSection(Component.translatable("pack.aether_nitrogen.mod.description"), SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES), packTypes));
+        packMeta.add(PackMetadataSection.TYPE, new PackMetadataSection(Component.translatable("pack.nitrogen_internals.mod.description"), SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES), packTypes));
         generator.addProvider(true, packMeta);
     }
 

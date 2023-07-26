@@ -6,10 +6,7 @@ orbs:
 parameters:
   artifact-name:
     type: string
-    default: aether_nitrogen
-  allow-build:
-    type: boolean
-    default: false
+    default: nitrogen_internals-1.19.4-0.8.11-forge.jar
 
 jobs:
   build:
@@ -20,25 +17,14 @@ jobs:
       _JAVA_OPTIONS: -Xmx3200m
       GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.logging.level=info
     steps:
-      - when:
-          condition: <<pipeline.parameters.allow-build>>
-          steps:
-            - setup
-            - persist_to_workspace:
-                root: ~/project/build/libs
-                paths:
-                  - << pipeline.parameters.artifact-name >>-*.jar
-      - unless:
-         condition: <<pipeline.parameters.allow-build>>
-         steps:
-           - run: echo "Condition not met."
+      - setup
 
 commands:
   setup:
     steps:
       - checkout
       - gradle/with_cache:
-          cache_key: 'v2'
+          cache_key: 'v1'
           steps:
             - run:
                 name: chmod permissions
