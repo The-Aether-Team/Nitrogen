@@ -8,6 +8,7 @@ modId = "nitrogen_internals"
 version = "${file.jarVersion}"
 displayName = "Nitrogen"
 displayURL = "https://github.com/The-Aether-Team/Nitrogen"
+credits = "The Aether Team"
 authors = "bconlon"
 description = '''
     A library used for the Aether series of mods.'''
