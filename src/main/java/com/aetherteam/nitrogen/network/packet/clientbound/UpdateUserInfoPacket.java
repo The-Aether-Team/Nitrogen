@@ -1,7 +1,7 @@
 package com.aetherteam.nitrogen.network.packet.clientbound;
 
-import com.aetherteam.nitrogen.api.users.UserData;
 import com.aetherteam.nitrogen.api.users.User;
+import com.aetherteam.nitrogen.api.users.UserData;
 import com.aetherteam.nitrogen.network.BasePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;

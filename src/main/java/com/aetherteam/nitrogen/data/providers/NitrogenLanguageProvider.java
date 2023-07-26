@@ -6,7 +6,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.common.data.LanguageProvider;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -106,10 +105,6 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
 
     public void addPackDescription(String packName, String description) {
         this.add("pack." + this.id + "." + packName + ".description", description);
-    }
-
-    public void addMenuTitle(String key, String name) {
-        this.add(this.id + ".menu_title." + key, name);
     }
 
     public void addPatreonTier(String key, String name) {

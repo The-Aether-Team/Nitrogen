@@ -9,10 +9,5 @@
     "defaultRequire": 1
   },
   "client": [
-    "client.accessor.CreateWorldScreenAccessor",
-    "client.accessor.GuiComponentAccessor",
-    "client.accessor.RealmsPlayerScreenAccessor",
-    "client.accessor.TabButtonAccessor",
-    "client.accessor.TitleScreenAccessor"
   ]
 }

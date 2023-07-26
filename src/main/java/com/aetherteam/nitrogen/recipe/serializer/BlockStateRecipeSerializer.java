@@ -2,8 +2,8 @@ package com.aetherteam.nitrogen.recipe.serializer;
 
 import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
 import com.aetherteam.nitrogen.recipe.BlockStateIngredient;
-import com.aetherteam.nitrogen.recipe.recipes.AbstractBlockStateRecipe;
 import com.aetherteam.nitrogen.recipe.BlockStateRecipeUtil;
+import com.aetherteam.nitrogen.recipe.recipes.AbstractBlockStateRecipe;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
