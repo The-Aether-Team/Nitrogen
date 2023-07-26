@@ -6,7 +6,7 @@ orbs:
 parameters:
   artifact-name:
     type: string
-    default: nitrogen_internals-1.19.4-0.8.12-forge.jar
+    default: nitrogen_internals-1.19.4-0.8.13-forge.jar
 
 jobs:
   build:
