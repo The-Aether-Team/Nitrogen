@@ -1,5 +1,6 @@
 package com.aetherteam.nitrogen.network.packet;
 
+import com.aetherteam.nitrogen.capability.CapabilityUtil;
 import com.aetherteam.nitrogen.capability.INBTSynchable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
@@ -20,13 +21,14 @@ public abstract class SyncLevelPacket<T extends INBTSynchable<CompoundTag>> exte
     @Override
     public void execute(Player playerEntity) {
         if (playerEntity != null && playerEntity.getServer() != null && this.value != null) {
+            CapabilityUtil.loadLevelCapability(this, playerEntity, this.key, this.value, false);
             this.getCapability(playerEntity.getLevel()).ifPresent((synchable) -> synchable.getSynchableFunctions().get(this.key).getMiddle().accept(this.value));
         } else {
             if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null && this.value != null) {
-                this.getCapability(Minecraft.getInstance().level).ifPresent((synchable) -> synchable.getSynchableFunctions().get(this.key).getMiddle().accept(this.value));
+                CapabilityUtil.loadLevelCapability(this, playerEntity, this.key, this.value, true);
             }
         }
     }
 
-    protected abstract LazyOptional<T> getCapability(Level level);
+    public abstract LazyOptional<T> getCapability(Level level);
 }
