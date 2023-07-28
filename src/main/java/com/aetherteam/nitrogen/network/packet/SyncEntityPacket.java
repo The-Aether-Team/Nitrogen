@@ -51,5 +51,5 @@ public abstract class SyncEntityPacket<T extends INBTSynchable<CompoundTag>> ext
         }
     }
 
-    protected abstract LazyOptional<T> getCapability(Entity entity);
+    public abstract LazyOptional<T> getCapability(Entity entity);
 }
