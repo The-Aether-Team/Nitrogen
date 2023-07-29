@@ -36,7 +36,7 @@ public interface BossMob<T extends Mob & BossMob<T>> {
     }
 
     default void displayTooFarMessage(Player player) {
-        player.sendSystemMessage(Component.translatable("gui.aether.boss.message.far"));
+        player.sendSystemMessage(Component.translatable("gui.nitrogen_internals.boss.message.far"));
     }
 
     default void onDungeonPlayerAdded(@Nullable Player player) { }

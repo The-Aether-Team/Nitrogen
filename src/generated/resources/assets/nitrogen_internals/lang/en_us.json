@@ -1,11 +1,5 @@
 {
-  "config.nitrogen_internals.client.menu.active_menu": "Sets the current active menu title screen",
-  "config.nitrogen_internals.client.menu.enable_menu_api": "Determines whether the Menu API is enabled or not",
-  "config.nitrogen_internals.client.menu.enable_menu_list_button": "Adds a button to the top right of the main menu screen to open a menu selection screen",
-  "gui.nitrogen_internals.button.menu_launch": "Launch Menu",
-  "gui.nitrogen_internals.button.menu_list": "Menu List",
-  "gui.nitrogen_internals.title.menu_selection": "Choose a Main Menu",
-  "nitrogen_internals.menu_title.minecraft": "Minecraft",
+  "gui.nitrogen_internals.boss.message.far": "You must be in the boss room to interact.",
   "nitrogen_internals.patreon.tier.arkenzus": "Arkenzus",
   "nitrogen_internals.patreon.tier.ascentan": "Ascentan",
   "nitrogen_internals.patreon.tier.human": "Human",
