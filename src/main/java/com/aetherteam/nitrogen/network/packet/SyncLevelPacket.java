@@ -9,6 +9,9 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.LazyOptional;
 import org.apache.commons.lang3.tuple.Triple;
 
+/**
+ * An abstract packet used by level capabilities for data syncing.
+ */
 public abstract class SyncLevelPacket<T extends INBTSynchable<CompoundTag>> extends SyncPacket {
     public SyncLevelPacket(Triple<String, INBTSynchable.Type, Object> values) {
         super(values);

@@ -7,6 +7,9 @@ import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.UUID;
 
+/**
+ * An abstract packet that is extended by other packets that are meant to be used for capability syncing through {@link INBTSynchable}.
+ */
 public abstract class SyncPacket implements BasePacket {
     protected final String key;
     protected final INBTSynchable.Type type;

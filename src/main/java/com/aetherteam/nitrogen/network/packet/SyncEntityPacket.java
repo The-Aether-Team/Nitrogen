@@ -10,6 +10,9 @@ import net.minecraftforge.common.util.LazyOptional;
 import org.apache.commons.lang3.tuple.Triple;
 import oshi.util.tuples.Quartet;
 
+/**
+ * An abstract packet used by entity capabilities for data syncing.
+ */
 public abstract class SyncEntityPacket<T extends INBTSynchable<CompoundTag>> extends SyncPacket {
     private final int entityID;
 

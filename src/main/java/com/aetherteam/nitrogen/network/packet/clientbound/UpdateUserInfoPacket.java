@@ -7,6 +7,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 
+/**
+ * Updates the {@link User} on the client.
+ */
 public record UpdateUserInfoPacket(User user) implements BasePacket {
     @Override
     public void encode(FriendlyByteBuf buffer) {
