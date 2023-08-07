@@ -55,13 +55,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class BlockStateRenderer implements IIngredientRenderer<ItemStack> {
-    private final BlockPropertyPair[] pairs;
-
-    public BlockStateRenderer(BlockPropertyPair... pairs) {
-        this.pairs = pairs;
-    }
-
+public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredientRenderer<ItemStack> {
     @Override
     public void render(PoseStack poseStack, @Nullable ItemStack ingredient) {
         Minecraft minecraft = Minecraft.getInstance();

@@ -19,7 +19,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * Based on {@link net.minecraft.world.item.crafting.Ingredient}, except based on a {@link Predicate}<{@link BlockState}>.
+ * [CODE COPY] - {@link net.minecraft.world.item.crafting.Ingredient}.<br><br>
+ * Modified to be based on a {@link Predicate}<{@link BlockState}>.
  */
 public class BlockStateIngredient implements Predicate<BlockState> {
     public static final BlockStateIngredient EMPTY = new BlockStateIngredient(Stream.empty());
@@ -245,9 +246,9 @@ public class BlockStateIngredient implements Predicate<BlockState> {
 
         @Override
         public JsonObject serialize() {
-            JsonObject jsonobject = new JsonObject();
-            jsonobject.addProperty("tag", this.tag.location().toString());
-            return jsonobject;
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("tag", this.tag.location().toString());
+            return jsonObject;
         }
     }
 

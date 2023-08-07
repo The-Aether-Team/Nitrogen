@@ -64,7 +64,7 @@ public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> impl
     }
 
     public interface CookieBaker<T extends AbstractBlockStateRecipe> {
-        T create(ResourceLocation id, BlockStateIngredient ingredient, BlockPropertyPair result, CommandFunction.CacheableFunction function);
+        T create(ResourceLocation id, BlockStateIngredient ingredient, BlockPropertyPair result, @Nullable CommandFunction.CacheableFunction function);
     }
 }
 

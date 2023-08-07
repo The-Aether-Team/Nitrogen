@@ -25,6 +25,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -36,7 +37,7 @@ public final class BlockStateRecipeUtil {
      * @param pos The {@link BlockPos} to execute at.
      * @param function The {@link net.minecraft.commands.CommandFunction.CacheableFunction} to execute.
      */
-    public static void executeFunction(Level level, BlockPos pos, CommandFunction.CacheableFunction function) {
+    public static void executeFunction(Level level, BlockPos pos, @Nullable CommandFunction.CacheableFunction function) {
         if (level instanceof ServerLevel serverLevel && function != null) {
             MinecraftServer minecraftServer = serverLevel.getServer();
             function.get(minecraftServer.getFunctions()).ifPresent(command -> {
@@ -179,7 +180,7 @@ public final class BlockStateRecipeUtil {
      * @param json The {@link JsonObject}.
      * @param biomeKey The {@link Biome} {@link ResourceKey}.
      */
-    public static void biomeKeyToJson(JsonObject json, ResourceKey<Biome> biomeKey) {
+    public static void biomeKeyToJson(JsonObject json, @Nullable ResourceKey<Biome> biomeKey) {
         if (biomeKey != null) {
             ResourceLocation biomeLocation = biomeKey.location();
             json.addProperty("biome", biomeLocation.toString());
@@ -191,7 +192,7 @@ public final class BlockStateRecipeUtil {
      * @param json The {@link JsonObject}.
      * @param biomeTag The {@link Biome} {@link TagKey}.
      */
-    public static void biomeTagToJson(JsonObject json, TagKey<Biome> biomeTag) {
+    public static void biomeTagToJson(JsonObject json, @Nullable TagKey<Biome> biomeTag) {
         if (biomeTag != null) {
             ResourceLocation tagLocation = biomeTag.location();
             json.addProperty("biome", "#" + tagLocation);

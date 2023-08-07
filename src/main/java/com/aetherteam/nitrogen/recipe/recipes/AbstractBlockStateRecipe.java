@@ -11,6 +11,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
@@ -18,9 +19,10 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
     protected final ResourceLocation id;
     protected final BlockStateIngredient ingredient;
     protected final BlockPropertyPair result;
+    @Nullable
     protected final CommandFunction.CacheableFunction function;
 
-    public AbstractBlockStateRecipe(RecipeType<?> type, ResourceLocation id, BlockStateIngredient ingredient, BlockPropertyPair result, CommandFunction.CacheableFunction function) {
+    public AbstractBlockStateRecipe(RecipeType<?> type, ResourceLocation id, BlockStateIngredient ingredient, BlockPropertyPair result, @Nullable CommandFunction.CacheableFunction function) {
         this.type = type;
         this.id = id;
         this.ingredient = ingredient;
@@ -84,6 +86,7 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
         return this.result;
     }
 
+    @Nullable
     @Override
     public CommandFunction.CacheableFunction getFunction() {
         return this.function;

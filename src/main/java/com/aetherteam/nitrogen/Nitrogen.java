@@ -38,10 +38,6 @@ public class Nitrogen {
     public static final String MODID = "nitrogen_internals";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    /**
-     * This is a test JavaDoc, please ignore.
-     * @author bconlon
-     */
     public Nitrogen() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::commonSetup);

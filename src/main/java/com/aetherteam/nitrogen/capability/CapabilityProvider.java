@@ -7,8 +7,11 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
-import javax.annotation.Nonnull;
-
+/**
+ * Record used for creating basic capability providers.
+ * @param registeredCapability The registered {@link Capability} field.
+ * @param capabilityInterface The {@link INBTSerializable}<{@link CompoundTag}> capability class.
+ */
 public record CapabilityProvider(Capability<?> registeredCapability, INBTSerializable<CompoundTag> capabilityInterface) implements ICapabilitySerializable<CompoundTag> {
     @Override
     public CompoundTag serializeNBT() {
@@ -24,9 +27,8 @@ public record CapabilityProvider(Capability<?> registeredCapability, INBTSeriali
      * Warning for "unchecked" is suppressed because the generic cast is fine for capabilities.
      */
     @SuppressWarnings("unchecked")
-    @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, Direction side) {
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction side) {
         if (capability == this.registeredCapability()) {
             return LazyOptional.of(() -> (T) this.capabilityInterface());
         }

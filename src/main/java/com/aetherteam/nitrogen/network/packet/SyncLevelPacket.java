@@ -21,11 +21,10 @@ public abstract class SyncLevelPacket<T extends INBTSynchable<CompoundTag>> exte
     @Override
     public void execute(Player playerEntity) {
         if (playerEntity != null && playerEntity.getServer() != null && this.value != null) {
-            CapabilityUtil.loadLevelCapability(this, playerEntity, this.key, this.value, false);
-            this.getCapability(playerEntity.getLevel()).ifPresent((synchable) -> synchable.getSynchableFunctions().get(this.key).getMiddle().accept(this.value));
+            CapabilityUtil.syncLevelCapability(this, playerEntity, this.key, this.value, false);
         } else {
             if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null && this.value != null) {
-                CapabilityUtil.loadLevelCapability(this, playerEntity, this.key, this.value, true);
+                CapabilityUtil.syncLevelCapability(this, playerEntity, this.key, this.value, true);
             }
         }
     }

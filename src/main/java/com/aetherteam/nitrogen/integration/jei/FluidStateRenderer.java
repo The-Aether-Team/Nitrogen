@@ -34,13 +34,7 @@ import net.minecraft.world.level.material.Fluids;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FluidStateRenderer<T> implements IIngredientRenderer<T> {
-    private final IPlatformFluidHelperInternal<T> fluidHelper;
-
-    public FluidStateRenderer(IPlatformFluidHelperInternal<T> fluidHelper) {
-        this.fluidHelper = fluidHelper;
-    }
-
+public record FluidStateRenderer<T>(IPlatformFluidHelperInternal<T> fluidHelper) implements IIngredientRenderer<T> {
     @Override
     public void render(PoseStack poseStack, T ingredient) {
         Minecraft minecraft = Minecraft.getInstance();

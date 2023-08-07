@@ -10,19 +10,22 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nullable;
 
 public interface BossMob<T extends Mob & BossMob<T>> {
+    TargetingConditions NON_COMBAT = TargetingConditions.forNonCombat();
+
     @SuppressWarnings("unchecked")
     private T self() {
         return (T) this;
     }
-    TargetingConditions NON_COMBAT = TargetingConditions.forNonCombat();
+
     Component getBossName();
     void setBossName(Component component);
 
     boolean isBossFight();
     void setBossFight(boolean isFighting);
 
+    @Nullable
     BossRoomTracker<T> getDungeon();
-    void setDungeon(BossRoomTracker<T> dungeon);
+    void setDungeon(@Nullable BossRoomTracker<T> dungeon);
 
     int getDeathScore();
 
@@ -49,7 +52,9 @@ public interface BossMob<T extends Mob & BossMob<T>> {
      * Called when the boss is defeated to change all blocks to unlocked blocks.
      */
     default void tearDownRoom() {
-        this.getDungeon().modifyRoom(this::convertBlock);
+        if (this.getDungeon() != null) {
+            this.getDungeon().modifyRoom(this::convertBlock);
+        }
     }
 
     void closeRoom();
