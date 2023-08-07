@@ -327,38 +327,30 @@ public abstract class NitrogenBlockStateProvider extends BlockStateProvider {
         ModelFile lit = this.models().orientable(blockName + "_on", side, front_on, top);
         this.getVariantBuilder(block).forAllStatesExcept((state) -> {
             Direction direction = state.getValue(AbstractFurnaceBlock.FACING);
-            if (state.getValue(AbstractFurnaceBlock.LIT))
-                switch (direction) {
-                    case NORTH -> {
-                        return ConfiguredModel.builder().modelFile(lit).build();
-                    }
-                    case SOUTH -> {
-                        return ConfiguredModel.builder().modelFile(lit).rotationY(180).build();
-                    }
-                    case WEST -> {
-                        return ConfiguredModel.builder().modelFile(lit).rotationY(270).build();
-                    }
-                    case EAST -> {
-                        return ConfiguredModel.builder().modelFile(lit).rotationY(90).build();
-                    }
-                }
-            else
-                switch (direction) {
-                    case NORTH -> {
-                        return ConfiguredModel.builder().modelFile(normal).build();
-                    }
-                    case SOUTH -> {
-                        return ConfiguredModel.builder().modelFile(normal).rotationY(180).build();
-                    }
-                    case WEST -> {
-                        return ConfiguredModel.builder().modelFile(normal).rotationY(270).build();
-                    }
-                    case EAST -> {
-                        return ConfiguredModel.builder().modelFile(normal).rotationY(90).build();
-                    }
-                }
-            return ConfiguredModel.builder().build();
+            if (state.getValue(AbstractFurnaceBlock.LIT)) {
+                return this.rotateModel(direction, lit);
+            } else {
+                return this.rotateModel(direction, normal);
+            }
         });
+    }
+
+    public ConfiguredModel[] rotateModel(Direction direction, ModelFile model) {
+        switch (direction) {
+            case NORTH -> {
+                return ConfiguredModel.builder().modelFile(model).build();
+            }
+            case SOUTH -> {
+                return ConfiguredModel.builder().modelFile(model).rotationY(180).build();
+            }
+            case WEST -> {
+                return ConfiguredModel.builder().modelFile(model).rotationY(270).build();
+            }
+            case EAST -> {
+                return ConfiguredModel.builder().modelFile(model).rotationY(90).build();
+            }
+        }
+        return ConfiguredModel.builder().build();
     }
 
     public void ladder(LadderBlock block) {
