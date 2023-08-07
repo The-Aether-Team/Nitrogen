@@ -12,6 +12,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
@@ -62,11 +63,18 @@ public class Nitrogen {
         generator.addProvider(true, packMeta);
     }
 
+    /**
+     * @see UserData.Server#initializeFromCache(MinecraftServer).
+     */
     @SubscribeEvent
     public static void serverAboutToStart(ServerStartingEvent event) {
         UserData.Server.initializeFromCache(event.getServer());
     }
 
+    /**
+     * Checks if a player has a corresponding {@link User} when logging in. If they do, then that is synced to the client.
+     * If they don't, or if they are past their renewal time, the server will query the Patreon database through {@link UserData.Server#sendUserRequest(MinecraftServer, ServerPlayer, UUID)}.
+     */
     @SubscribeEvent
     public static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         Player player = event.getEntity();
@@ -76,17 +84,22 @@ public class Nitrogen {
             User user;
             if (userData.containsKey(uuid)) {
                 user = userData.get(uuid);
-                if (user != null && user.getRenewalDate() != null && isAfterRenewalTime(user)) {
+                if (user != null && user.getRenewalDate() != null && isAfterRenewalTime(user)) { // Check renewal time.
                     UserData.Server.sendUserRequest(serverPlayer.getServer(), serverPlayer, uuid);
-                } else {
+                } else { // Sync to client.
                     PacketRelay.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
                 }
-            } else {
+            } else { // Query database if no User is found with the server.
                 UserData.Server.sendUserRequest(serverPlayer.getServer(), serverPlayer, uuid);
             }
         }
     }
 
+    /**
+     * Checks if the current time is past the time when a {@link User}'s information has to be re-verified.
+     * @param user The {@link User}.
+     * @return The {@link Boolean} result.
+     */
     private static boolean isAfterRenewalTime(User user) {
         ZonedDateTime renewalDateTime = LocalDateTime.parse(user.getRenewalDate(), User.DATE_FORMAT).atZone(ZoneId.of("UTC"));
         ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
