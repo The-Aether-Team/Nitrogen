@@ -22,6 +22,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -44,44 +45,50 @@ public abstract class AbstractBlockStateRecipeCategory<T extends AbstractBlockSt
         BlockStateIngredient recipeIngredients = recipe.getIngredient();
         BlockPropertyPair recipeResult = recipe.getResult();
         BlockPropertyPair[] pairs = recipeIngredients.getPairs();
-
-        List<Object> ingredients = new ArrayList<>();
-        for (BlockPropertyPair pair : pairs) {
-            if (pair.block() instanceof LiquidBlock liquidBlock) {
-                ingredients.add(this.fluidHelper.create(liquidBlock.getFluid(), 1000));
-            } else {
-                ingredients.add(this.setupIngredient(recipeResult));
+        if (pairs != null) {
+            // Sets up input slots.
+            List<Object> inputIngredients = new ArrayList<>();
+            for (BlockPropertyPair pair : pairs) {
+                if (pair.block() instanceof LiquidBlock liquidBlock) {
+                    inputIngredients.add(this.fluidHelper.create(liquidBlock.getFluid(), 1000));
+                } else {
+                    inputIngredients.add(this.setupIngredient(recipeResult));
+                }
             }
-        }
-        builder.addSlot(RecipeIngredientRole.INPUT, 8, 6).addIngredientsUnsafe(ingredients).addTooltipCallback((recipeSlotView, tooltip) -> this.populateAdditionalInformation(recipe, tooltip))
-                .setCustomRenderer(Services.PLATFORM.getFluidHelper().getFluidIngredientType(), new FluidStateRenderer(Services.PLATFORM.getFluidHelper())).setCustomRenderer(VanillaTypes.ITEM_STACK, new BlockStateRenderer(pairs));
+            builder.addSlot(RecipeIngredientRole.INPUT, 8, 6).addIngredientsUnsafe(inputIngredients).addTooltipCallback((recipeSlotView, tooltip) -> this.populateAdditionalInformation(recipe, tooltip))
+                    .setCustomRenderer(Services.PLATFORM.getFluidHelper().getFluidIngredientType(), new FluidStateRenderer(Services.PLATFORM.getFluidHelper())).setCustomRenderer(VanillaTypes.ITEM_STACK, new BlockStateRenderer(pairs));
 
-        Object ingredient;
-        if (recipeResult.block() instanceof LiquidBlock liquidBlock) {
-            ingredient = this.fluidHelper.create(liquidBlock.getFluid(), 1000);
-        } else {
-            ingredient = this.setupIngredient(recipeResult);
+            // Sets up output slots.
+            Object outputIngredient;
+            if (recipeResult.block() instanceof LiquidBlock liquidBlock) {
+                outputIngredient = this.fluidHelper.create(liquidBlock.getFluid(), 1000);
+            } else {
+                outputIngredient = this.setupIngredient(recipeResult);
+            }
+            builder.addSlot(RecipeIngredientRole.OUTPUT, 60, 6).addIngredientsUnsafe(List.of(outputIngredient))
+                    .setCustomRenderer(Services.PLATFORM.getFluidHelper().getFluidIngredientType(), new FluidStateRenderer(Services.PLATFORM.getFluidHelper())).setCustomRenderer(VanillaTypes.ITEM_STACK, new BlockStateRenderer(recipeResult));
         }
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 60, 6).addIngredientsUnsafe(List.of(ingredient))
-                .setCustomRenderer(Services.PLATFORM.getFluidHelper().getFluidIngredientType(), new FluidStateRenderer(Services.PLATFORM.getFluidHelper())).setCustomRenderer(VanillaTypes.ITEM_STACK, new BlockStateRenderer(recipeResult));
     }
 
+    /**
+     * Warning for "deprecation" is suppressed because the non-sensitive version of {@link net.minecraft.world.level.block.Block#getCloneItemStack(BlockGetter, BlockPos, BlockState)} is needed in this context.
+     */
+    @SuppressWarnings("deprecation")
     private ItemStack setupIngredient(BlockPropertyPair recipeResult) {
-        BlockState resultState = recipeResult.block().defaultBlockState();
-        for (Map.Entry<Property<?>, Comparable<?>> propertyEntry : recipeResult.properties().entrySet()) {
-            resultState = BlockStateRecipeUtil.setHelper(propertyEntry, resultState);
+        ItemStack stack = ItemStack.EMPTY;
+        if (Minecraft.getInstance().level != null) {
+            BlockState resultState = recipeResult.block().defaultBlockState();
+            for (Map.Entry<Property<?>, Comparable<?>> propertyEntry : recipeResult.properties().entrySet()) {
+                resultState = BlockStateRecipeUtil.setHelper(propertyEntry, resultState);
+            }
+            stack = recipeResult.block().getCloneItemStack(Minecraft.getInstance().level, BlockPos.ZERO, resultState);
         }
-        ItemStack stack = recipeResult.block().getCloneItemStack(Minecraft.getInstance().level, BlockPos.ZERO, resultState);
         return stack.isEmpty() ? new ItemStack(Blocks.STONE) : stack;
     }
 
     @Override
-    public void draw(T recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
+    public void draw(T recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) { }
 
-    }
-
-    protected void populateAdditionalInformation(T recipe, List<Component> tooltip) {
-
-    }
+    protected void populateAdditionalInformation(T recipe, List<Component> tooltip) { }
 }
 

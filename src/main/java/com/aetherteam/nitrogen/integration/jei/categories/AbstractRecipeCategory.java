@@ -6,6 +6,9 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
+/**
+ * A basic abstract class for JEI recipe categories.
+ */
 public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
     protected final String id;
     protected final ResourceLocation uid;
@@ -19,11 +22,6 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
         this.background = background;
         this.icon = icon;
         this.recipeType = recipeType;
-    }
-
-    @Override
-    public Component getTitle() {
-        return Component.translatable("gui.aether.jei." + this.id);
     }
 
     @Override

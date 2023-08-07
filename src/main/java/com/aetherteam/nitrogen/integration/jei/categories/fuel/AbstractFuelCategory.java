@@ -20,6 +20,9 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * An abstract class for JEI fuel recipe categories.
+ */
 public abstract class AbstractFuelCategory implements IRecipeCategory<FuelRecipe> {
     private final IDrawable background;
     private final IDrawable icon;
@@ -39,13 +42,12 @@ public abstract class AbstractFuelCategory implements IRecipeCategory<FuelRecipe
         this.icon = helper.createDrawable(this.getTexture(), 176, 0, 14, 13);
 
         this.cachedFuelIndicator = CacheBuilder.newBuilder().maximumSize(25)
-                .build(new CacheLoader<>() {
-                    @Override
-                    public IDrawableAnimated load(Integer burnTime) {
-                        return helper.drawableBuilder(AbstractFuelCategory.this.getTexture(), 176, 0, 14, 13)
-                                .buildAnimated(burnTime, IDrawableAnimated.StartDirection.TOP, true);
-                    }
-                });
+            .build(new CacheLoader<>() {
+                @Override
+                public IDrawableAnimated load(Integer burnTime) {
+                    return helper.drawableBuilder(AbstractFuelCategory.this.getTexture(), 176, 0, 14, 13).buildAnimated(burnTime, IDrawableAnimated.StartDirection.TOP, true);
+                }
+            });
     }
 
     @Override

@@ -15,7 +15,6 @@ import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -25,27 +24,21 @@ import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.ColorResolver;
-import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.level.lighting.LevelLightEngine;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -63,7 +56,7 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
 
         BlockPropertyPair pair = this.getMatchingPair(ingredient);
 
-        if (pair.block() != null && pair.properties() != null) {
+        if (pair.block() != null && pair.properties() != null && minecraft.level != null) {
             BlockState blockState = pair.block().defaultBlockState();
             for (Map.Entry<Property<?>, Comparable<?>> propertyEntry : pair.properties().entrySet()) {
                 blockState = BlockStateRecipeUtil.setHelper(propertyEntry, blockState);
@@ -71,9 +64,9 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
 
             poseStack.pushPose();
 
-            poseStack.translate(15, 12.33, 5);
-            poseStack.mulPose(Axis.XP.rotationDegrees(-30F));
-            poseStack.mulPose(Axis.YP.rotationDegrees(45F));
+            poseStack.translate(15.0F, 12.33F, 5.0F);
+            poseStack.mulPose(Axis.XP.rotationDegrees(-30.0F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(45.0F));
             poseStack.scale(-9.9F, -9.9F, -9.9F);
 
             RenderSystem.setupGui3DDiffuseLighting((new Vector3f(0.4F, 0.0F, 1.0F)).normalize(), (new Vector3f(-0.4F, 1.0F, -0.2F)).normalize());
@@ -82,7 +75,7 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
             MultiBufferSource.BufferSource bufferSource = minecraft.renderBuffers().bufferSource();
             BakedModel model = blockRenderDispatcher.getBlockModel(blockState);
             RenderType renderType = model.getRenderTypes(blockState, minecraft.level.getRandom(), ModelData.EMPTY).asList().get(0);
-            modelBlockRenderer.tesselateBlock(new FakeWorld(blockState), model, blockState, BlockPos.ZERO, poseStack, bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), false, minecraft.level.getRandom(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, renderType);
+            modelBlockRenderer.tesselateBlock(new FakeBlockLevel(blockState), model, blockState, BlockPos.ZERO, poseStack, bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), false, minecraft.level.getRandom(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, renderType);
             bufferSource.endBatch();
 
             Lighting.setupFor3DItems();
@@ -96,23 +89,32 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
         try {
+            List<Component> list = Lists.newArrayList();
+
             BlockPropertyPair pair = this.getMatchingPair(ingredient);
             Block block = pair.block();
             Map<Property<?>, Comparable<?>> properties = pair.properties();
 
-            List<Component> list = Lists.newArrayList();
-            MutableComponent mutablecomponent = Component.empty().append(block.getName()).withStyle(ingredient.getRarity().getStyleModifier());
-            list.add(mutablecomponent);
-            if (tooltipFlag.isAdvanced()) {
-                list.add(Component.literal(BuiltInRegistries.BLOCK.getKey(block).toString()).withStyle(ChatFormatting.DARK_GRAY));
-            }
-            if (player != null && !ingredient.getItem().isEnabled(player.getLevel().enabledFeatures())) {
-                list.add(Component.translatable("item.disabled").withStyle(ChatFormatting.RED));
-            }
-            if (!properties.isEmpty()) {
-                list.add(Component.translatable("gui.aether.jei.properties.tooltip").withStyle(ChatFormatting.GRAY));
-                for (Map.Entry<Property<?>, Comparable<?>> entry : properties.entrySet()) {
-                    list.add(Component.literal(entry.getKey().getName() + ": " + entry.getValue().toString()).withStyle(ChatFormatting.DARK_GRAY));
+            if (block != null && properties != null) {
+                // Display block name.
+                MutableComponent mutablecomponent = Component.empty().append(block.getName()).withStyle(ingredient.getRarity().getStyleModifier());
+                list.add(mutablecomponent);
+                if (tooltipFlag.isAdvanced()) {
+                    ResourceLocation blockKey = ForgeRegistries.BLOCKS.getKey(block);
+                    if (blockKey != null) {
+                        list.add(Component.literal(blockKey.toString()).withStyle(ChatFormatting.DARK_GRAY));
+                    }
+                }
+                // Display whether this blockstate is enabled.
+                if (player != null && !ingredient.getItem().isEnabled(player.getLevel().enabledFeatures())) {
+                    list.add(Component.translatable("item.disabled").withStyle(ChatFormatting.RED));
+                }
+                // Display block properties.
+                if (!properties.isEmpty()) {
+                    list.add(Component.translatable("gui.aether.jei.properties.tooltip").withStyle(ChatFormatting.GRAY));
+                    for (Map.Entry<Property<?>, Comparable<?>> entry : properties.entrySet()) {
+                        list.add(Component.literal(entry.getKey().getName() + ": " + entry.getValue().toString()).withStyle(ChatFormatting.DARK_GRAY));
+                    }
                 }
             }
             return list;
@@ -142,62 +144,35 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
         return 16;
     }
 
+    /**
+     * Warning for "deprecation" is suppressed because the non-sensitive version of {@link net.minecraft.world.level.block.Block#getCloneItemStack(BlockGetter, BlockPos, BlockState)} is needed in this context.
+     */
+    @SuppressWarnings("deprecation")
     private BlockPropertyPair getMatchingPair(ItemStack ingredient) {
         Map<Block, Map<Property<?>, Comparable<?>>> pairsMap = Stream.of(this.pairs).collect(Collectors.toMap(BlockPropertyPair::block, BlockPropertyPair::properties));
         Block block = null;
         Map<Property<?>, Comparable<?>> propertiesMap = null;
-        for (Map.Entry<Block, Map<Property<?>, Comparable<?>>> entry : pairsMap.entrySet()) {
-            ItemStack stack = entry.getKey().getCloneItemStack(Minecraft.getInstance().level, BlockPos.ZERO, entry.getKey().defaultBlockState());
-            stack = stack.isEmpty() ? new ItemStack(Blocks.STONE) : stack;
-            if (stack.getItem() == ingredient.getItem()) {
-                block = entry.getKey();
-                propertiesMap = entry.getValue();
+        if (Minecraft.getInstance().level != null) {
+            for (Map.Entry<Block, Map<Property<?>, Comparable<?>>> entry : pairsMap.entrySet()) {
+                ItemStack stack = entry.getKey().getCloneItemStack(Minecraft.getInstance().level, BlockPos.ZERO, entry.getKey().defaultBlockState());
+                stack = stack.isEmpty() ? new ItemStack(Blocks.STONE) : stack;
+                if (stack.getItem() == ingredient.getItem()) {
+                    block = entry.getKey();
+                    propertiesMap = entry.getValue();
+                }
             }
         }
         return BlockPropertyPair.of(block, propertiesMap);
     }
 
-    private static class FakeWorld implements BlockAndTintGetter {
+    /**
+     * A fake level used for rendering.
+     */
+    private static class FakeBlockLevel extends FakeLevel {
         private final BlockState blockState;
 
-        public FakeWorld(BlockState blockState) {
+        public FakeBlockLevel(BlockState blockState) {
             this.blockState = blockState;
-        }
-
-        @Override
-        public float getShade(Direction direction, boolean bl) {
-            return 1.0F;
-        }
-
-        @Override
-        public LevelLightEngine getLightEngine() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getBrightness(LightLayer lightLayer, BlockPos pos) {
-            return 15;
-        }
-
-        @Override
-        public int getRawBrightness(BlockPos pos, int i) {
-            return 15;
-        }
-
-        @Override
-        public int getBlockTint(BlockPos pos, ColorResolver colorResolver) {
-            ClientLevel level = Minecraft.getInstance().level;
-            if (level != null) {
-                Holder<Biome> biome = Minecraft.getInstance().level.getBiome(pos);
-                return colorResolver.getColor(biome.value(), 0, 0);
-            } else {
-                return -1;
-            }
-        }
-
-        @Override
-        public BlockEntity getBlockEntity(BlockPos pos) {
-            return null;
         }
 
         @Override
@@ -212,16 +187,6 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
         @Override
         public FluidState getFluidState(BlockPos pos) {
             return Fluids.EMPTY.defaultFluidState();
-        }
-
-        @Override
-        public int getHeight() {
-            return 0;
-        }
-
-        @Override
-        public int getMinBuildHeight() {
-            return 0;
         }
     }
 }
