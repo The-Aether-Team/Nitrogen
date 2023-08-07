@@ -52,7 +52,7 @@ public abstract class AbstractBlockStateRecipeCategory<T extends AbstractBlockSt
                 if (pair.block() instanceof LiquidBlock liquidBlock) {
                     inputIngredients.add(this.fluidHelper.create(liquidBlock.getFluid(), 1000));
                 } else {
-                    inputIngredients.add(this.setupIngredient(recipeResult));
+                    inputIngredients.add(this.setupIngredient(pair));
                 }
             }
             builder.addSlot(RecipeIngredientRole.INPUT, 8, 6).addIngredientsUnsafe(inputIngredients).addTooltipCallback((recipeSlotView, tooltip) -> this.populateAdditionalInformation(recipe, tooltip))
