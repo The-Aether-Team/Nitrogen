@@ -29,6 +29,11 @@ public interface BossMob<T extends Mob & BossMob<T>> {
 
     int getDeathScore();
 
+    /**
+     * Should be called from {@link Mob#customServerAiStep()}.<br>
+     * This is used to track the contents of the dungeon room.
+     * If any of the tracked players leave or if the boss leaves, then the boss fight resets.
+     */
     default void trackDungeon() {
         if (this.getDungeon() != null) {
             this.getDungeon().trackPlayers();
@@ -38,6 +43,10 @@ public interface BossMob<T extends Mob & BossMob<T>> {
         }
     }
 
+    /**
+     * Displays a message when the player tries to start a boss fight but is outside of the room.
+     * @param player The {@link Player}.
+     */
     default void displayTooFarMessage(Player player) {
         player.sendSystemMessage(Component.translatable("gui.nitrogen_internals.boss.message.far"));
     }

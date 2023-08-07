@@ -19,6 +19,9 @@ import java.util.UUID;
 import java.util.function.Function;
 
 public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3 originCoordinates, AABB roomBounds, List<UUID> dungeonPlayers) {
+    /**
+     * @return Whether the dungeon boss is within the room bounds, as a {@link Boolean}.
+     */
     public boolean isBossWithinRoom() {
         if (this.boss() != null) {
             return this.roomBounds().contains(this.boss().position());
@@ -26,6 +29,11 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
         return false;
     }
 
+    /**
+     * Checks whether a player is within the room bounds.
+     * @param entity The player {@link Entity}.
+     * @return The {@link Boolean} result.
+     */
     public boolean isPlayerWithinRoom(Entity entity) {
         if (this.boss() != null) {
             return this.roomBounds().contains(entity.position());
@@ -33,6 +41,11 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
         return false;
     }
 
+    /**
+     * Checks whether a player is within the interior of the room bounds, not including the wall, floor, or ceiling positions.
+     * @param entity The player {@link Entity}.
+     * @return The {@link Boolean} result.
+     */
     public boolean isPlayerWithinRoomInterior(Entity entity) {
         if (this.boss() != null) {
             return this.roomBounds().deflate(1.0, 1.0, 1.0).contains(entity.position());
@@ -40,6 +53,11 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
         return false;
     }
 
+    /**
+     * Checks whether this player is tracked within the list of players inside the boss room.
+     * @param player The {@link Player}.
+     * @return The {@link Boolean} result.
+     */
     public boolean isPlayerTracked(Player player) {
         if (this.boss() != null) {
             return this.dungeonPlayers().contains(player.getUUID());
@@ -47,6 +65,11 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
         return false;
     }
 
+    /**
+     * Tracks whether players enter or leave the boss room.
+     * If there are living players in the boss room, then they are tracked to {@link BossRoomTracker#dungeonPlayers()}.
+     * If any players die, leave the room, or no longer exist, then they are removed from tracking.
+     */
     public void trackPlayers() {
         if (this.boss() != null) {
             this.boss().getLevel().getEntities(EntityType.PLAYER, this.roomBounds(), Entity::isAlive).forEach(player -> {
@@ -66,6 +89,10 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
         }
     }
 
+    /**
+     * Marks every player in the boss room as having killed the boss, so they all get achievements.
+     * @param damageSource The {@link DamageSource} used to kill the boss.
+     */
     public void grantAdvancements(DamageSource damageSource) {
         if (this.boss() != null) {
             for (UUID uuid : this.dungeonPlayers()) {
@@ -79,6 +106,7 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
 
     /**
      * Iterates on every block within the bounds of the dungeon
+     * @param function A {@link Function} of two {@link BlockState}s, used to modify blocks within the room.
      */
     public void modifyRoom(Function<BlockState, BlockState> function) {
         if (this.boss() != null) {
