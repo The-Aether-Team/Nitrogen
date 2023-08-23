@@ -1,7 +1,7 @@
 package com.aetherteam.nitrogen.recipe;
 
 import com.google.gson.*;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -150,7 +150,7 @@ public class BlockStateIngredient implements Predicate<BlockState> {
             }
         } else if (json.has("tag")) {
             ResourceLocation resourcelocation = new ResourceLocation(GsonHelper.getAsString(json, "tag"));
-            TagKey<Block> tagKey = TagKey.create(Registries.BLOCK, resourcelocation);
+            TagKey<Block> tagKey = TagKey.create(Registry.BLOCK_REGISTRY, resourcelocation);
             return new BlockStateIngredient.TagValue(tagKey);
         } else {
             throw new JsonParseException("An ingredient entry needs either a tag or a block");

@@ -5,7 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import net.minecraft.commands.CommandFunction;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
@@ -145,7 +145,7 @@ public final class BlockStateRecipeUtil {
             return null;
         } else {
             ResourceLocation biomeLocation = buffer.readResourceLocation();
-            return ResourceKey.create(Registries.BIOME, biomeLocation);
+            return ResourceKey.create(Registry.BIOME_REGISTRY, biomeLocation);
         }
     }
 
@@ -159,7 +159,7 @@ public final class BlockStateRecipeUtil {
             return null;
         } else {
             ResourceLocation tagLocation = buffer.readResourceLocation();
-            return TagKey.create(Registries.BIOME, tagLocation);
+            return TagKey.create(Registry.BIOME_REGISTRY, tagLocation);
         }
     }
 
@@ -292,7 +292,7 @@ public final class BlockStateRecipeUtil {
     public static ResourceKey<Biome> biomeKeyFromJson(JsonObject json) {
         String biomeName = GsonHelper.getAsString(json, "biome");
         String[] nameWithId = biomeName.split(":");
-        return ResourceKey.create(Registries.BIOME, (nameWithId.length > 1) ? new ResourceLocation(nameWithId[0], nameWithId[1]) : new ResourceLocation(biomeName));
+        return ResourceKey.create(Registry.BIOME_REGISTRY, (nameWithId.length > 1) ? new ResourceLocation(nameWithId[0], nameWithId[1]) : new ResourceLocation(biomeName));
     }
 
     /**
@@ -303,7 +303,7 @@ public final class BlockStateRecipeUtil {
     public static TagKey<Biome> biomeTagFromJson(JsonObject json) {
         String biomeName = GsonHelper.getAsString(json, "biome").replace("#", "");
         String[] nameWithId = biomeName.split(":");
-        return TagKey.create(Registries.BIOME, (nameWithId.length > 1) ? new ResourceLocation(nameWithId[0], nameWithId[1]) : new ResourceLocation(biomeName));
+        return TagKey.create(Registry.BIOME_REGISTRY, (nameWithId.length > 1) ? new ResourceLocation(nameWithId[0], nameWithId[1]) : new ResourceLocation(biomeName));
     }
 
     // Extra methods.

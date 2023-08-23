@@ -110,7 +110,8 @@ public final class UserData {
                     JsonArray pastTiersArray = pastTiersElement.getAsJsonArray();
                     int pastTierLevel = 0;
                     try {
-                        for (int pastTierId : pastTiersArray.asList().stream().map((JsonElement::getAsInt)).toList()) {
+                        for (JsonElement pastTierElement : pastTiersArray) {
+                            int pastTierId = pastTierElement.getAsInt();
                             if (pastTierId != -1) {
                                 User.Tier pastTier = User.Tier.byId(pastTierId);
                                 if (pastTier != null) {
@@ -133,7 +134,8 @@ public final class UserData {
                     JsonArray groupsArray = groupsElement.getAsJsonArray();
                     int groupLevel = 0;
                     try {
-                        for (String groupName : groupsArray.asList().stream().map((JsonElement::getAsString)).toList()) {
+                        for (JsonElement groupElement :groupsArray) {
+                            String groupName = groupElement.getAsString();
                             User.Group group = User.Group.valueOf(groupName.toUpperCase(Locale.ROOT));
                             if (group.getLevel() > groupLevel) {
                                 groupLevel = group.getLevel();

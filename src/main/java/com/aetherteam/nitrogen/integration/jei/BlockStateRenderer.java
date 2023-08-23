@@ -7,12 +7,13 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LightTexture;
@@ -40,7 +41,6 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,11 +65,11 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
             poseStack.pushPose();
 
             poseStack.translate(15.0F, 12.33F, 5.0F);
-            poseStack.mulPose(Axis.XP.rotationDegrees(-30.0F));
-            poseStack.mulPose(Axis.YP.rotationDegrees(45.0F));
+            poseStack.mulPose(Vector3f.XP.rotationDegrees(-30.0F));
+            poseStack.mulPose(Vector3f.YP.rotationDegrees(45.0F));
             poseStack.scale(-9.9F, -9.9F, -9.9F);
 
-            RenderSystem.setupGui3DDiffuseLighting((new Vector3f(0.4F, 0.0F, 1.0F)).normalize(), (new Vector3f(-0.4F, 1.0F, -0.2F)).normalize());
+            RenderSystem.setupGui3DDiffuseLighting(Util.make(new Vector3f(0.4F, 0.0F, 1.0F), Vector3f::normalize), Util.make(new Vector3f(-0.4F, 1.0F, -0.2F), Vector3f::normalize));
 
             ModelBlockRenderer modelBlockRenderer = blockRenderDispatcher.getModelRenderer();
             MultiBufferSource.BufferSource bufferSource = minecraft.renderBuffers().bufferSource();
@@ -104,10 +104,6 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
                     if (blockKey != null) {
                         list.add(Component.literal(blockKey.toString()).withStyle(ChatFormatting.DARK_GRAY));
                     }
-                }
-                // Display whether this blockstate is enabled.
-                if (player != null && !ingredient.getItem().isEnabled(player.getLevel().enabledFeatures())) {
-                    list.add(Component.translatable("item.disabled").withStyle(ChatFormatting.RED));
                 }
                 // Display block properties.
                 if (!properties.isEmpty()) {

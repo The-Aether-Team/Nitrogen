@@ -5,7 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
@@ -34,8 +34,8 @@ public record FluidStateRenderer<T>(IPlatformFluidHelperInternal<T> fluidHelper)
         poseStack.pushPose();
 
         poseStack.translate(15.0F, 12.33F, 0.0F);
-        poseStack.mulPose(Axis.XP.rotationDegrees(-30.0F));
-        poseStack.mulPose(Axis.YP.rotationDegrees(45.0F));
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(-30.0F));
+        poseStack.mulPose(Vector3f.YP.rotationDegrees(45.0F));
         poseStack.scale(-9.9F, -9.9F, -9.9F);
 
         IIngredientTypeWithSubtypes<Fluid, T> type = this.fluidHelper.getFluidIngredientType();

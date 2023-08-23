@@ -1,6 +1,6 @@
 package com.aetherteam.nitrogen.data.providers;
 
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 public abstract class NitrogenLanguageProvider extends LanguageProvider {
     protected final String id;
 
-    public NitrogenLanguageProvider(PackOutput output, String id) {
+    public NitrogenLanguageProvider(DataGenerator output, String id) {
         super(output, id, "en_us");
         this.id = id;
     }
