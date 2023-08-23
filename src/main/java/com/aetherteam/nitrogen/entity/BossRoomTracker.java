@@ -72,14 +72,14 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
      */
     public void trackPlayers() {
         if (this.boss() != null) {
-            this.boss().getLevel().getEntities(EntityType.PLAYER, this.roomBounds(), Entity::isAlive).forEach(player -> {
+            this.boss().level().getEntities(EntityType.PLAYER, this.roomBounds(), Entity::isAlive).forEach(player -> {
                 if (!isPlayerTracked(player)) {
                     this.boss().onDungeonPlayerAdded(player);
                     this.dungeonPlayers().add(player.getUUID());
                 }
             });
             this.dungeonPlayers().removeIf(uuid -> {
-                Player player = this.boss().getLevel().getPlayerByUUID(uuid);
+                Player player = this.boss().level().getPlayerByUUID(uuid);
                 boolean shouldRemove = player != null && (!this.isPlayerWithinRoom(player) || !player.isAlive());
                 if (shouldRemove) {
                     this.boss().onDungeonPlayerRemoved(player);
@@ -96,7 +96,7 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
     public void grantAdvancements(DamageSource damageSource) {
         if (this.boss() != null) {
             for (UUID uuid : this.dungeonPlayers()) {
-                Player player = this.boss().getLevel().getPlayerByUUID(uuid);
+                Player player = this.boss().level().getPlayerByUUID(uuid);
                 if (player != null) {
                     player.awardKillScore(this.boss(), this.boss().getDeathScore(), damageSource);
                 }
@@ -111,7 +111,7 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
     public void modifyRoom(Function<BlockState, BlockState> function) {
         if (this.boss() != null) {
             AABB bounds = this.roomBounds();
-            Level level = this.boss().getLevel();
+            Level level = this.boss().level();
             for (BlockPos pos : BlockPos.betweenClosed((int) bounds.minX, (int) bounds.minY, (int) bounds.minZ, (int) bounds.maxX, (int) bounds.maxY, (int) bounds.maxZ)) {
                 BlockState state = level.getBlockState(pos);
                 BlockState newState = function.apply(state);

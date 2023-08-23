@@ -14,6 +14,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -68,15 +69,15 @@ public abstract class AbstractFuelCategory implements IRecipeCategory<FuelRecipe
     }
 
     @Override
-    public void draw(FuelRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
+    public void draw(FuelRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
         int burnTime = recipe.getBurnTime();
         IDrawableAnimated fuelIndicator = this.cachedFuelIndicator.getUnchecked(burnTime);
-        fuelIndicator.draw(stack, 1, 0);
+        fuelIndicator.draw(guiGraphics, 1, 0);
 
         Font font = Minecraft.getInstance().font;
         Component burnTimeText = createBurnTimeText(recipe.getBurnTime(), recipe.getUsage().getName());
         int stringWidth = font.width(burnTimeText);
-        font.draw(stack, burnTimeText, this.background.getWidth() - stringWidth, 14, 0xFF808080);
+        guiGraphics.drawString(font, burnTimeText, this.background.getWidth() - stringWidth, 14, 0xFF808080);
     }
 
     private static Component createBurnTimeText(int burnTime, Component usage) {

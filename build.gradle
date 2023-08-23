@@ -1,7 +1,7 @@
 plugins {
     id 'eclipse'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'net.neoforged.gradle' version '[6.0.13, 6.2)'
     id 'org.spongepowered.mixin' version '[0.7,0.8)'
     id 'org.parchmentmc.librarian.forgegradle' version '[1,2)'
     id 'org.moddingx.modgradle.mapping' version '[4,5)'
@@ -9,7 +9,7 @@ plugins {
     id 'io.github.0ffz.github-packages' version '[1,2)'
 }
 
-version = "${mc_version}-${mod_version}-forge"
+version = "${mc_version}-${mod_version}-neoforge"
 group = 'com.aetherteam.nitrogen' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 
 base {
@@ -99,7 +99,7 @@ sourceSets.main.resources {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${project.mc_version}-${project.forge_version}"
+    minecraft "net.neoforged:forge:${project.mc_version}-${project.neoforge_version}"
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 

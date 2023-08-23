@@ -27,7 +27,7 @@ public record TriggerUpdateInfoPacket(int playerID) implements BasePacket {
 
     @Override
     public void execute(@Nullable Player player) {
-        if (player != null && player.getServer() != null && player.level.getEntity(this.playerID) instanceof ServerPlayer serverPlayer) {
+        if (player != null && player.getServer() != null && player.level().getEntity(this.playerID) instanceof ServerPlayer serverPlayer) {
             UserData.Server.sendUserRequest(serverPlayer.getServer(), serverPlayer, serverPlayer.getGameProfile().getId());
         }
     }

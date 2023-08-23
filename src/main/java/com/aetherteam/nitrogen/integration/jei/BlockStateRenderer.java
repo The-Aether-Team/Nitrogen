@@ -15,6 +15,7 @@ import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -50,7 +51,8 @@ import java.util.stream.Stream;
 
 public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredientRenderer<ItemStack> {
     @Override
-    public void render(PoseStack poseStack, @Nullable ItemStack ingredient) {
+    public void render(GuiGraphics guiGraphics, @Nullable ItemStack ingredient) {
+        PoseStack poseStack = guiGraphics.pose();
         Minecraft minecraft = Minecraft.getInstance();
         BlockRenderDispatcher blockRenderDispatcher = minecraft.getBlockRenderer();
 
@@ -106,7 +108,7 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
                     }
                 }
                 // Display whether this blockstate is enabled.
-                if (player != null && !ingredient.getItem().isEnabled(player.getLevel().enabledFeatures())) {
+                if (player != null && !ingredient.getItem().isEnabled(player.level().enabledFeatures())) {
                     list.add(Component.translatable("item.disabled").withStyle(ChatFormatting.RED));
                 }
                 // Display block properties.

@@ -40,14 +40,14 @@ public abstract class SyncEntityPacket<T extends INBTSynchable<CompoundTag>> ext
     @Override
     public void execute(Player playerEntity) {
         if (playerEntity != null && playerEntity.getServer() != null && this.value != null) {
-            Entity entity = playerEntity.getLevel().getEntity(this.entityID);
-            if (entity != null && !entity.getLevel().isClientSide()) {
+            Entity entity = playerEntity.level().getEntity(this.entityID);
+            if (entity != null && !entity.level().isClientSide()) {
                 this.getCapability(entity).ifPresent((synchable) -> synchable.getSynchableFunctions().get(this.key).getMiddle().accept(this.value));
             }
         } else {
             if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null && this.value != null) {
                 Entity entity = Minecraft.getInstance().level.getEntity(this.entityID);
-                if (entity != null && entity.getLevel().isClientSide()) {
+                if (entity != null && entity.level().isClientSide()) {
                     this.getCapability(entity).ifPresent((synchable) -> synchable.getSynchableFunctions().get(this.key).getMiddle().accept(this.value));
                 }
             }

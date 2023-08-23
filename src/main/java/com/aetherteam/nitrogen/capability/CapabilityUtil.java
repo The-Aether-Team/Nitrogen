@@ -16,7 +16,7 @@ public class CapabilityUtil {
      * @see SyncLevelPacket
      */
     public static void syncLevelCapability(SyncLevelPacket<?> syncLevelPacket, Player playerEntity, String key, Object value, boolean isClientSide) {
-        Level level = isClientSide ? Minecraft.getInstance().level : playerEntity.getLevel();
+        Level level = isClientSide ? Minecraft.getInstance().level : playerEntity.level();
         syncLevelPacket.getCapability(level).ifPresent((synchable) -> synchable.getSynchableFunctions().get(key).getMiddle().accept(value));
     }
 }

@@ -10,6 +10,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
@@ -27,7 +28,8 @@ import java.util.List;
 
 public record FluidStateRenderer<T>(IPlatformFluidHelperInternal<T> fluidHelper) implements IIngredientRenderer<T> {
     @Override
-    public void render(PoseStack poseStack, T ingredient) {
+    public void render(GuiGraphics guiGraphics, T ingredient) {
+        PoseStack poseStack = guiGraphics.pose();
         Minecraft minecraft = Minecraft.getInstance();
         BlockRenderDispatcher blockRenderDispatcher = minecraft.getBlockRenderer();
 
