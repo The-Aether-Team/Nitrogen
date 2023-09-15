@@ -24,6 +24,10 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
         this.add(key.get().getDescriptionId() + ".desc", name);
     }
 
+    public void addTrim(String key, String name) {
+        this.add("trim_material." + this.id + "." + key, name + " Material");
+    }
+
     public void addBiome(ResourceKey<Biome> biome, String name) {
         this.add("biome." + this.id + "." + biome.location().getPath(), name);
     }
