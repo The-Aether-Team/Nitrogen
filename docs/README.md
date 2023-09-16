@@ -1,7 +1,7 @@
 # Nitrogen
 [![Modloader: Forge](https://img.shields.io/badge/mod%20loader-forge-CC974D?style=flat-square)](https://files.minecraftforge.net/net/minecraftforge/forge/)
 [![CircleCI](https://circleci.com/gh/The-Aether-Team/Nitrogen/tree/1.19.2-develop.svg?style=shield)](https://app.circleci.com/pipelines/github/The-Aether-Team/Nitrogen?branch=1.19.2-develop)
-[![Code license (LGPL v3.0)](https://img.shields.io/badge/code%20license-LGPL%20v3.0-green.svg?style=flat-square)](https://github.com/The-Aether-Team/Nitrogen/blob/1.19.4-develop/LICENSE.txt)
+[![Code license (LGPL v3.0)](https://img.shields.io/badge/code%20license-LGPL%20v3.0-green.svg?style=flat-square)](https://github.com/The-Aether-Team/Nitrogen/blob/1.20.1-develop/LICENSE.txt)
 
 Nitrogen is a library mod used by The Aether Team to abstract code that is usable by both The Aether and The Aether II to allow for easier maintenance and organization. This library is intended for usage by The Aether Team, and isn't particularly useful to use or possible to contribute to if you're an outside developer. This library will also not be released on CurseForge. This repository is only public for visibility and ease of use for the team.
 
