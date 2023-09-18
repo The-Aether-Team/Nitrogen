@@ -77,7 +77,7 @@ public abstract class AbstractFuelCategory implements IRecipeCategory<FuelRecipe
         Font font = Minecraft.getInstance().font;
         Component burnTimeText = createBurnTimeText(recipe.getBurnTime(), recipe.getUsage().getName());
         int stringWidth = font.width(burnTimeText);
-        guiGraphics.drawString(font, burnTimeText, this.background.getWidth() - stringWidth, 14, 0xFF808080);
+        guiGraphics.drawString(font, burnTimeText, this.background.getWidth() - stringWidth, 14, 0xFF808080, false);
     }
 
     private static Component createBurnTimeText(int burnTime, Component usage) {
