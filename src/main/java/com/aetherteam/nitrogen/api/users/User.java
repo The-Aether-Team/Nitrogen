@@ -3,7 +3,7 @@ package com.aetherteam.nitrogen.api.users;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.time.format.DateTimeFormatter;
 
 public final class User {
