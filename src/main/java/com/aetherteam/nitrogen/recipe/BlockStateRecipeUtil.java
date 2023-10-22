@@ -5,6 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import net.minecraft.commands.CommandFunction;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -22,7 +23,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import org.jetbrains.annotations.Nullable;
@@ -56,8 +56,8 @@ public final class BlockStateRecipeUtil {
      * @param pair The {@link BlockPropertyPair}.
      */
     public static void writePair(FriendlyByteBuf buffer, BlockPropertyPair pair) {
-        ResourceLocation blockLocation = ForgeRegistries.BLOCKS.getKey(pair.block());
-        if ((pair.block().defaultBlockState().isAir() && pair.properties().isEmpty()) || blockLocation == null) {
+        ResourceLocation blockLocation = BuiltInRegistries.BLOCK.getKey(pair.block());
+        if (pair.block().defaultBlockState().isAir() && pair.properties().isEmpty()) {
             buffer.writeBoolean(false);
         } else {
             buffer.writeBoolean(true);
@@ -113,8 +113,8 @@ public final class BlockStateRecipeUtil {
         } else {
             String blockString = buffer.readUtf();
             ResourceLocation blockLocation = new ResourceLocation(blockString);
-            Block block = ForgeRegistries.BLOCKS.getValue(blockLocation);
-            if (block == null) {
+            Block block = BuiltInRegistries.BLOCK.get(blockLocation);
+            if (block.defaultBlockState().isAir()) {
                 throw new JsonSyntaxException("Unknown block '" + blockLocation + "'");
             }
 
@@ -231,8 +231,8 @@ public final class BlockStateRecipeUtil {
     public static Block blockFromJson(JsonObject json) {
         String blockName = GsonHelper.getAsString(json, "block");
         ResourceLocation blockLocation = new ResourceLocation(blockName);
-        Block block = ForgeRegistries.BLOCKS.getValue(blockLocation);
-        if (block == null) {
+        Block block = BuiltInRegistries.BLOCK.get(blockLocation);
+        if (block.defaultBlockState().isAir()) {
             throw new JsonSyntaxException("Unknown block '" + blockLocation + "'");
         }
         if (block.defaultBlockState().isAir()) {

@@ -1,6 +1,8 @@
 package com.aetherteam.nitrogen.recipe;
 
 import com.google.gson.*;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -9,8 +11,6 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.tags.ITagManager;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.*;
@@ -184,8 +184,8 @@ public class BlockStateIngredient implements Predicate<BlockState> {
         @Override
         public JsonObject serialize() {
             JsonObject jsonObject = new JsonObject();
-            ResourceLocation blockLocation = ForgeRegistries.BLOCKS.getKey(this.block);
-            if (blockLocation == null) {
+            ResourceLocation blockLocation = BuiltInRegistries.BLOCK.getKey(this.block);
+            if (this.block.defaultBlockState().isAir()) {
                 throw new JsonParseException("Block for ingredient StateValue serialization shouldn't be null");
             } else {
                 jsonObject.addProperty("block", blockLocation.toString());
@@ -217,8 +217,8 @@ public class BlockStateIngredient implements Predicate<BlockState> {
         @Override
         public JsonObject serialize() {
             JsonObject jsonObject = new JsonObject();
-            ResourceLocation blockLocation = ForgeRegistries.BLOCKS.getKey(this.block);
-            if (blockLocation == null) {
+            ResourceLocation blockLocation = BuiltInRegistries.BLOCK.getKey(this.block);
+            if (this.block.defaultBlockState().isAir()) {
                 throw new JsonParseException("Block for ingredient StateValue serialization shouldn't be null");
             } else {
                 jsonObject.addProperty("block", blockLocation.toString());
@@ -237,10 +237,8 @@ public class BlockStateIngredient implements Predicate<BlockState> {
         @Override
         public Collection<BlockPropertyPair> getPairs() {
             List<BlockPropertyPair> list = new ArrayList<>();
-            ITagManager<Block> tags = ForgeRegistries.BLOCKS.tags();
-            if (tags != null) {
-                tags.getTag(this.tag).stream().forEach((block) -> list.add(BlockPropertyPair.of(block, Map.of())));
-            }
+            Iterable<Holder<Block>> blockTag = BuiltInRegistries.BLOCK.getTagOrEmpty(this.tag);
+            blockTag.forEach((block) -> list.add(BlockPropertyPair.of(block.value(), Map.of())));
             return list;
         }
 
