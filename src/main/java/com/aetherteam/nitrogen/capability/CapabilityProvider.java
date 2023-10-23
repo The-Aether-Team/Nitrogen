@@ -1,11 +1,8 @@
 package com.aetherteam.nitrogen.capability;
 
+//import io.github.fabricators_of_create.porting_lib.core.util.INBTSerializable;
 //import net.minecraft.core.Direction;
 //import net.minecraft.nbt.CompoundTag;
-//import net.minecraftforge.common.capabilities.Capability;
-//import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-//import net.minecraftforge.common.util.INBTSerializable;
-//import net.minecraftforge.common.util.LazyOptional;
 //
 ///**
 // * Record used for creating basic capability providers.
@@ -35,4 +32,3 @@ package com.aetherteam.nitrogen.capability;
 //        return LazyOptional.empty();
 //    }
 //}
-// todo CARDINAL COMPONENTS
