@@ -62,8 +62,8 @@ dependencies {
         modApi(include("io.github.fabricators_of_create.Porting-Lib:$module:${project.porting_lib_version}"))
     }
 
-//    compileOnly "mezz.jei:jei-${project.mc_version}-common:${project.jei_version}"
-//    compileOnly "mezz.jei:jei-${project.mc_version}-forge:${project.jei_version}"
+    modImplementation "mezz.jei:jei-${project.mc_version}-common:${project.jei_version}"
+    modImplementation "mezz.jei:jei-${project.mc_version}-fabric:${project.jei_version}"
 }
 
 repositories {

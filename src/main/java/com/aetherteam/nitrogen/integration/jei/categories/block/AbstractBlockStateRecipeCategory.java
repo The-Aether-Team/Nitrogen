@@ -7,7 +7,6 @@ import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
 import com.aetherteam.nitrogen.recipe.BlockStateIngredient;
 import com.aetherteam.nitrogen.recipe.BlockStateRecipeUtil;
 import com.aetherteam.nitrogen.recipe.recipes.AbstractBlockStateRecipe;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -51,7 +50,7 @@ public abstract class AbstractBlockStateRecipeCategory<T extends AbstractBlockSt
             List<Object> inputIngredients = new ArrayList<>();
             for (BlockPropertyPair pair : pairs) {
                 if (pair.block() instanceof LiquidBlock liquidBlock) {
-                    inputIngredients.add(this.fluidHelper.create(liquidBlock.getFluid(), 1000));
+                    inputIngredients.add(this.fluidHelper.create(liquidBlock.getFluidState(liquidBlock.defaultBlockState()).getType(), 1000));
                 } else {
                     inputIngredients.add(this.setupIngredient(pair));
                 }
@@ -62,7 +61,7 @@ public abstract class AbstractBlockStateRecipeCategory<T extends AbstractBlockSt
             // Sets up output slots.
             Object outputIngredient;
             if (recipeResult.block() instanceof LiquidBlock liquidBlock) {
-                outputIngredient = this.fluidHelper.create(liquidBlock.getFluid(), 1000);
+                outputIngredient = this.fluidHelper.create(liquidBlock.getFluidState(liquidBlock.defaultBlockState()).getType(), 1000);
             } else {
                 outputIngredient = this.setupIngredient(recipeResult);
             }
@@ -74,7 +73,6 @@ public abstract class AbstractBlockStateRecipeCategory<T extends AbstractBlockSt
     /**
      * Warning for "deprecation" is suppressed because the non-sensitive version of {@link net.minecraft.world.level.block.Block#getCloneItemStack(BlockGetter, BlockPos, BlockState)} is needed in this context.
      */
-    @SuppressWarnings("deprecation")
     private ItemStack setupIngredient(BlockPropertyPair recipeResult) {
         ItemStack stack = ItemStack.EMPTY;
         if (Minecraft.getInstance().level != null) {

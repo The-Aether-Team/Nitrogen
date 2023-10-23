@@ -18,13 +18,13 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -38,8 +38,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -76,8 +74,7 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
             ModelBlockRenderer modelBlockRenderer = blockRenderDispatcher.getModelRenderer();
             MultiBufferSource.BufferSource bufferSource = minecraft.renderBuffers().bufferSource();
             BakedModel model = blockRenderDispatcher.getBlockModel(blockState);
-            RenderType renderType = model.getRenderTypes(blockState, minecraft.level.getRandom(), ModelData.EMPTY).asList().get(0);
-            modelBlockRenderer.tesselateBlock(new FakeBlockLevel(blockState), model, blockState, BlockPos.ZERO, poseStack, bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), false, minecraft.level.getRandom(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, renderType);
+            modelBlockRenderer.tesselateBlock(new FakeBlockLevel(blockState), model, blockState, BlockPos.ZERO, poseStack, bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), false, minecraft.level.getRandom(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
             bufferSource.endBatch();
 
             Lighting.setupFor3DItems();
@@ -99,11 +96,11 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
 
             if (block != null && properties != null) {
                 // Display block name.
-                MutableComponent mutablecomponent = Component.empty().append(block.getName()).withStyle(ingredient.getRarity().getStyleModifier());
+                MutableComponent mutablecomponent = Component.empty().append(block.getName()).withStyle(ingredient.getRarity().color);
                 list.add(mutablecomponent);
                 if (tooltipFlag.isAdvanced()) {
-                    ResourceLocation blockKey = ForgeRegistries.BLOCKS.getKey(block);
-                    if (blockKey != null) {
+                    ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(block);
+                    if (block.defaultBlockState().isAir()) {
                         list.add(Component.literal(blockKey.toString()).withStyle(ChatFormatting.DARK_GRAY));
                     }
                 }
@@ -149,7 +146,6 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
     /**
      * Warning for "deprecation" is suppressed because the non-sensitive version of {@link net.minecraft.world.level.block.Block#getCloneItemStack(BlockGetter, BlockPos, BlockState)} is needed in this context.
      */
-    @SuppressWarnings("deprecation")
     private BlockPropertyPair getMatchingPair(ItemStack ingredient) {
         Map<Block, Map<Property<?>, Comparable<?>>> pairsMap = Stream.of(this.pairs).collect(Collectors.toMap(BlockPropertyPair::block, BlockPropertyPair::properties));
         Block block = null;
