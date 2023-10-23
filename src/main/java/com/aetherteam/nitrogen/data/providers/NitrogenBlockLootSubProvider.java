@@ -1,8 +1,8 @@
 package com.aetherteam.nitrogen.data.providers;
 
+import io.github.fabricators_of_create.porting_lib.data.ModdedBlockLootSubProvider;
 import io.github.fabricators_of_create.porting_lib.tags.Tags;
 import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -16,7 +16,7 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
 import java.util.Set;
 
-public abstract class NitrogenBlockLootSubProvider extends BlockLootSubProvider {
+public abstract class NitrogenBlockLootSubProvider extends ModdedBlockLootSubProvider {
     public NitrogenBlockLootSubProvider(Set<Item> items, FeatureFlagSet flags) {
         super(items, flags);
     }

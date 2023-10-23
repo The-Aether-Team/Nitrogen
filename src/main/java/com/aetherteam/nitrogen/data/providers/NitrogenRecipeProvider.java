@@ -1,6 +1,8 @@
 package com.aetherteam.nitrogen.data.providers;
 
 import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceLocation;
@@ -15,10 +17,10 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public abstract class NitrogenRecipeProvider extends RecipeProvider {
+public abstract class NitrogenRecipeProvider extends FabricRecipeProvider {
     protected final String id;
 
-    public NitrogenRecipeProvider(PackOutput output, String id) {
+    public NitrogenRecipeProvider(FabricDataOutput output, String id) {
         super(output);
         this.id = id;
     }
