@@ -1,5 +1,6 @@
 package com.aetherteam.nitrogen.data.providers;
 
+import io.github.fabricators_of_create.porting_lib.tags.Tags;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -12,7 +13,6 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraftforge.common.Tags;
 
 import java.util.Set;
 

@@ -1,6 +1,8 @@
 package com.aetherteam.nitrogen.data.providers;
 
 import com.aetherteam.nitrogen.Nitrogen;
+import io.github.fabricators_of_create.porting_lib.data.ExistingFileHelper;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
@@ -10,14 +12,10 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.armortrim.TrimMaterial;
 import net.minecraft.world.item.armortrim.TrimMaterials;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.model.generators.ItemModelBuilder;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
-public abstract class NitrogenItemModelProvider extends ItemModelProvider {
+public abstract class NitrogenItemModelProvider extends FabricModelProvider {
     protected static final List<ResourceKey<TrimMaterial>> VANILLA_TRIM_MATERIALS = List.of(TrimMaterials.QUARTZ, TrimMaterials.IRON, TrimMaterials.NETHERITE, TrimMaterials.REDSTONE, TrimMaterials.COPPER, TrimMaterials.GOLD, TrimMaterials.EMERALD, TrimMaterials.DIAMOND, TrimMaterials.LAPIS, TrimMaterials.AMETHYST);
 
     public NitrogenItemModelProvider(PackOutput output, String id, ExistingFileHelper helper) {

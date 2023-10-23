@@ -1,5 +1,6 @@
 package com.aetherteam.nitrogen.data.providers;
 
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -14,7 +15,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Map;
 
-public abstract class NitrogenBlockStateProvider extends BlockStateProvider {
+public abstract class NitrogenBlockStateProvider extends FabricModelProvider {
     public NitrogenBlockStateProvider(PackOutput output, String id, ExistingFileHelper helper) {
         super(output, id, helper);
     }

@@ -1,5 +1,7 @@
 package com.aetherteam.nitrogen.data.providers;
 
+import io.github.fabricators_of_create.porting_lib.data.LanguageProvider;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -7,8 +9,6 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraftforge.common.data.LanguageProvider;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.function.Supplier;
 
@@ -33,7 +33,7 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
     }
 
     public void addContainerType(Supplier<? extends MenuType<?>> key, String name) {
-        ResourceLocation location = ForgeRegistries.MENU_TYPES.getKey(key.get());
+        ResourceLocation location = BuiltInRegistries.MENU.getKey(key.get());
         if (location != null) {
             this.add("menu." + location.toString().replace(":", "."), name);
         }
