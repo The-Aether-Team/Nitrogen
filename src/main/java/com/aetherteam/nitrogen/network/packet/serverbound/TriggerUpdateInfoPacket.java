@@ -1,7 +1,7 @@
 package com.aetherteam.nitrogen.network.packet.serverbound;
 
 import com.aetherteam.nitrogen.api.users.UserData;
-import com.aetherteam.nitrogen.network.BasePacket;
+import com.aetherteam.nitrogen.network.ServerPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,7 +14,7 @@ import java.util.UUID;
  * Triggers the server to query the Patreon database.
  * @see UserData.Server#sendUserRequest(MinecraftServer, ServerPlayer, UUID)
  */
-public record TriggerUpdateInfoPacket(int playerID) implements BasePacket {
+public record TriggerUpdateInfoPacket(int playerID) implements ServerPacket {
     @Override
     public void encode(FriendlyByteBuf buffer) {
         buffer.writeInt(this.playerID());
