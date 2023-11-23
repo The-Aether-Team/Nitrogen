@@ -1,4 +1,4 @@
-package com.aetherteam.nitrogen.integration.jei;
+package com.aetherteam.nitrogen.integration.recipeviewer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;

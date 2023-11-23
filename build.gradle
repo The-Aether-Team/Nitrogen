@@ -64,6 +64,9 @@ dependencies {
 
     modImplementation "mezz.jei:jei-${project.mc_version}-common:${project.jei_version}"
     modImplementation "mezz.jei:jei-${project.mc_version}-fabric:${project.jei_version}"
+
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}"
+    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
 }
 
 repositories {

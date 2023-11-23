@@ -1,16 +1,20 @@
-package com.aetherteam.nitrogen.integration.jei;
+package com.aetherteam.nitrogen.integration.rei;
 
 import com.aetherteam.nitrogen.Nitrogen;
 import com.aetherteam.nitrogen.integration.recipeviewer.FakeFluidLevel;
-import com.aetherteam.nitrogen.integration.recipeviewer.FakeLevel;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.math.Axis;
-import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
-import mezz.jei.common.platform.IPlatformFluidHelperInternal;
+import io.github.fabricators_of_create.porting_lib.util.FluidStack;
+import me.shedaniel.math.Rectangle;
+import me.shedaniel.rei.api.client.entry.renderer.EntryRenderer;
+import me.shedaniel.rei.api.client.gui.widgets.Tooltip;
+import me.shedaniel.rei.api.client.gui.widgets.TooltipContext;
+import me.shedaniel.rei.api.common.entry.EntryStack;
+import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -18,19 +22,12 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public record FluidStateRenderer<T>(IPlatformFluidHelperInternal<T> fluidHelper) implements IIngredientRenderer<T> {
+public class FluidStateRenderer implements EntryRenderer<FluidStack> {
     @Override
-    public void render(GuiGraphics guiGraphics, T ingredient) {
+    public void render(EntryStack<FluidStack> entry, GuiGraphics guiGraphics, Rectangle bounds, int mouseX, int mouseY, float delta) {
         PoseStack poseStack = guiGraphics.pose();
         Minecraft minecraft = Minecraft.getInstance();
         BlockRenderDispatcher blockRenderDispatcher = minecraft.getBlockRenderer();
@@ -42,8 +39,7 @@ public record FluidStateRenderer<T>(IPlatformFluidHelperInternal<T> fluidHelper)
         poseStack.mulPose(Axis.YP.rotationDegrees(45.0F));
         poseStack.scale(-9.9F, -9.9F, -9.9F);
 
-        IIngredientTypeWithSubtypes<Fluid, T> type = this.fluidHelper.getFluidIngredientType();
-        Fluid fluidType = type.getBase(ingredient);
+        Fluid fluidType = entry.getValue().getFluid();
         FluidState fluidState = fluidType.defaultFluidState();
         RenderType renderType = ItemBlockRenderTypes.getRenderLayer(fluidState);
         PoseStack worldStack = RenderSystem.getModelViewStack();
@@ -69,13 +65,13 @@ public record FluidStateRenderer<T>(IPlatformFluidHelperInternal<T> fluidHelper)
     }
 
     @Override
-    public List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag) {
+    public Tooltip getTooltip(EntryStack<FluidStack> entry, TooltipContext context) {
         try {
-            return this.fluidHelper.getTooltip(ingredient, tooltipFlag);
+            return Tooltip.create(FluidVariantRendering.getTooltip(entry.getValue().getType(), context.getFlag()));
         } catch (RuntimeException | LinkageError e) {
-            Component displayName = this.fluidHelper.getDisplayName(ingredient);
+            Component displayName = FluidVariantAttributes.getName(entry.getValue().getType());
             Nitrogen.LOGGER.error("Failed to get tooltip for fluid: " + displayName, e);
-            return new ArrayList<>();
+            return Tooltip.create();
         }
     }
 }

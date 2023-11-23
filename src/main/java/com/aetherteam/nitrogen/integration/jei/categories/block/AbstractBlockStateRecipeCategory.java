@@ -16,6 +16,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.common.platform.Services;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
@@ -50,7 +51,7 @@ public abstract class AbstractBlockStateRecipeCategory<T extends AbstractBlockSt
             List<Object> inputIngredients = new ArrayList<>();
             for (BlockPropertyPair pair : pairs) {
                 if (pair.block() instanceof LiquidBlock liquidBlock) {
-                    inputIngredients.add(this.fluidHelper.create(liquidBlock.getFluidState(liquidBlock.defaultBlockState()).getType(), 1000));
+                    inputIngredients.add(this.fluidHelper.create(liquidBlock.getFluidState(liquidBlock.defaultBlockState()).getType(), FluidConstants.BLOCK));
                 } else {
                     inputIngredients.add(this.setupIngredient(pair));
                 }
@@ -61,7 +62,7 @@ public abstract class AbstractBlockStateRecipeCategory<T extends AbstractBlockSt
             // Sets up output slots.
             Object outputIngredient;
             if (recipeResult.block() instanceof LiquidBlock liquidBlock) {
-                outputIngredient = this.fluidHelper.create(liquidBlock.getFluidState(liquidBlock.defaultBlockState()).getType(), 1000);
+                outputIngredient = this.fluidHelper.create(liquidBlock.getFluidState(liquidBlock.defaultBlockState()).getType(), FluidConstants.BLOCK);
             } else {
                 outputIngredient = this.setupIngredient(recipeResult);
             }

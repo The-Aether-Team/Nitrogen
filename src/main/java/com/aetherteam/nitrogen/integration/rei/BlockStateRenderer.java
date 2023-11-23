@@ -1,22 +1,20 @@
-package com.aetherteam.nitrogen.integration.jei;
+package com.aetherteam.nitrogen.integration.rei;
 
 import com.aetherteam.nitrogen.Nitrogen;
 import com.aetherteam.nitrogen.integration.recipeviewer.FakeBlockLevel;
-import com.aetherteam.nitrogen.integration.recipeviewer.FakeLevel;
 import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
 import com.aetherteam.nitrogen.recipe.BlockStateRecipeUtil;
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.common.platform.IPlatformRenderHelper;
-import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.ErrorUtil;
+import me.shedaniel.math.Rectangle;
+import me.shedaniel.rei.api.client.entry.renderer.EntryRenderer;
+import me.shedaniel.rei.api.client.gui.widgets.Tooltip;
+import me.shedaniel.rei.api.client.gui.widgets.TooltipContext;
+import me.shedaniel.rei.api.common.entry.EntryStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -32,31 +30,25 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredientRenderer<ItemStack> {
+public record BlockStateRenderer(BlockPropertyPair... pairs) implements EntryRenderer<ItemStack> {
     @Override
-    public void render(GuiGraphics guiGraphics, @Nullable ItemStack ingredient) {
+    public void render(EntryStack<ItemStack> entry, GuiGraphics guiGraphics, Rectangle bounds, int mouseX, int mouseY, float delta) {
         PoseStack poseStack = guiGraphics.pose();
         Minecraft minecraft = Minecraft.getInstance();
         BlockRenderDispatcher blockRenderDispatcher = minecraft.getBlockRenderer();
 
-        BlockPropertyPair pair = this.getMatchingPair(ingredient);
+        BlockPropertyPair pair = this.getMatchingPair(entry.getValue());
 
         if (pair.block() != null && pair.properties() != null && minecraft.level != null) {
             BlockState blockState = pair.block().defaultBlockState();
@@ -86,63 +78,43 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
     }
 
     @Override
-    public List<Component> getTooltip(ItemStack ingredient, TooltipFlag tooltipFlag) {
+    public Tooltip getTooltip(EntryStack<ItemStack> ingredient, TooltipContext context) {
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
         try {
-            List<Component> list = Lists.newArrayList();
+            Tooltip tooltip = Tooltip.create();
 
-            BlockPropertyPair pair = this.getMatchingPair(ingredient);
+            BlockPropertyPair pair = this.getMatchingPair(ingredient.getValue());
             Block block = pair.block();
             Map<Property<?>, Comparable<?>> properties = pair.properties();
 
             if (block != null && properties != null) {
                 // Display block name.
-                MutableComponent mutablecomponent = Component.empty().append(block.getName()).withStyle(ingredient.getRarity().color);
-                list.add(mutablecomponent);
-                if (tooltipFlag.isAdvanced()) {
+                MutableComponent mutablecomponent = Component.empty().append(block.getName()).withStyle(ingredient.getValue().getRarity().color);
+                tooltip.add(mutablecomponent);
+                if (context.getFlag().isAdvanced()) {
                     ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(block);
                     if (block.defaultBlockState().isAir()) {
-                        list.add(Component.literal(blockKey.toString()).withStyle(ChatFormatting.DARK_GRAY));
+                        tooltip.add(Component.literal(blockKey.toString()).withStyle(ChatFormatting.DARK_GRAY));
                     }
                 }
                 // Display whether this blockstate is enabled.
-                if (player != null && !ingredient.getItem().isEnabled(player.level().enabledFeatures())) {
-                    list.add(Component.translatable("item.disabled").withStyle(ChatFormatting.RED));
+                if (player != null && !ingredient.getValue().getItem().isEnabled(player.level().enabledFeatures())) {
+                    tooltip.add(Component.translatable("item.disabled").withStyle(ChatFormatting.RED));
                 }
                 // Display block properties.
                 if (!properties.isEmpty()) {
-                    list.add(Component.translatable("gui.aether.jei.properties.tooltip").withStyle(ChatFormatting.GRAY));
+                    tooltip.add(Component.translatable("gui.aether.jei.properties.tooltip").withStyle(ChatFormatting.GRAY));
                     for (Map.Entry<Property<?>, Comparable<?>> entry : properties.entrySet()) {
-                        list.add(Component.literal(entry.getKey().getName() + ": " + entry.getValue().toString()).withStyle(ChatFormatting.DARK_GRAY));
+                        tooltip.add(Component.literal(entry.getKey().getName() + ": " + entry.getValue().toString()).withStyle(ChatFormatting.DARK_GRAY));
                     }
                 }
             }
-            return list;
+            return tooltip;
         } catch (RuntimeException | LinkageError e) {
-            String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
-            Nitrogen.LOGGER.error("Failed to get tooltip: {}", itemStackInfo, e);
-            List<Component> list = new ArrayList<>();
-            MutableComponent crash = Component.translatable("jei.tooltip.error.crash");
-            list.add(crash.withStyle(ChatFormatting.RED));
-            return list;
+            Nitrogen.LOGGER.error("Failed to get tooltip: {}", ingredient, e);
+            return Tooltip.create(Component.translatable("jei.tooltip.error.crash").withStyle(ChatFormatting.RED));
         }
-    }
-
-    @Override
-    public Font getFontRenderer(Minecraft minecraft, ItemStack ingredient) {
-        IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
-        return renderHelper.getFontRenderer(minecraft, ingredient);
-    }
-
-    @Override
-    public int getWidth() {
-        return 16;
-    }
-
-    @Override
-    public int getHeight() {
-        return 16;
     }
 
     /**
