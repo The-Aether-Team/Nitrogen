@@ -81,8 +81,6 @@ public final class UserData {
                 Optional<JsonElement> jsonOptional = array.asList().stream().filter((element) -> {
                     if (element.isJsonObject()) {
                         JsonObject entry = element.getAsJsonObject();
-                        Nitrogen.LOGGER.info(entry.get("uuid").getAsString());
-                        Nitrogen.LOGGER.info(uuid.toString());
                         return entry.get("uuid").getAsString().toLowerCase(Locale.ROOT).equals(uuid.toString().toLowerCase(Locale.ROOT));
                     }
                     return false;
@@ -152,9 +150,6 @@ public final class UserData {
 
                     // Create a User for the player, store the data to the server, and send it to the client.
                     if (currentTier != null || highestPastTier != null || highestGroup != null) {
-                        Nitrogen.LOGGER.info(String.valueOf(currentTier));
-                        Nitrogen.LOGGER.info(String.valueOf(highestPastTier));
-                        Nitrogen.LOGGER.info(String.valueOf(highestGroup));
                         User user = new User(currentTier, highestPastTier, ZonedDateTime.now(ZoneId.of("UTC")).plusDays(1).format(User.DATE_FORMAT), highestGroup);
                         modifySavedData(server, uuid, user);
                         STORED_USERS.put(uuid, user);
