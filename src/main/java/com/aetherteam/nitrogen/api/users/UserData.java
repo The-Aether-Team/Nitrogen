@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -78,7 +79,7 @@ public final class UserData {
             JsonElement data = JsonParser.parseString(response); // Format the response to JSON.
             if (data != null && !data.isJsonNull() && data.isJsonArray()) {
                 JsonArray array = data.getAsJsonArray();
-                Optional<JsonElement> jsonOptional = array.asList().stream().filter((element) -> {
+                Optional<JsonElement> jsonOptional = Lists.newArrayList(array.iterator()).stream().filter((element) -> {
                     if (element.isJsonObject()) {
                         JsonObject entry = element.getAsJsonObject();
                         return entry.get("uuid").getAsString().toLowerCase(Locale.ROOT).equals(uuid.toString().toLowerCase(Locale.ROOT));
@@ -110,7 +111,7 @@ public final class UserData {
                         if (!pastTiersArray.isEmpty()) {
                             int pastTierLevel = 0;
                             try {
-                                for (int pastTierId : pastTiersArray.asList().stream().map((JsonElement::getAsInt)).toList()) {
+                                for (int pastTierId : Lists.newArrayList(pastTiersArray.iterator()).stream().map((JsonElement::getAsInt)).toList()) {
                                     if (pastTierId != -1) {
                                         User.Tier pastTier = User.Tier.byId(pastTierId);
                                         if (pastTier != null) {
@@ -135,7 +136,7 @@ public final class UserData {
                         if (!groupsArray.isEmpty()) {
                             int groupLevel = 0;
                             try {
-                                for (String groupName : groupsArray.asList().stream().map((JsonElement::getAsString)).toList()) {
+                                for (String groupName : Lists.newArrayList(groupsArray.iterator()).stream().map((JsonElement::getAsString)).toList()) {
                                     User.Group group = User.Group.valueOf(groupName.toUpperCase(Locale.ROOT));
                                     if (group.getLevel() > groupLevel) {
                                         groupLevel = group.getLevel();
