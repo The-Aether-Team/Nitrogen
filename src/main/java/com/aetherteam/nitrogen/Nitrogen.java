@@ -30,7 +30,7 @@ public class Nitrogen implements ModInitializer {
     @Override
     public void onInitialize() {
         NitrogenPacketHandler.register();
-        ServerLifecycleEvents.SERVER_STARTING.register(Nitrogen::serverAboutToStart);
+        ServerLifecycleEvents.SERVER_STARTED.register(Nitrogen::serverAboutToStart);
         ServerLoginConnectionEvents.QUERY_START.register(Nitrogen::playerLoggedIn);
     }
 

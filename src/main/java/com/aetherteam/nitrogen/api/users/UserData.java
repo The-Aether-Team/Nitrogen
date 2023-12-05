@@ -11,18 +11,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import org.apache.commons.io.IOUtils;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public final class UserData {
     public static class Client {
@@ -62,19 +58,13 @@ public final class UserData {
          * @param uuid The {@link UUID} to query with.
          */
         public static void sendUserRequest(MinecraftServer server, ServerPlayer serverPlayer, UUID uuid) {
-            HttpClient client = HttpClient.newBuilder()
-                    .version(HttpClient.Version.HTTP_1_1)
-                    .followRedirects(HttpClient.Redirect.NORMAL)
-                    .connectTimeout(Duration.ofSeconds(20))
-                    .build();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://www.aether-mod.net/api/verify/" + uuid))
-                    .timeout(Duration.ofMinutes(2))
-                    .header("Content-Type", "application/json")
-                    .build();
-            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenApply(HttpResponse::body)
-                    .thenAccept((response) -> parseUserData(server, serverPlayer, uuid, response));
+            try {
+                URL url = new URL("https://raw.githubusercontent.com/The-Aether-Team/.github/main/supporters/database.json");
+                String data = IOUtils.toString(url.openStream(), StandardCharsets.UTF_8);
+                parseUserData(server, serverPlayer, uuid, data);
+            } catch (IOException e) {
+                Nitrogen.LOGGER.warn("Failed to read supporter data.");
+            }
         }
 
         /**
@@ -85,72 +75,86 @@ public final class UserData {
          * @param response The database response {@link String}.
          */
         private static void parseUserData(MinecraftServer server, ServerPlayer serverPlayer, UUID uuid, String response) {
-            JsonElement jsonElement = JsonParser.parseString(response); // Format the response to JSON.
-            if (jsonElement != null && !jsonElement.isJsonNull() && jsonElement.isJsonObject()) {
-                JsonObject json = jsonElement.getAsJsonObject();
-
-                // Attempt to parse the current Patreon tier associated with the UUID.
-                User.Tier currentTier = null;
-                try {
-                    JsonElement currentTierElement = json.get("currentTier");
-                    if (currentTierElement != null && !currentTierElement.isJsonNull()) {
-                        int currentTierId = currentTierElement.getAsInt();
-                        if (currentTierId != -1) {
-                            currentTier = User.Tier.byId(currentTierId);
-                        }
+            JsonElement data = JsonParser.parseString(response); // Format the response to JSON.
+            if (data != null && !data.isJsonNull() && data.isJsonArray()) {
+                JsonArray array = data.getAsJsonArray();
+                Optional<JsonElement> jsonOptional = array.asList().stream().filter((element) -> {
+                    if (element.isJsonObject()) {
+                        JsonObject entry = element.getAsJsonObject();
+                        return entry.get("uuid").getAsString().toLowerCase(Locale.ROOT).equals(uuid.toString().toLowerCase(Locale.ROOT));
                     }
-                } catch (NumberFormatException e) {
-                    Nitrogen.LOGGER.error(e.getMessage());
-                }
+                    return false;
+                }).findFirst();
+                if (jsonOptional.isPresent() && jsonOptional.get().isJsonObject()) {
+                    JsonObject json = jsonOptional.get().getAsJsonObject();
 
-                // Attempt to parse the past highest Patreon tier associated with the UUID.
-                User.Tier highestPastTier = null;
-                JsonElement pastTiersElement = json.get("pastTiers");
-                if (pastTiersElement != null && !pastTiersElement.isJsonNull() && pastTiersElement.isJsonArray()) {
-                    JsonArray pastTiersArray = pastTiersElement.getAsJsonArray();
-                    int pastTierLevel = 0;
+                    // Attempt to parse the current Patreon tier associated with the UUID.
+                    User.Tier currentTier = null;
                     try {
-                        for (int pastTierId : pastTiersArray.asList().stream().map((JsonElement::getAsInt)).toList()) {
-                            if (pastTierId != -1) {
-                                User.Tier pastTier = User.Tier.byId(pastTierId);
-                                if (pastTier != null) {
-                                    if (pastTier.getLevel() > pastTierLevel) {
-                                        pastTierLevel = pastTier.getLevel();
-                                        highestPastTier = pastTier;
+                        JsonElement currentTierElement = json.get("currentTier");
+                        if (currentTierElement != null && !currentTierElement.isJsonNull()) {
+                            int currentTierId = currentTierElement.getAsInt();
+                            if (currentTierId != -1) {
+                                currentTier = User.Tier.byId(currentTierId);
+                            }
+                        }
+                    } catch (NumberFormatException e) {
+                        Nitrogen.LOGGER.error("Failed to get currentTier: " + e.getMessage());
+                    }
+
+                    // Attempt to parse the past highest Patreon tier associated with the UUID.
+                    User.Tier highestPastTier = null;
+                    JsonElement pastTiersElement = json.get("pastTiers");
+                    if (pastTiersElement != null && !pastTiersElement.isJsonNull() && pastTiersElement.isJsonArray()) {
+                        JsonArray pastTiersArray = pastTiersElement.getAsJsonArray();
+                        if (!pastTiersArray.isEmpty()) {
+                            int pastTierLevel = 0;
+                            try {
+                                for (int pastTierId : pastTiersArray.asList().stream().map((JsonElement::getAsInt)).toList()) {
+                                    if (pastTierId != -1) {
+                                        User.Tier pastTier = User.Tier.byId(pastTierId);
+                                        if (pastTier != null) {
+                                            if (pastTier.getLevel() > pastTierLevel) {
+                                                pastTierLevel = pastTier.getLevel();
+                                                highestPastTier = pastTier;
+                                            }
+                                        }
                                     }
                                 }
+                            } catch (NumberFormatException e) {
+                                Nitrogen.LOGGER.error("Failed to get pastTiers: " + e.getMessage());
                             }
                         }
-                    } catch (NumberFormatException e) {
-                        Nitrogen.LOGGER.error(e.getMessage());
                     }
-                }
 
-                // Attempt to parse the highest group associated with the UUID.
-                User.Group highestGroup = null;
-                JsonElement groupsElement = json.get("groups");
-                if (groupsElement != null && !groupsElement.isJsonNull() && groupsElement.isJsonArray()) {
-                    JsonArray groupsArray = groupsElement.getAsJsonArray();
-                    int groupLevel = 0;
-                    try {
-                        for (String groupName : groupsArray.asList().stream().map((JsonElement::getAsString)).toList()) {
-                            User.Group group = User.Group.valueOf(groupName.toUpperCase(Locale.ROOT));
-                            if (group.getLevel() > groupLevel) {
-                                groupLevel = group.getLevel();
-                                highestGroup = group;
+                    // Attempt to parse the highest group associated with the UUID.
+                    User.Group highestGroup = null;
+                    JsonElement groupsElement = json.get("groups");
+                    if (groupsElement != null && !groupsElement.isJsonNull() && groupsElement.isJsonArray()) {
+                        JsonArray groupsArray = groupsElement.getAsJsonArray();
+                        if (!groupsArray.isEmpty()) {
+                            int groupLevel = 0;
+                            try {
+                                for (String groupName : groupsArray.asList().stream().map((JsonElement::getAsString)).toList()) {
+                                    User.Group group = User.Group.valueOf(groupName.toUpperCase(Locale.ROOT));
+                                    if (group.getLevel() > groupLevel) {
+                                        groupLevel = group.getLevel();
+                                        highestGroup = group;
+                                    }
+                                }
+                            } catch (NumberFormatException e) {
+                                Nitrogen.LOGGER.error("Failed to get groups: " + e.getMessage());
                             }
                         }
-                    } catch (NumberFormatException e) {
-                        Nitrogen.LOGGER.error(e.getMessage());
                     }
-                }
 
-                // Create a User for the player, store the data to the server, and send it to the client.
-                if (currentTier != null || highestPastTier != null || highestGroup != null) {
-                    User user = new User(currentTier, highestPastTier, ZonedDateTime.now(ZoneId.of("UTC")).plusDays(1).format(User.DATE_FORMAT), highestGroup);
-                    modifySavedData(server, uuid, user);
-                    STORED_USERS.put(uuid, user);
-                    PacketRelay.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
+                    // Create a User for the player, store the data to the server, and send it to the client.
+                    if (currentTier != null || highestPastTier != null || highestGroup != null) {
+                        User user = new User(currentTier, highestPastTier, ZonedDateTime.now(ZoneId.of("UTC")).plusDays(1).format(User.DATE_FORMAT), highestGroup);
+                        modifySavedData(server, uuid, user);
+                        STORED_USERS.put(uuid, user);
+                        PacketRelay.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
+                    }
                 }
             }
         }
