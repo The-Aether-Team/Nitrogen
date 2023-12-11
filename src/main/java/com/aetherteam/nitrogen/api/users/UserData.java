@@ -110,7 +110,7 @@ public final class UserData {
                         if (!pastTiersArray.isEmpty()) {
                             int pastTierLevel = 0;
                             try {
-                                for (int pastTierId : jsonToArray(array).stream().map((JsonElement::getAsInt)).toList()) {
+                                for (int pastTierId : jsonToArray(pastTiersArray).stream().map((JsonElement::getAsInt)).toList()) {
                                     if (pastTierId != -1) {
                                         User.Tier pastTier = User.Tier.byId(pastTierId);
                                         if (pastTier != null) {
@@ -135,7 +135,7 @@ public final class UserData {
                         if (!groupsArray.isEmpty()) {
                             int groupLevel = 0;
                             try {
-                                for (String groupName : jsonToArray(array).stream().map((JsonElement::getAsString)).toList()) {
+                                for (String groupName : jsonToArray(groupsArray).stream().map((JsonElement::getAsString)).toList()) {
                                     User.Group group = User.Group.valueOf(groupName.toUpperCase(Locale.ROOT));
                                     if (group.getLevel() > groupLevel) {
                                         groupLevel = group.getLevel();
