@@ -1,3 +1,5 @@
+<p align="center"><img width="250" height="250" src="assets/logo.webp"></p>
+
 # Nitrogen
 [![Modloader: Forge](https://img.shields.io/badge/mod%20loader-forge-CC974D?style=flat-square)](https://files.minecraftforge.net/net/minecraftforge/forge/)
 [![CircleCI](https://circleci.com/gh/The-Aether-Team/Nitrogen/tree/1.19.2-develop.svg?style=shield)](https://app.circleci.com/pipelines/github/The-Aether-Team/Nitrogen?branch=1.19.2-develop)
