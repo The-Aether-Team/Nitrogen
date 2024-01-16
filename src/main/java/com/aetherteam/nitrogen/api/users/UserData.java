@@ -11,11 +11,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import org.apache.commons.io.IOUtils;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -58,13 +59,19 @@ public final class UserData {
          * @param uuid The {@link UUID} to query with.
          */
         public static void sendUserRequest(MinecraftServer server, ServerPlayer serverPlayer, UUID uuid) {
-            try {
-                URL url = new URL("https://raw.githubusercontent.com/The-Aether-Team/.github/main/supporters/database.json");
-                String data = IOUtils.toString(url.openStream(), StandardCharsets.UTF_8);
-                parseUserData(server, serverPlayer, uuid, data);
-            } catch (IOException e) {
-                Nitrogen.LOGGER.warn("Failed to read supporter data.");
-            }
+            HttpClient client = HttpClient.newBuilder()
+                    .version(HttpClient.Version.HTTP_1_1)
+                    .followRedirects(HttpClient.Redirect.NORMAL)
+                    .connectTimeout(Duration.ofSeconds(20))
+                    .build();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://raw.githubusercontent.com/The-Aether-Team/.github/main/supporters/database.json"))
+                    .timeout(Duration.ofMinutes(2))
+                    .header("Content-Type", "application/json")
+                    .build();
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenApply(HttpResponse::body)
+                    .thenAccept(response -> parseUserData(server, serverPlayer, uuid, response));
         }
 
         /**
