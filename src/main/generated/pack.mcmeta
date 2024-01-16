@@ -1,0 +1,8 @@
+{
+  "pack": {
+    "description": {
+      "translate": "pack.nitrogen_internals.mod.description"
+    },
+    "pack_format": 15
+  }
+}
