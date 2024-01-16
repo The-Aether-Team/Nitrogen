@@ -4,6 +4,7 @@
   "version": "${version}",
   "name": "Nitrogen",
   "description": "A library used for the Aether series of mods.",
+  "icon": "nitrogen.png",
   "authors": [
     "The Aether Team",
     "bconlon"
