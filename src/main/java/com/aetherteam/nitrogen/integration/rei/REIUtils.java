@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 public class REIUtils {
-
     public static List<EntryIngredient> toIngredientList(BlockPropertyPair ...pairs) {
         if (pairs == null) return List.of();
         // Sets up input slots.

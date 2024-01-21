@@ -10,7 +10,6 @@ import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import java.util.List;
 
 public class BlockStateRecipeDisplay<R extends AbstractBlockStateRecipe> extends BasicDisplay {
-
     private final CategoryIdentifier<?> categoryIdentifier;
 
     private final R recipe;
@@ -40,6 +39,6 @@ public class BlockStateRecipeDisplay<R extends AbstractBlockStateRecipe> extends
 
     @Override
     public CategoryIdentifier<?> getCategoryIdentifier() {
-        return categoryIdentifier;
+        return this.categoryIdentifier;
     }
 }

@@ -24,7 +24,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 
 public class FluidStateRenderer implements EntryRenderer<FluidStack> {
-
     @Override
     public void render(EntryStack<FluidStack> entry, GuiGraphics guiGraphics, Rectangle bounds, int mouseX, int mouseY, float delta) {
         PoseStack poseStack = guiGraphics.pose();

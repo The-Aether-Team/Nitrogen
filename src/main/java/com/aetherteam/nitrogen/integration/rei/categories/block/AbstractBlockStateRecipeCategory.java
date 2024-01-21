@@ -16,7 +16,6 @@ import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import java.util.List;
 
 public abstract class AbstractBlockStateRecipeCategory<R extends AbstractBlockStateRecipe> extends AbstractRecipeCategory<BlockStateRecipeDisplay<R>> {
-
     public AbstractBlockStateRecipeCategory(String id, CategoryIdentifier<BlockStateRecipeDisplay<R>> uid, int width, int height, Renderer icon) {
         super(id, uid, width, height, icon);
     }
@@ -51,5 +50,5 @@ public abstract class AbstractBlockStateRecipeCategory<R extends AbstractBlockSt
         return widgets;
     }
 
-    protected void populateTooltip(BlockStateRecipeDisplay<R> display, Tooltip tooltip) {}
+    protected void populateTooltip(BlockStateRecipeDisplay<R> display, Tooltip tooltip) { }
 }

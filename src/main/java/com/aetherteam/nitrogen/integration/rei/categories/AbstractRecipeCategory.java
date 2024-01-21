@@ -4,7 +4,6 @@ import me.shedaniel.math.Point;
 import me.shedaniel.math.Rectangle;
 import me.shedaniel.rei.api.client.gui.Renderer;
 import me.shedaniel.rei.api.client.gui.widgets.Widget;
-import me.shedaniel.rei.api.client.gui.widgets.WidgetWithBounds;
 import me.shedaniel.rei.api.client.gui.widgets.Widgets;
 import me.shedaniel.rei.api.client.registry.display.DisplayCategory;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractRecipeCategory<T extends Display> implements DisplayCategory<T> {
-
     protected final String id;
     protected final CategoryIdentifier<T> uid;
 
@@ -52,15 +50,15 @@ public abstract class AbstractRecipeCategory<T extends Display> implements Displ
 
     @Override
     public int getDisplayHeight() {
-        return height + (padding * 2);
+        return this.height + (this.padding * 2);
     }
 
     @Override
     public int getDisplayWidth(T display) {
-        return width + (padding * 2);
+        return this.width + (this.padding * 2);
     }
 
-    protected Point startingOffset(Rectangle bounds){
-        return new Point(bounds.x + padding, bounds.y + padding);
+    protected Point startingOffset(Rectangle bounds) {
+        return new Point(bounds.x + this.padding, bounds.y + this.padding);
     }
 }

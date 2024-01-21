@@ -14,7 +14,6 @@ import org.apache.commons.lang3.mutable.MutableDouble;
 import java.util.List;
 
 public abstract class AbstractFuelCategory extends AbstractRecipeCategory<FuelDisplay> {
-
     private final ResourceLocation texture;
 
     public AbstractFuelCategory(CategoryIdentifier<FuelDisplay> categoryIdentifier, ResourceLocation texture) {
@@ -24,7 +23,7 @@ public abstract class AbstractFuelCategory extends AbstractRecipeCategory<FuelDi
         this.texture = texture;
     }
 
-    public ResourceLocation getTexture(){
+    public ResourceLocation getTexture() {
         return this.texture;
     }
 
@@ -48,7 +47,9 @@ public abstract class AbstractFuelCategory extends AbstractRecipeCategory<FuelDi
                         (graphics, bound, mouseX, mouseY, delta) -> {
                             lastTick.getAndAdd(delta);
 
-                            if(lastTick.getValue() > burnTime) lastTick.setValue(0);
+                            if (lastTick.getValue() > burnTime) {
+                                lastTick.setValue(0);
+                            }
 
                             var height = (int) Math.round(11 * (lastTick.getValue() / burnTime));
 
