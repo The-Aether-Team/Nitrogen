@@ -58,7 +58,7 @@ public abstract class AbstractRecipeCategory<T extends Display> implements Displ
         return this.width + (this.padding * 2);
     }
 
-    protected Point startingOffset(Rectangle bounds){
+    protected Point startingOffset(Rectangle bounds) {
         return new Point(bounds.x + this.padding, bounds.y + this.padding);
     }
 }

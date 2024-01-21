@@ -50,5 +50,5 @@ public abstract class AbstractBlockStateRecipeCategory<R extends AbstractBlockSt
         return widgets;
     }
 
-    protected void populateTooltip(BlockStateRecipeDisplay<R> display, Tooltip tooltip) {}
+    protected void populateTooltip(BlockStateRecipeDisplay<R> display, Tooltip tooltip) { }
 }

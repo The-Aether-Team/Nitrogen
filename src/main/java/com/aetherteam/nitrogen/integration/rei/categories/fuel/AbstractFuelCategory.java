@@ -42,7 +42,7 @@ public abstract class AbstractFuelCategory extends AbstractRecipeCategory<FuelDi
         this.texture = texture;
     }
 
-    public ResourceLocation getTexture(){
+    public ResourceLocation getTexture() {
         return this.texture;
     }
 
