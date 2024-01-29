@@ -7,6 +7,7 @@ plugins {
     id 'org.moddingx.modgradle.mapping' version '[4,5)'
     id 'org.moddingx.modgradle.sourcejar' version '[4,5)' apply false
     id 'io.github.0ffz.github-packages' version '[1,2)'
+    id 'io.github.p03w.machete' version '2.0.1'
 }
 
 version = "${mc_version}-${mod_version}-neoforge"
@@ -67,6 +68,20 @@ minecraft {
 sourceSets.main.resources {
     srcDir 'src/generated/resources'
 }
+
+processResources {
+    exclude '.cache/'
+}
+
+machete {
+    jij.enabled = false
+    json.enabled = true
+    png.enabled = false
+    sourceFileStriping.enabled = false
+    lvtStriping.enabled = false
+}
+
+tasks.jar.finalizedBy('optimizeOutputsOfJar')
 
 dependencies {
     minecraft "net.neoforged:forge:${project.mc_version}-${project.neoforge_version}"
