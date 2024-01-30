@@ -5,8 +5,9 @@ import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.aetherteam.nitrogen.network.packet.serverbound.TriggerUpdateInfoPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.NetworkRegistry;
+import net.neoforged.neoforge.network.simple.MessageFunctions;
+import net.neoforged.neoforge.network.simple.SimpleChannel;
 
 import java.util.function.Function;
 
@@ -27,7 +28,7 @@ public class NitrogenPacketHandler {
         register(TriggerUpdateInfoPacket.class, TriggerUpdateInfoPacket::decode);
     }
 
-    private static <MSG extends BasePacket> void register(final Class<MSG> packet, Function<FriendlyByteBuf, MSG> decoder) {
+    private static <MSG extends BasePacket> void register(final Class<MSG> packet, MessageFunctions.MessageDecoder<MSG> decoder) {
         INSTANCE.messageBuilder(packet, index++).encoder(BasePacket::encode).decoder(decoder).consumerMainThread(BasePacket::handle).add();
     }
 }

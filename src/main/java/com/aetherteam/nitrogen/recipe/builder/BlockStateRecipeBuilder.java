@@ -5,9 +5,11 @@ import com.aetherteam.nitrogen.recipe.BlockStateIngredient;
 import com.aetherteam.nitrogen.recipe.recipes.AbstractBlockStateRecipe;
 import com.aetherteam.nitrogen.recipe.serializer.BlockStateRecipeSerializer;
 import com.google.gson.JsonObject;
-import net.minecraft.advancements.CriterionTriggerInstance;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeBuilder;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -17,7 +19,6 @@ import net.minecraft.world.level.block.state.properties.Property;
 
 import javax.annotation.Nullable;
 import java.util.Map;
-import java.util.function.Consumer;
 
 public class BlockStateRecipeBuilder implements RecipeBuilder {
     private final BlockPropertyPair result;
@@ -72,13 +73,13 @@ public class BlockStateRecipeBuilder implements RecipeBuilder {
     }
 
     @Override
-    public RecipeBuilder unlockedBy(String criterionName, CriterionTriggerInstance criterionTrigger) {
+    public RecipeBuilder unlockedBy(String criterionName, Criterion<?> criterionTrigger) {
         return this;
     }
 
     @Override
-    public void save(Consumer<FinishedRecipe> finishedRecipeConsumer, ResourceLocation id) {
-        finishedRecipeConsumer.accept(new BlockStateRecipeBuilder.Result(id, this.ingredient, this.result, this.serializer, this.function));
+    public void save(RecipeOutput output, ResourceLocation id) {
+        output.accept(new BlockStateRecipeBuilder.Result(id, this.ingredient, this.result, this.serializer, this.function));
     }
 
     public static class Result implements FinishedRecipe {
@@ -115,24 +116,18 @@ public class BlockStateRecipeBuilder implements RecipeBuilder {
         }
 
         @Override
-        public RecipeSerializer<?> getType() {
+        public RecipeSerializer<?> type() {
             return this.serializer;
         }
 
         @Override
-        public ResourceLocation getId() {
+        public ResourceLocation id() {
             return this.id;
         }
 
         @Nullable
         @Override
-        public JsonObject serializeAdvancement() {
-            return null;
-        }
-
-        @Nullable
-        @Override
-        public ResourceLocation getAdvancementId() {
+        public AdvancementHolder advancement() {
             return null;
         }
     }

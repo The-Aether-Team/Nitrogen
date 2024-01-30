@@ -6,8 +6,8 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.network.simple.SimpleChannel;
 import org.apache.commons.lang3.tuple.Triple;
 import oshi.util.tuples.Quintet;
 

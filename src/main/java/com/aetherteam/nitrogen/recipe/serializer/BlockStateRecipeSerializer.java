@@ -7,6 +7,7 @@ import com.aetherteam.nitrogen.recipe.recipes.AbstractBlockStateRecipe;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.Codec;
 import net.minecraft.commands.CommandFunction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -22,7 +23,6 @@ public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> impl
         this.factory = factory;
     }
 
-    @Override
     public T fromJson(ResourceLocation id, JsonObject json) {
         if (!json.has("ingredient")) throw new JsonSyntaxException("Missing ingredient, expected to find an object or array");
         JsonElement jsonElement = GsonHelper.isArrayNode(json, "ingredient") ? GsonHelper.getAsJsonArray(json, "ingredient") : GsonHelper.getAsJsonObject(json, "ingredient");
@@ -47,12 +47,21 @@ public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> impl
     }
 
     @Nullable
-    @Override
     public T fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
         BlockStateIngredient ingredient = BlockStateIngredient.fromNetwork(buffer);
         BlockPropertyPair result = BlockStateRecipeUtil.readPair(buffer);
         CommandFunction.CacheableFunction function = BlockStateRecipeUtil.readFunction(buffer);
         return this.factory.create(id, ingredient, result, function);
+    }
+
+    @Override
+    public Codec<T> codec() {
+        return null;
+    }
+
+    @Override
+    public T fromNetwork(FriendlyByteBuf pBuffer) {
+        return null;
     }
 
     @Override

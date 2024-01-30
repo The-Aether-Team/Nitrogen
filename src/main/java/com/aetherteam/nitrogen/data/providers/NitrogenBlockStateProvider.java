@@ -1,6 +1,7 @@
 package com.aetherteam.nitrogen.data.providers;
 
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.*;
@@ -8,9 +9,8 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.block.state.properties.WallSide;
-import net.minecraftforge.client.model.generators.*;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.client.model.generators.*;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.Map;
 
@@ -20,7 +20,7 @@ public abstract class NitrogenBlockStateProvider extends BlockStateProvider {
     }
 
     public String name(Block block) {
-        ResourceLocation location = ForgeRegistries.BLOCKS.getKey(block);
+        ResourceLocation location = BuiltInRegistries.BLOCK.getKey(block);
         if (location != null) {
             return location.getPath();
         } else {

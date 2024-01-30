@@ -88,7 +88,7 @@ public final class UserSavedData extends SavedData {
      * @return The {@link UserSavedData} corresponding to the data file.
      */
     public static UserSavedData compute(DimensionDataStorage dataStorage) {
-        return dataStorage.computeIfAbsent(UserSavedData::load, UserSavedData::create, FILE_NAME);
+        return dataStorage.computeIfAbsent(new SavedData.Factory<>(UserSavedData::create, UserSavedData::load, null), FILE_NAME);
     }
 
     /**

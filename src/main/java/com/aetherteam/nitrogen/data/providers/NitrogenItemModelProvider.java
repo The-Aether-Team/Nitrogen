@@ -2,6 +2,7 @@ package com.aetherteam.nitrogen.data.providers;
 
 import com.aetherteam.nitrogen.Nitrogen;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -10,10 +11,9 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.armortrim.TrimMaterial;
 import net.minecraft.world.item.armortrim.TrimMaterials;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.model.generators.ItemModelBuilder;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public abstract class NitrogenItemModelProvider extends ItemModelProvider {
     }
 
     public String blockName(Block block) {
-        ResourceLocation location = ForgeRegistries.BLOCKS.getKey(block);
+        ResourceLocation location = BuiltInRegistries.BLOCK.getKey(block);
         if (location != null) {
             return location.getPath();
         } else {
@@ -34,7 +34,7 @@ public abstract class NitrogenItemModelProvider extends ItemModelProvider {
     }
 
     public String itemName(Item item) {
-        ResourceLocation location = ForgeRegistries.ITEMS.getKey(item);
+        ResourceLocation location = BuiltInRegistries.ITEM.getKey(item);
         if (location != null) {
             return location.getPath();
         } else {

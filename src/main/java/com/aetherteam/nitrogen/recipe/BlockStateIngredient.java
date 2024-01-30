@@ -1,6 +1,8 @@
 package com.aetherteam.nitrogen.recipe;
 
 import com.google.gson.*;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -9,12 +11,13 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.tags.ITagManager;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -22,14 +25,33 @@ import java.util.stream.StreamSupport;
  * [CODE COPY] - {@link net.minecraft.world.item.crafting.Ingredient}.<br><br>
  * Modified to be based on a {@link Predicate}<{@link BlockState}>.
  */
-public class BlockStateIngredient implements Predicate<BlockState> {
+public class BlockStateIngredient implements Predicate<BlockState> { //todo: codecs
     public static final BlockStateIngredient EMPTY = new BlockStateIngredient(Stream.empty());
     private final BlockStateIngredient.Value[] values;
     @Nullable
     private BlockPropertyPair[] pairs;
+    private final Supplier<? extends IngredientType<?>> type;
 
-    protected BlockStateIngredient(Stream<? extends BlockStateIngredient.Value> values) {
-        this.values = values.toArray(Value[]::new);
+    public BlockStateIngredient(Stream<? extends BlockStateIngredient.Value> values) {
+        this(values, NeoForgeMod.VANILLA_INGREDIENT_TYPE);
+    }
+
+    public BlockStateIngredient(BlockStateIngredient.Value[] values) {
+        this(values, NeoForgeMod.VANILLA_INGREDIENT_TYPE);
+    }
+
+    public BlockStateIngredient(Stream<? extends BlockStateIngredient.Value> values, Supplier<? extends IngredientType<?>> type) {
+        this.values = values.toArray(BlockStateIngredient.Value[]::new);
+        this.type = type;
+    }
+
+    public BlockStateIngredient(BlockStateIngredient.Value[] values, Supplier<? extends IngredientType<?>> type) {
+        this.values = values;
+        this.type = type;
+    }
+
+    public IngredientType<?> getType() {
+        return type.get();
     }
 
     private void dissolve() {
@@ -184,7 +206,7 @@ public class BlockStateIngredient implements Predicate<BlockState> {
         @Override
         public JsonObject serialize() {
             JsonObject jsonObject = new JsonObject();
-            ResourceLocation blockLocation = ForgeRegistries.BLOCKS.getKey(this.block);
+            ResourceLocation blockLocation = BuiltInRegistries.BLOCK.getKey(this.block);
             if (blockLocation == null) {
                 throw new JsonParseException("Block for ingredient StateValue serialization shouldn't be null");
             } else {
@@ -217,7 +239,7 @@ public class BlockStateIngredient implements Predicate<BlockState> {
         @Override
         public JsonObject serialize() {
             JsonObject jsonObject = new JsonObject();
-            ResourceLocation blockLocation = ForgeRegistries.BLOCKS.getKey(this.block);
+            ResourceLocation blockLocation = BuiltInRegistries.BLOCK.getKey(this.block);
             if (blockLocation == null) {
                 throw new JsonParseException("Block for ingredient StateValue serialization shouldn't be null");
             } else {
@@ -237,10 +259,10 @@ public class BlockStateIngredient implements Predicate<BlockState> {
         @Override
         public Collection<BlockPropertyPair> getPairs() {
             List<BlockPropertyPair> list = new ArrayList<>();
-            ITagManager<Block> tags = ForgeRegistries.BLOCKS.tags();
-            if (tags != null) {
-                tags.getTag(this.tag).stream().forEach((block) -> list.add(BlockPropertyPair.of(block, Map.of())));
-            }
+
+            Optional<HolderSet.Named<Block>> tags = BuiltInRegistries.BLOCK.getTag(this.tag);
+            tags.ifPresent(holders -> holders.stream().forEach((block) -> list.add(BlockPropertyPair.of(block.value(), Map.of()))));
+
             return list;
         }
 

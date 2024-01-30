@@ -3,8 +3,8 @@ package com.aetherteam.nitrogen.client.renderer;
 import com.aetherteam.nitrogen.client.renderer.blockentity.NitrogenBlockEntityWithoutLevelRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraftforge.common.util.Lazy;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.common.util.Lazy;
 
 public class NitrogenRenderers {
     public static final Lazy<BlockEntityWithoutLevelRenderer> blockEntityWithoutLevelRenderer = () ->

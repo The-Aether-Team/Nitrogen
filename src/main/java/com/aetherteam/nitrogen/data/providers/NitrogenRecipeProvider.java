@@ -1,6 +1,7 @@
 package com.aetherteam.nitrogen.data.providers;
 
 import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceLocation;
@@ -12,14 +13,15 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.Property;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class NitrogenRecipeProvider extends RecipeProvider {
     protected final String id;
 
-    public NitrogenRecipeProvider(PackOutput output, String id) {
-        super(output);
+    public NitrogenRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String id) {
+        super(output, lookupProvider);
         this.id = id;
     }
 
@@ -27,9 +29,9 @@ public abstract class NitrogenRecipeProvider extends RecipeProvider {
         return new ResourceLocation(this.id, name);
     }
 
-    protected void oreBlockStorageRecipesRecipesWithCustomUnpacking(Consumer<FinishedRecipe> consumer, RecipeCategory itemCategory, ItemLike item, RecipeCategory blockCategory, ItemLike block, String itemRecipeName, String itemGroup) {
-        ShapelessRecipeBuilder.shapeless(itemCategory, item, 9).requires(block).group(itemGroup).unlockedBy(getHasName(block), has(block)).save(consumer, this.name(itemRecipeName));
-        ShapedRecipeBuilder.shaped(blockCategory, block).define('#', item).pattern("###").pattern("###").pattern("###").unlockedBy(getHasName(item), has(item)).save(consumer, this.name(getSimpleRecipeName(block)));
+    protected void oreBlockStorageRecipesRecipesWithCustomUnpacking(RecipeOutput output, RecipeCategory itemCategory, ItemLike item, RecipeCategory blockCategory, ItemLike block, String itemRecipeName, String itemGroup) {
+        ShapelessRecipeBuilder.shapeless(itemCategory, item, 9).requires(block).group(itemGroup).unlockedBy(getHasName(block), has(block)).save(output, this.name(itemRecipeName));
+        ShapedRecipeBuilder.shaped(blockCategory, block).define('#', item).pattern("###").pattern("###").pattern("###").unlockedBy(getHasName(item), has(item)).save(output, this.name(getSimpleRecipeName(block)));
     }
 
     protected ShapedRecipeBuilder fence(Supplier<? extends Block> fence, Supplier<? extends Block> material, Ingredient sticks) {
@@ -324,12 +326,12 @@ public abstract class NitrogenRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(ingredient), has(ingredient));
     }
 
-    protected void stonecuttingRecipe(Consumer<FinishedRecipe> consumer, RecipeCategory category, ItemLike item, ItemLike ingredient) {
-        this.stonecuttingRecipe(consumer, category, item, ingredient, 1);
+    protected void stonecuttingRecipe(RecipeOutput output, RecipeCategory category, ItemLike item, ItemLike ingredient) {
+        this.stonecuttingRecipe(output, category, item, ingredient, 1);
     }
 
-    protected void stonecuttingRecipe(Consumer<FinishedRecipe> consumer, RecipeCategory category, ItemLike item, ItemLike ingredient, int count) {
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ingredient), category, item, count).unlockedBy(getHasName(ingredient), has(ingredient)).save(consumer, this.name(getConversionRecipeName(item, ingredient) + "_stonecutting"));
+    protected void stonecuttingRecipe(RecipeOutput output, RecipeCategory category, ItemLike item, ItemLike ingredient, int count) {
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ingredient), category, item, count).unlockedBy(getHasName(ingredient), has(ingredient)).save(output, this.name(getConversionRecipeName(item, ingredient) + "_stonecutting"));
     }
 
     protected BlockPropertyPair pair(Block resultBlock, Map<Property<?>, Comparable<?>> resultProperties) {

@@ -5,7 +5,6 @@ import com.aetherteam.nitrogen.recipe.BlockStateIngredient;
 import com.aetherteam.nitrogen.recipe.BlockStateRecipeUtil;
 import net.minecraft.commands.CommandFunction;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -16,15 +15,13 @@ import java.util.Map;
 
 public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
     protected final RecipeType<?> type;
-    protected final ResourceLocation id;
     protected final BlockStateIngredient ingredient;
     protected final BlockPropertyPair result;
     @Nullable
     protected final CommandFunction.CacheableFunction function;
 
-    public AbstractBlockStateRecipe(RecipeType<?> type, ResourceLocation id, BlockStateIngredient ingredient, BlockPropertyPair result, @Nullable CommandFunction.CacheableFunction function) {
+    public AbstractBlockStateRecipe(RecipeType<?> type, BlockStateIngredient ingredient, BlockPropertyPair result, @Nullable CommandFunction.CacheableFunction function) {
         this.type = type;
-        this.id = id;
         this.ingredient = ingredient;
         this.result = result;
         this.function = function;
@@ -69,11 +66,6 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
     @Override
     public RecipeType<?> getType() {
         return this.type;
-    }
-
-    @Override
-    public ResourceLocation getId() {
-        return this.id;
     }
 
     @Override

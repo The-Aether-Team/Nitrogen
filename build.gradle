@@ -1,13 +1,10 @@
 plugins {
     id 'eclipse'
     id 'maven-publish'
-    id 'net.neoforged.gradle' version '[6.0.13, 6.2)'
-    id 'org.spongepowered.mixin' version '[0.7,0.8)'
-    id 'org.parchmentmc.librarian.forgegradle' version '[1,2)'
-    id 'org.moddingx.modgradle.mapping' version '[4,5)'
-    id 'org.moddingx.modgradle.sourcejar' version '[4,5)' apply false
+    id 'net.neoforged.gradle.userdev' version '7.0.+'
     id 'io.github.0ffz.github-packages' version '[1,2)'
-    id 'io.github.p03w.machete' version '2.0.1'
+    id 'com.matthewprenger.cursegradle' version '[1.4,1.5)'
+    id 'com.modrinth.minotaur' version '[2,3)'
 }
 
 version = "${mc_version}-${mod_version}-neoforge"
@@ -19,49 +16,30 @@ base {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-apply plugin: 'org.moddingx.modgradle.sourcejar'
+runs {
+    configureEach {
+        workingDirectory project.file('run')
+        systemProperty "${mod_id}.iside", 'true'
+        systemProperty  'forge.logging.console.level', 'info'
 
-minecraft {
-    mappings channel: 'sugarcane', version: project.mappings
+        modSource project.sourceSets.main
+    }
 
-    copyIdeResources = true
+    client {
+        systemProperty 'forge.enabledGameTestNamespaces', mod_id
+    }
 
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    server {
+        systemProperty 'forge.enabledGameTestNamespaces', mod_id
+        programArgument '--nogui'
+    }
 
-    runs {
-        configureEach {
-            workingDirectory project.file('run')
+    gameTestServer {
+        systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
+    }
 
-            property "${mod_id}.iside", 'true'
-
-            property 'forge.logging.console.level', 'info'
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        client {
-            property 'forge.enabledGameTestNamespaces', mod_id
-        }
-
-        server {
-            property 'forge.enabledGameTestNamespaces', mod_id
-
-            args '--nogui'
-        }
-
-        gameTestServer {
-            property 'forge.enabledGameTestNamespaces', mod_id
-        }
-
-        data {
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/'), '--existing', file('src/generated/resources/')
-
-            environment 'target', 'fmluserdevdata'
-        }
+    data {
+        programArguments.addAll '--mod', mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath(), '--existing', file('src/generated/resources/').getAbsolutePath()
     }
 }
 
@@ -69,33 +47,24 @@ sourceSets.main.resources {
     srcDir 'src/generated/resources'
 }
 
-processResources {
-    exclude '.cache/'
+subsystems {
+    parchment {
+        minecraftVersion = project.mc_version
+        mappingsVersion = project.mappings
+    }
 }
-
-machete {
-    jij.enabled = false
-    json.enabled = true
-    png.enabled = false
-    sourceFileStriping.enabled = false
-    lvtStriping.enabled = false
-}
-
-tasks.jar.finalizedBy('optimizeOutputsOfJar')
 
 dependencies {
-    minecraft "net.neoforged:forge:${project.mc_version}-${project.neoforge_version}"
+    implementation "net.neoforged:neoforge:${project.neoforge_version}"
 
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+//    compileOnly "mezz.jei:jei-${project.mc_version}-common:${project.jei_version}"
+//    compileOnly "mezz.jei:jei-${project.mc_version}-forge:${project.jei_version}"
 
-    compileOnly "mezz.jei:jei-${project.mc_version}-common:${project.jei_version}"
-    compileOnly "mezz.jei:jei-${project.mc_version}-forge:${project.jei_version}"
+    compileOnly "me.shedaniel:RoughlyEnoughItems-api-forge:$rei_version"
+    compileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-forge:$rei_version"
 
-    compileOnly fg.deobf("me.shedaniel:RoughlyEnoughItems-api-forge:$rei_version")
-    compileOnly fg.deobf("me.shedaniel:RoughlyEnoughItems-default-plugin-forge:$rei_version")
-
-    compileOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:$cloth_config_version")
-    compileOnly fg.deobf("dev.architectury:architectury-forge:$architectury_version")
+    compileOnly "me.shedaniel.cloth:cloth-config-forge:$cloth_config_version"
+    compileOnly "dev.architectury:architectury-forge:$architectury_version"
 }
 
 repositories {
@@ -103,6 +72,20 @@ repositories {
     maven { url = "https://maven.shedaniel.me/" }
     maven { url = "https://maven.architectury.dev/" }
 }
+
+//processResources {
+//    exclude '.cache/'
+//}
+//
+//machete {
+//    jij.enabled = false
+//    json.enabled = true
+//    png.enabled = false
+//    sourceFileStriping.enabled = false
+//    lvtStriping.enabled = false
+//}
+//
+//tasks.jar.finalizedBy('optimizeOutputsOfJar')
 
 tasks.named('jar', Jar).configure {
     manifest {
@@ -116,24 +99,24 @@ tasks.named('jar', Jar).configure {
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
-
-    finalizedBy 'reobfJar'
-}
-
-tasks.named(sourceSets.main.compileJavaTaskName) {
-    outputs.file("${it.temporaryDir}/${it.name}-refmap.json").withPropertyName("mixin refmap")
 }
 
 compileJava {
     options.incremental = false
 }
 
+tasks.register('sourceJar', Jar) {
+    dependsOn 'classes'
+    from sourceSets.main.allSource
+    archiveClassifier = 'sources'
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
             artifactId project.archivesBaseName
-            artifact jar
-            artifact sourceJar
+            artifact project.jar
+            artifact project.sourceJar
         }
     }
     repositories {
@@ -146,9 +129,4 @@ publishing {
             }
         }
     }
-}
-
-mixin {
-    config "${project.mod_id}.mixins.json"
-    add sourceSets.main, "${project.mod_id}.refmap.json"
 }

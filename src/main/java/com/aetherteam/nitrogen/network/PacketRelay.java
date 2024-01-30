@@ -3,8 +3,8 @@ package com.aetherteam.nitrogen.network;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.simple.SimpleChannel;
 
 public class PacketRelay {
     public static <MSG> void sendToPlayer(SimpleChannel handler, MSG message, ServerPlayer player) {
