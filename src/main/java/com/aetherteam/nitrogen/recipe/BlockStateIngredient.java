@@ -11,13 +11,10 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.crafting.IngredientType;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -30,28 +27,9 @@ public class BlockStateIngredient implements Predicate<BlockState> { //todo: cod
     private final BlockStateIngredient.Value[] values;
     @Nullable
     private BlockPropertyPair[] pairs;
-    private final Supplier<? extends IngredientType<?>> type;
 
     public BlockStateIngredient(Stream<? extends BlockStateIngredient.Value> values) {
-        this(values, NeoForgeMod.VANILLA_INGREDIENT_TYPE);
-    }
-
-    public BlockStateIngredient(BlockStateIngredient.Value[] values) {
-        this(values, NeoForgeMod.VANILLA_INGREDIENT_TYPE);
-    }
-
-    public BlockStateIngredient(Stream<? extends BlockStateIngredient.Value> values, Supplier<? extends IngredientType<?>> type) {
-        this.values = values.toArray(BlockStateIngredient.Value[]::new);
-        this.type = type;
-    }
-
-    public BlockStateIngredient(BlockStateIngredient.Value[] values, Supplier<? extends IngredientType<?>> type) {
-        this.values = values;
-        this.type = type;
-    }
-
-    public IngredientType<?> getType() {
-        return type.get();
+        this.values = values.toArray(Value[]::new);
     }
 
     private void dissolve() {
