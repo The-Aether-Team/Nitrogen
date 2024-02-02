@@ -56,7 +56,7 @@ public record DependentMapCodec<Dependent, Keyable, Value, Returnable>(
 
 		final MutableObject<DataResult<Unit>> resultAccumulator = new MutableObject<>(DataResult.success(Unit.INSTANCE, Lifecycle.experimental()));
 
-		final Map<String, Keyable> properties = this.keyGetter.andThen(c -> c.stream().collect(Collectors.toMap(this.mapKeyNameGetter, Function.identity()))).apply(block);
+		final Map<String, Keyable> properties = this.keyGetter.apply(block).stream().collect(Collectors.toMap(this.mapKeyNameGetter, Function.identity()));
 
 		propertyMap.accept((key, value) -> {
 			DataResult<Keyable> propertyInfo = ops.getStringValue(key).map(properties::get);
