@@ -208,7 +208,7 @@ public final class BlockStateRecipeUtil {
      * @return The {@link BlockPropertyPair}.
      */
     public static BlockPropertyPair pairFromJson(JsonObject json) {
-        if (true) return BlockPropertyPair.CODEC.decode(JsonOps.INSTANCE, json).getOrThrow(false, Nitrogen.LOGGER::error).getFirst();
+        if (true) return BlockPropertyPair.BLOCKSTATE_CODEC.decode(JsonOps.INSTANCE, json).getOrThrow(false, Nitrogen.LOGGER::error).getFirst();
 
         Block block;
         Map<Property<?>, Comparable<?>> properties = Map.of();

@@ -1,13 +1,18 @@
 package com.aetherteam.nitrogen.recipe;
 
 import com.google.gson.*;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -163,6 +168,8 @@ public class BlockStateIngredient implements Predicate<BlockState> { //todo: cod
     }
 
     public static class StateValue implements BlockStateIngredient.Value {
+        public static final Codec<BlockStateIngredient.StateValue> CODEC = BlockPropertyPair.BLOCKSTATE_CODEC.xmap(StateValue::new, value -> new BlockPropertyPair(value.block, value.properties));
+
         private final Block block;
         private final Map<Property<?>, Comparable<?>> properties;
 
@@ -181,28 +188,34 @@ public class BlockStateIngredient implements Predicate<BlockState> { //todo: cod
             return Collections.singleton(BlockPropertyPair.of(this.block, this.properties));
         }
 
-        @Override
-        public JsonObject serialize() {
-            JsonObject jsonObject = new JsonObject();
-            ResourceLocation blockLocation = BuiltInRegistries.BLOCK.getKey(this.block);
-            if (blockLocation == null) {
-                throw new JsonParseException("Block for ingredient StateValue serialization shouldn't be null");
-            } else {
-                jsonObject.addProperty("block", blockLocation.toString());
-            }
-            JsonObject jsonObject1 = new JsonObject();
-            if (!this.properties.isEmpty()) {
-                for (Map.Entry<Property<?>, Comparable<?>> entry : this.properties.entrySet()) {
-                    Property<?> property = entry.getKey();
-                    jsonObject1.addProperty(property.getName(), BlockStateRecipeUtil.getName(property, entry.getValue()));
-                }
-            }
-            jsonObject.add("properties", jsonObject1);
-            return jsonObject;
-        }
+//        @Override
+//        public JsonObject serialize() {
+//            JsonObject jsonObject = new JsonObject();
+//            ResourceLocation blockLocation = BuiltInRegistries.BLOCK.getKey(this.block);
+//            if (blockLocation == null) {
+//                throw new JsonParseException("Block for ingredient StateValue serialization shouldn't be null");
+//            } else {
+//                jsonObject.addProperty("block", blockLocation.toString());
+//            }
+//            JsonObject jsonObject1 = new JsonObject();
+//            if (!this.properties.isEmpty()) {
+//                for (Map.Entry<Property<?>, Comparable<?>> entry : this.properties.entrySet()) {
+//                    Property<?> property = entry.getKey();
+//                    jsonObject1.addProperty(property.getName(), BlockStateRecipeUtil.getName(property, entry.getValue()));
+//                }
+//            }
+//            jsonObject.add("properties", jsonObject1);
+//            return jsonObject;
+//        }
     }
 
     public static class BlockValue implements BlockStateIngredient.Value {
+        public static final Codec<BlockStateIngredient.BlockValue> CODEC = RecordCodecBuilder.create(
+                instance -> instance.group(
+                        BlockPropertyPair.BLOCK_CODEC.fieldOf("block").forGetter(value -> value.block)
+                ).apply(instance, BlockStateIngredient.BlockValue::new)
+        );
+
         private final Block block;
 
         public BlockValue(Block block) {
@@ -214,20 +227,26 @@ public class BlockStateIngredient implements Predicate<BlockState> { //todo: cod
             return Collections.singleton(BlockPropertyPair.of(this.block, Map.of()));
         }
 
-        @Override
-        public JsonObject serialize() {
-            JsonObject jsonObject = new JsonObject();
-            ResourceLocation blockLocation = BuiltInRegistries.BLOCK.getKey(this.block);
-            if (blockLocation == null) {
-                throw new JsonParseException("Block for ingredient StateValue serialization shouldn't be null");
-            } else {
-                jsonObject.addProperty("block", blockLocation.toString());
-            }
-            return jsonObject;
-        }
+//        @Override
+//        public JsonObject serialize() {
+//            JsonObject jsonObject = new JsonObject();
+//            ResourceLocation blockLocation = BuiltInRegistries.BLOCK.getKey(this.block);
+//            if (blockLocation == null) {
+//                throw new JsonParseException("Block for ingredient StateValue serialization shouldn't be null");
+//            } else {
+//                jsonObject.addProperty("block", blockLocation.toString());
+//            }
+//            return jsonObject;
+//        }
     }
 
     public static class TagValue implements BlockStateIngredient.Value {
+        public static final Codec<BlockStateIngredient.TagValue> CODEC = RecordCodecBuilder.create(
+                instance -> instance.group(
+                        TagKey.codec(Registries.BLOCK).fieldOf("tag").forGetter(value -> value.tag)
+                ).apply(instance, BlockStateIngredient.TagValue::new)
+        );
+
         private final TagKey<Block> tag;
 
         public TagValue(TagKey<Block> tag) {
@@ -244,17 +263,17 @@ public class BlockStateIngredient implements Predicate<BlockState> { //todo: cod
             return list;
         }
 
-        @Override
-        public JsonObject serialize() {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("tag", this.tag.location().toString());
-            return jsonObject;
-        }
+//        @Override
+//        public JsonObject serialize() {
+//            JsonObject jsonObject = new JsonObject();
+//            jsonObject.addProperty("tag", this.tag.location().toString());
+//            return jsonObject;
+//        }
     }
 
     public interface Value {
-        Collection<BlockPropertyPair> getPairs();
 
-        JsonObject serialize();
+
+        Collection<BlockPropertyPair> getPairs();
     }
 }

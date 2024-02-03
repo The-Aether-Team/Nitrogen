@@ -3,7 +3,9 @@ package com.aetherteam.nitrogen.recipe;
 import com.aetherteam.nitrogen.util.DependentMapCodec;
 import com.mojang.serialization.*;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 
@@ -15,16 +17,20 @@ import java.util.Map;
  */
 public record BlockPropertyPair(Block block, Map<Property<?>, Comparable<?>> properties) {
     @SuppressWarnings("unchecked")
-    public static final Codec<BlockPropertyPair> CODEC = new DependentMapCodec<>(
+    public static final Codec<BlockPropertyPair> BLOCKSTATE_CODEC = new DependentMapCodec<>(
             "block",
             "properties",
             BuiltInRegistries.BLOCK.byNameCodec(),
-            b -> b.defaultBlockState().getProperties(),
-            p -> (Codec<Comparable<?>>) p.codec(),
+            block -> block.defaultBlockState().getProperties(),
+            property -> (Codec<Comparable<?>>) property.codec(),
             Property::getName,
             BlockPropertyPair::new,
             BlockPropertyPair::block,
             BlockPropertyPair::properties
+    );
+    public static final Codec<Block> BLOCK_CODEC = ExtraCodecs.validate(
+            BuiltInRegistries.BLOCK.byNameCodec(),
+            block -> block == Blocks.AIR ? DataResult.error(() -> "Crafting result must not be minecraft:air") : DataResult.success(block)
     );
 
     public static BlockPropertyPair of(Block block, Map<Property<?>, Comparable<?>> properties) {
