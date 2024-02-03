@@ -1,5 +1,8 @@
 package com.aetherteam.nitrogen.recipe;
 
+import com.aetherteam.nitrogen.util.DependentMapCodec;
+import com.mojang.serialization.*;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -11,6 +14,19 @@ import java.util.Map;
  * Used to store a block alongside a block's properties.
  */
 public record BlockPropertyPair(Block block, Map<Property<?>, Comparable<?>> properties) {
+    @SuppressWarnings("unchecked")
+    public static final Codec<BlockPropertyPair> CODEC = new DependentMapCodec<>(
+            "block",
+            "properties",
+            BuiltInRegistries.BLOCK.byNameCodec(),
+            b -> b.defaultBlockState().getProperties(),
+            p -> (Codec<Comparable<?>>) p.codec(),
+            Property::getName,
+            BlockPropertyPair::new,
+            BlockPropertyPair::block,
+            BlockPropertyPair::properties
+    );
+
     public static BlockPropertyPair of(Block block, Map<Property<?>, Comparable<?>> properties) {
         return new BlockPropertyPair(block, properties);
     }

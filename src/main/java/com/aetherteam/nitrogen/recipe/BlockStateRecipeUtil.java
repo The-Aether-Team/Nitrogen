@@ -1,7 +1,9 @@
 package com.aetherteam.nitrogen.recipe;
 
+import com.aetherteam.nitrogen.Nitrogen;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.commands.CommandFunction;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
@@ -206,6 +208,8 @@ public final class BlockStateRecipeUtil {
      * @return The {@link BlockPropertyPair}.
      */
     public static BlockPropertyPair pairFromJson(JsonObject json) {
+        if (true) return BlockPropertyPair.CODEC.decode(JsonOps.INSTANCE, json).getOrThrow(false, Nitrogen.LOGGER::error).getFirst();
+
         Block block;
         Map<Property<?>, Comparable<?>> properties = Map.of();
         if (json.has("block")) {
