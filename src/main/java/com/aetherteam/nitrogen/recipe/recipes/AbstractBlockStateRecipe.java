@@ -19,12 +19,14 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
     protected final BlockPropertyPair result;
     @Nullable
     protected final CommandFunction.CacheableFunction function;
+    private final String functionString;
 
-    public AbstractBlockStateRecipe(RecipeType<?> type, BlockStateIngredient ingredient, BlockPropertyPair result, @Nullable CommandFunction.CacheableFunction function) {
+    public AbstractBlockStateRecipe(RecipeType<?> type, BlockStateIngredient ingredient, BlockPropertyPair result, @Nullable String functionString) {
         this.type = type;
         this.ingredient = ingredient;
         this.result = result;
-        this.function = function;
+        this.functionString = functionString == null || functionString.isBlank() ? "" : functionString;
+        this.function = BlockStateRecipeUtil.buildMCFunction(this.functionString);
     }
 
     /**
@@ -82,6 +84,10 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
     @Override
     public CommandFunction.CacheableFunction getFunction() {
         return this.function;
+    }
+
+    public String getFunctionString() {
+        return this.functionString;
     }
 }
 

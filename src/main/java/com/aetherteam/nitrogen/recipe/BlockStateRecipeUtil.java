@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -173,6 +174,12 @@ public final class BlockStateRecipeUtil {
     public static CommandFunction.CacheableFunction readFunction(FriendlyByteBuf buffer) {
         String functionString = buffer.readUtf();
         ResourceLocation functionLocation = functionString.isEmpty() ? null : new ResourceLocation(functionString);
+        return functionLocation == null ? CommandFunction.CacheableFunction.NONE : new CommandFunction.CacheableFunction(functionLocation);
+    }
+
+    @NotNull
+    public static CommandFunction.CacheableFunction buildMCFunction(String functionString) {
+        ResourceLocation functionLocation = functionString == null ? null : new ResourceLocation(functionString);
         return functionLocation == null ? CommandFunction.CacheableFunction.NONE : new CommandFunction.CacheableFunction(functionLocation);
     }
 

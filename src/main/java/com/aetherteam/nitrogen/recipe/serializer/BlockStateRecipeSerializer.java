@@ -4,64 +4,38 @@ import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
 import com.aetherteam.nitrogen.recipe.BlockStateIngredient;
 import com.aetherteam.nitrogen.recipe.BlockStateRecipeUtil;
 import com.aetherteam.nitrogen.recipe.recipes.AbstractBlockStateRecipe;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
+import com.mojang.datafixers.util.Function3;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.commands.CommandFunction;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
-import javax.annotation.Nullable;
-
 public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> implements RecipeSerializer<T> {
-    private final BlockStateRecipeSerializer.CookieBaker<T> factory;
+    private final Function3<BlockStateIngredient, BlockPropertyPair, String, T> factory;
+    private final Codec<T> codec;
 
-    public BlockStateRecipeSerializer(BlockStateRecipeSerializer.CookieBaker<T> factory) {
+    public BlockStateRecipeSerializer(Function3<BlockStateIngredient, BlockPropertyPair, String, T> factory) {
         this.factory = factory;
-    }
 
-    public T fromJson(ResourceLocation id, JsonObject json) {
-        if (!json.has("ingredient")) throw new JsonSyntaxException("Missing ingredient, expected to find an object or array");
-        JsonElement jsonElement = GsonHelper.isArrayNode(json, "ingredient") ? GsonHelper.getAsJsonArray(json, "ingredient") : GsonHelper.getAsJsonObject(json, "ingredient");
-        BlockStateIngredient ingredient = BlockStateIngredient.fromJson(jsonElement);
-
-        BlockPropertyPair result;
-        if (!json.has("result")) {
-            throw new JsonSyntaxException("Missing result, expected to find a string or object");
-        }
-        if (json.get("result").isJsonObject()) {
-            JsonObject resultObject = json.getAsJsonObject("result");
-            result = BlockStateRecipeUtil.pairFromJson(resultObject);
-        } else {
-            throw new JsonSyntaxException("Expected result to be object");
-        }
-
-        String functionString = GsonHelper.getAsString(json, "mcfunction", null);
-        ResourceLocation functionLocation = functionString == null ? null : new ResourceLocation(functionString);
-        CommandFunction.CacheableFunction function = functionLocation == null ? CommandFunction.CacheableFunction.NONE : new CommandFunction.CacheableFunction(functionLocation);
-
-        return this.factory.create(ingredient, result, function);
-    }
-
-    @Nullable
-    public T fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
-        BlockStateIngredient ingredient = BlockStateIngredient.fromNetwork(buffer);
-        BlockPropertyPair result = BlockStateRecipeUtil.readPair(buffer);
-        CommandFunction.CacheableFunction function = BlockStateRecipeUtil.readFunction(buffer);
-        return this.factory.create(ingredient, result, function);
+        this.codec = RecordCodecBuilder.create(inst -> inst.group(
+                BlockStateIngredient.CODEC.fieldOf("ingredient").forGetter(AbstractBlockStateRecipe::getIngredient),
+                BlockPropertyPair.BLOCKSTATE_CODEC.fieldOf("result").forGetter(AbstractBlockStateRecipe::getResult),
+                Codec.STRING.fieldOf("mcfunction").forGetter(AbstractBlockStateRecipe::getFunctionString)
+        ).apply(inst, this.factory));
     }
 
     @Override
     public Codec<T> codec() {
-        return null;
+        return this.codec;
     }
 
     @Override
-    public T fromNetwork(FriendlyByteBuf pBuffer) {
-        return null;
+    public T fromNetwork(FriendlyByteBuf buffer) {
+        BlockStateIngredient ingredient = BlockStateIngredient.fromNetwork(buffer);
+        BlockPropertyPair result = BlockStateRecipeUtil.readPair(buffer);
+        String functionString = buffer.readUtf();
+        return this.factory.apply(ingredient, result, functionString);
     }
 
     @Override
@@ -70,10 +44,6 @@ public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> impl
         BlockStateRecipeUtil.writePair(buffer, recipe.getResult());
         CommandFunction.CacheableFunction function = recipe.getFunction();
         buffer.writeUtf(function != null && function.getId() != null ? function.getId().toString() : "");
-    }
-
-    public interface CookieBaker<T extends AbstractBlockStateRecipe> {
-        T create(BlockStateIngredient ingredient, BlockPropertyPair result, @Nullable CommandFunction.CacheableFunction function);
     }
 }
 
