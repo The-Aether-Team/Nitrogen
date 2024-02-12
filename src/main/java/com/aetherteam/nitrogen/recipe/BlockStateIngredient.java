@@ -116,17 +116,7 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     }
 
     public JsonElement toJson() {
-        /*if (this.values.length == 1) {
-            return this.values[0].serialize();
-        } else {
-            JsonArray jsonArray = new JsonArray();
-            for (BlockStateIngredient.Value value : this.values) {
-                jsonArray.add(value.serialize());
-            }
-            return jsonArray;
-        }*/
-
-        return BlockStateIngredient.CODEC.encodeStart(JsonOps.INSTANCE, this).result().get();
+        return Util.getOrThrow(BlockStateIngredient.CODEC.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
     }
 
     public static BlockStateIngredient fromValues(Stream<? extends BlockStateIngredient.Value> stream) {
@@ -154,26 +144,6 @@ public class BlockStateIngredient implements Predicate<BlockState> {
         public Collection<BlockPropertyPair> getPairs() {
             return Collections.singleton(BlockPropertyPair.of(this.block, this.properties));
         }
-
-//        @Override
-//        public JsonObject serialize() {
-//            JsonObject jsonObject = new JsonObject();
-//            ResourceLocation blockLocation = BuiltInRegistries.BLOCK.getKey(this.block);
-//            if (blockLocation == null) {
-//                throw new JsonParseException("Block for ingredient StateValue serialization shouldn't be null");
-//            } else {
-//                jsonObject.addProperty("block", blockLocation.toString());
-//            }
-//            JsonObject jsonObject1 = new JsonObject();
-//            if (!this.properties.isEmpty()) {
-//                for (Map.Entry<Property<?>, Comparable<?>> entry : this.properties.entrySet()) {
-//                    Property<?> property = entry.getKey();
-//                    jsonObject1.addProperty(property.getName(), BlockStateRecipeUtil.getName(property, entry.getValue()));
-//                }
-//            }
-//            jsonObject.add("properties", jsonObject1);
-//            return jsonObject;
-//        }
     }
 
     public static class BlockValue implements BlockStateIngredient.Value {
@@ -193,18 +163,6 @@ public class BlockStateIngredient implements Predicate<BlockState> {
         public Collection<BlockPropertyPair> getPairs() {
             return Collections.singleton(BlockPropertyPair.of(this.block, Map.of()));
         }
-
-//        @Override
-//        public JsonObject serialize() {
-//            JsonObject jsonObject = new JsonObject();
-//            ResourceLocation blockLocation = BuiltInRegistries.BLOCK.getKey(this.block);
-//            if (blockLocation == null) {
-//                throw new JsonParseException("Block for ingredient StateValue serialization shouldn't be null");
-//            } else {
-//                jsonObject.addProperty("block", blockLocation.toString());
-//            }
-//            return jsonObject;
-//        }
     }
 
     public static class TagValue implements BlockStateIngredient.Value {
@@ -229,13 +187,6 @@ public class BlockStateIngredient implements Predicate<BlockState> {
 
             return list;
         }
-
-//        @Override
-//        public JsonObject serialize() {
-//            JsonObject jsonObject = new JsonObject();
-//            jsonObject.addProperty("tag", this.tag.location().toString());
-//            return jsonObject;
-//        }
     }
 
     public interface Value {
