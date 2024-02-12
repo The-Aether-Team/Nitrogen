@@ -1,18 +1,16 @@
 package com.aetherteam.nitrogen.recipe;
 
-import com.google.gson.*;
-import com.mojang.datafixers.util.Either;
+import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.Util;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -21,13 +19,19 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * [CODE COPY] - {@link net.minecraft.world.item.crafting.Ingredient}.<br><br>
  * Modified to be based on a {@link Predicate}<{@link BlockState}>.
  */
-public class BlockStateIngredient implements Predicate<BlockState> { //todo: codecs
+public class BlockStateIngredient implements Predicate<BlockState> {
+    @SuppressWarnings({"unused", "unchecked", "rawtypes"})
+    public static final Codec<BlockStateIngredient> CODEC = Util.make(() -> {
+        Codec<BlockStateIngredient> blockStateIngredientCodec = ExtraCodecs.withAlternative((Codec<BlockStateIngredient>) (Codec) StateValue.CODEC, (Codec<BlockStateIngredient>) (Codec) BlockValue.CODEC);
+        Codec<BlockStateIngredient> codec = (Codec<BlockStateIngredient>) (Codec) TagValue.CODEC;
+        return ExtraCodecs.withAlternative(codec, blockStateIngredientCodec);
+    });
+
     public static final BlockStateIngredient EMPTY = new BlockStateIngredient(Stream.empty());
     private final BlockStateIngredient.Value[] values;
     @Nullable
@@ -112,7 +116,7 @@ public class BlockStateIngredient implements Predicate<BlockState> { //todo: cod
     }
 
     public JsonElement toJson() {
-        if (this.values.length == 1) {
+        /*if (this.values.length == 1) {
             return this.values[0].serialize();
         } else {
             JsonArray jsonArray = new JsonArray();
@@ -120,46 +124,9 @@ public class BlockStateIngredient implements Predicate<BlockState> { //todo: cod
                 jsonArray.add(value.serialize());
             }
             return jsonArray;
-        }
-    }
+        }*/
 
-    public static BlockStateIngredient fromJson(@Nullable JsonElement json) {
-        if (json != null && !json.isJsonNull()) {
-            if (json.isJsonObject()) {
-                return fromValues(Stream.of(valueFromJson(json.getAsJsonObject())));
-            } else if (json.isJsonArray()) {
-                JsonArray jsonArray = json.getAsJsonArray();
-                if (jsonArray.size() == 0) {
-                    throw new JsonSyntaxException("Block array cannot be empty, at least one item must be defined");
-                } else {
-                    return fromValues(StreamSupport.stream(jsonArray.spliterator(), false).map((element) -> valueFromJson(GsonHelper.convertToJsonObject(element, "block"))));
-                }
-            } else {
-                throw new JsonSyntaxException("Expected block to be object or array of objects");
-            }
-        } else {
-            throw new JsonSyntaxException("Block cannot be null");
-        }
-    }
-
-    public static BlockStateIngredient.Value valueFromJson(JsonObject json) {
-        if (json.has("block") && json.has("tag")) {
-            throw new JsonParseException("An ingredient entry is either a tag or a block, not both");
-        } else if (json.has("block")) {
-            Block block = BlockStateRecipeUtil.blockFromJson(json);
-            if (json.has("properties")) {
-                Map<Property<?>, Comparable<?>> properties = BlockStateRecipeUtil.propertiesFromJson(json, block);
-                return new BlockStateIngredient.StateValue(block, properties);
-            } else {
-                return new BlockStateIngredient.BlockValue(block);
-            }
-        } else if (json.has("tag")) {
-            ResourceLocation resourcelocation = new ResourceLocation(GsonHelper.getAsString(json, "tag"));
-            TagKey<Block> tagKey = TagKey.create(Registries.BLOCK, resourcelocation);
-            return new BlockStateIngredient.TagValue(tagKey);
-        } else {
-            throw new JsonParseException("An ingredient entry needs either a tag or a block");
-        }
+        return BlockStateIngredient.CODEC.encodeStart(JsonOps.INSTANCE, this).result().get();
     }
 
     public static BlockStateIngredient fromValues(Stream<? extends BlockStateIngredient.Value> stream) {
