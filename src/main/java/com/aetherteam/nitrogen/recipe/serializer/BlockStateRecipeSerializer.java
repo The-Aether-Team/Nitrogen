@@ -43,7 +43,7 @@ public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> impl
         ResourceLocation functionLocation = functionString == null ? null : new ResourceLocation(functionString);
         CommandFunction.CacheableFunction function = functionLocation == null ? CommandFunction.CacheableFunction.NONE : new CommandFunction.CacheableFunction(functionLocation);
 
-        return this.factory.create(id, ingredient, result, function);
+        return this.factory.create(ingredient, result, function);
     }
 
     @Nullable
@@ -51,7 +51,7 @@ public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> impl
         BlockStateIngredient ingredient = BlockStateIngredient.fromNetwork(buffer);
         BlockPropertyPair result = BlockStateRecipeUtil.readPair(buffer);
         CommandFunction.CacheableFunction function = BlockStateRecipeUtil.readFunction(buffer);
-        return this.factory.create(id, ingredient, result, function);
+        return this.factory.create(ingredient, result, function);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> impl
     }
 
     public interface CookieBaker<T extends AbstractBlockStateRecipe> {
-        T create(ResourceLocation id, BlockStateIngredient ingredient, BlockPropertyPair result, @Nullable CommandFunction.CacheableFunction function);
+        T create(BlockStateIngredient ingredient, BlockPropertyPair result, @Nullable CommandFunction.CacheableFunction function);
     }
 }
 
