@@ -2,6 +2,7 @@ package com.aetherteam.nitrogen.recipe;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
@@ -25,20 +26,20 @@ import java.util.stream.Stream;
  * Modified to be based on a {@link Predicate}<{@link BlockState}>.
  */
 public class BlockStateIngredient implements Predicate<BlockState> {
-    @SuppressWarnings({"unused", "unchecked", "rawtypes"})
-    public static final Codec<BlockStateIngredient> CODEC = Util.make(() -> {
-        Codec<BlockStateIngredient> blockStateIngredientCodec = ExtraCodecs.withAlternative((Codec<BlockStateIngredient>) (Codec) StateValue.CODEC, (Codec<BlockStateIngredient>) (Codec) BlockValue.CODEC);
-        Codec<BlockStateIngredient> codec = (Codec<BlockStateIngredient>) (Codec) TagValue.CODEC;
-        return ExtraCodecs.withAlternative(codec, blockStateIngredientCodec);
-    });
+    private static final Codec<BlockStateIngredient.Value> VALUE_CODEC = Util.make(() -> ExtraCodecs.withAlternative(BlockStateIngredient.TagValue.CODEC, ExtraCodecs.withAlternative(BlockStateIngredient.StateValue.CODEC, BlockStateIngredient.BlockValue.CODEC)));
+    public static final Codec<BlockStateIngredient> CODEC = VALUE_CODEC.listOf().xmap(BlockStateIngredient::fromCollection, BlockStateIngredient::copyList);
 
-    public static final BlockStateIngredient EMPTY = new BlockStateIngredient(Stream.empty());
+    public static final BlockStateIngredient EMPTY = BlockStateIngredient.fromValues(Stream.empty());
     private final BlockStateIngredient.Value[] values;
     @Nullable
     private BlockPropertyPair[] pairs;
 
-    public BlockStateIngredient(Stream<? extends BlockStateIngredient.Value> values) {
-        this.values = values.toArray(Value[]::new);
+    public static BlockStateIngredient fromCollection(Collection<BlockStateIngredient.Value> values) {
+        return new BlockStateIngredient(values.toArray(Value[]::new));
+    }
+
+    public BlockStateIngredient(BlockStateIngredient.Value[] values) {
+        this.values = values;
     }
 
     private void dissolve() {
@@ -116,26 +117,20 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     }
 
     public JsonElement toJson() {
-        /*if (this.values.length == 1) {
-            return this.values[0].serialize();
-        } else {
-            JsonArray jsonArray = new JsonArray();
-            for (BlockStateIngredient.Value value : this.values) {
-                jsonArray.add(value.serialize());
-            }
-            return jsonArray;
-        }*/
-
         return BlockStateIngredient.CODEC.encodeStart(JsonOps.INSTANCE, this).result().get();
     }
 
+    private List<BlockStateIngredient.Value> copyList() {
+        return Arrays.asList(this.values);
+    }
+
     public static BlockStateIngredient fromValues(Stream<? extends BlockStateIngredient.Value> stream) {
-        BlockStateIngredient ingredient = new BlockStateIngredient(stream);
+        BlockStateIngredient ingredient = new BlockStateIngredient(stream.toArray(Value[]::new));
         return ingredient.values.length == 0 ? EMPTY : ingredient;
     }
 
     public static class StateValue implements BlockStateIngredient.Value {
-        public static final Codec<BlockStateIngredient.StateValue> CODEC = BlockPropertyPair.BLOCKSTATE_CODEC.xmap(StateValue::new, value -> new BlockPropertyPair(value.block, value.properties));
+        public static final Codec<BlockStateIngredient.Value> CODEC = BlockPropertyPair.BLOCKSTATE_CODEC.flatComapMap(StateValue::new, StateValue::cast);
 
         private final Block block;
         private final Map<Property<?>, Comparable<?>> properties;
@@ -155,31 +150,15 @@ public class BlockStateIngredient implements Predicate<BlockState> {
             return Collections.singleton(BlockPropertyPair.of(this.block, this.properties));
         }
 
-//        @Override
-//        public JsonObject serialize() {
-//            JsonObject jsonObject = new JsonObject();
-//            ResourceLocation blockLocation = BuiltInRegistries.BLOCK.getKey(this.block);
-//            if (blockLocation == null) {
-//                throw new JsonParseException("Block for ingredient StateValue serialization shouldn't be null");
-//            } else {
-//                jsonObject.addProperty("block", blockLocation.toString());
-//            }
-//            JsonObject jsonObject1 = new JsonObject();
-//            if (!this.properties.isEmpty()) {
-//                for (Map.Entry<Property<?>, Comparable<?>> entry : this.properties.entrySet()) {
-//                    Property<?> property = entry.getKey();
-//                    jsonObject1.addProperty(property.getName(), BlockStateRecipeUtil.getName(property, entry.getValue()));
-//                }
-//            }
-//            jsonObject.add("properties", jsonObject1);
-//            return jsonObject;
-//        }
+        private static DataResult<? extends BlockPropertyPair> cast(Value value) {
+            return DataResult.success(new BlockPropertyPair(((StateValue) value).block, ((StateValue) value).properties));
+        }
     }
 
     public static class BlockValue implements BlockStateIngredient.Value {
-        public static final Codec<BlockStateIngredient.BlockValue> CODEC = RecordCodecBuilder.create(
+        public static final Codec<BlockStateIngredient.Value> CODEC = RecordCodecBuilder.create(
                 instance -> instance.group(
-                        BlockPropertyPair.BLOCK_CODEC.fieldOf("block").forGetter(value -> value.block)
+                        BlockPropertyPair.BLOCK_CODEC.fieldOf("block").forGetter(value -> ((BlockValue) value).block)
                 ).apply(instance, BlockStateIngredient.BlockValue::new)
         );
 
@@ -193,24 +172,12 @@ public class BlockStateIngredient implements Predicate<BlockState> {
         public Collection<BlockPropertyPair> getPairs() {
             return Collections.singleton(BlockPropertyPair.of(this.block, Map.of()));
         }
-
-//        @Override
-//        public JsonObject serialize() {
-//            JsonObject jsonObject = new JsonObject();
-//            ResourceLocation blockLocation = BuiltInRegistries.BLOCK.getKey(this.block);
-//            if (blockLocation == null) {
-//                throw new JsonParseException("Block for ingredient StateValue serialization shouldn't be null");
-//            } else {
-//                jsonObject.addProperty("block", blockLocation.toString());
-//            }
-//            return jsonObject;
-//        }
     }
 
     public static class TagValue implements BlockStateIngredient.Value {
-        public static final Codec<BlockStateIngredient.TagValue> CODEC = RecordCodecBuilder.create(
+        public static final Codec<BlockStateIngredient.Value> CODEC = RecordCodecBuilder.create(
                 instance -> instance.group(
-                        TagKey.codec(Registries.BLOCK).fieldOf("tag").forGetter(value -> value.tag)
+                        TagKey.codec(Registries.BLOCK).fieldOf("tag").forGetter(value -> ((TagValue) value).tag)
                 ).apply(instance, BlockStateIngredient.TagValue::new)
         );
 
@@ -229,18 +196,9 @@ public class BlockStateIngredient implements Predicate<BlockState> {
 
             return list;
         }
-
-//        @Override
-//        public JsonObject serialize() {
-//            JsonObject jsonObject = new JsonObject();
-//            jsonObject.addProperty("tag", this.tag.location().toString());
-//            return jsonObject;
-//        }
     }
 
     public interface Value {
-
-
         Collection<BlockPropertyPair> getPairs();
     }
 }
