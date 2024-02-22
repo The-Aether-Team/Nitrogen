@@ -171,13 +171,13 @@ public final class BlockStateRecipeUtil {
      * @param buffer The networking {@link FriendlyByteBuf}.
      * @return The {@link net.minecraft.commands.CommandFunction.CacheableFunction}.
      */
+    @Deprecated // Use Below instead
     public static CommandFunction.CacheableFunction readFunction(FriendlyByteBuf buffer) {
-        String functionString = buffer.readUtf();
-        ResourceLocation functionLocation = functionString.isEmpty() ? null : new ResourceLocation(functionString);
-        return functionLocation == null ? CommandFunction.CacheableFunction.NONE : new CommandFunction.CacheableFunction(functionLocation);
+        return buildMCFunction(buffer.readUtf());
+        //ResourceLocation functionLocation = functionString.isEmpty() ? null : new ResourceLocation(functionString);
+        //return functionLocation == null ? CommandFunction.CacheableFunction.NONE : new CommandFunction.CacheableFunction(functionLocation);
     }
 
-    @NotNull
     public static CommandFunction.CacheableFunction buildMCFunction(String functionString) {
         ResourceLocation functionLocation = functionString == null ? null : new ResourceLocation(functionString);
         return functionLocation == null ? CommandFunction.CacheableFunction.NONE : new CommandFunction.CacheableFunction(functionLocation);
