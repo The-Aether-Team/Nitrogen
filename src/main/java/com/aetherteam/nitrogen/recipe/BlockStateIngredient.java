@@ -17,6 +17,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -228,7 +229,7 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     }
 
     public interface Value {
-        Codec<BlockStateIngredient.Value> CODEC = Util.make(() -> ExtraCodecs.withAlternative(BlockStateIngredient.TagValue.CODEC, ExtraCodecs.withAlternative(BlockStateIngredient.StateValue.CODEC, BlockStateIngredient.BlockValue.CODEC)));
+        Codec<BlockStateIngredient.Value> CODEC = Util.make(() -> NeoForgeExtraCodecs.withAlternative(BlockStateIngredient.TagValue.CODEC, NeoForgeExtraCodecs.withAlternative(BlockStateIngredient.StateValue.CODEC, BlockStateIngredient.BlockValue.CODEC)));
 
         Collection<BlockPropertyPair> getPairs();
     }
