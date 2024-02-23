@@ -24,11 +24,12 @@ public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> impl
         this.flatCodec = RecordCodecBuilder.mapCodec(inst -> inst.group(
                 BlockStateIngredient.CODEC.fieldOf("ingredient").forGetter(AbstractBlockStateRecipe::getIngredient),
                 BlockPropertyPair.BLOCKSTATE_CODEC.fieldOf("result").forGetter(AbstractBlockStateRecipe::getResult),
-                Codec.STRING.fieldOf("mcfunction").forGetter(AbstractBlockStateRecipe::getFunctionString)
+                Codec.STRING.fieldOf("mcfunction").orElse("").forGetter(AbstractBlockStateRecipe::getFunctionString)
         ).apply(inst, this.factory));
 
         this.codec = this.flatCodec.codec();
     }
+
     public MapCodec<T> flatCodec() {
         return this.flatCodec;
     }
