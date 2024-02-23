@@ -104,11 +104,11 @@ public class BlockStateRecipeBuilder implements RecipeBuilder {
 
         @Override
         public void serializeRecipeData(JsonObject json) {
-            json.add("ingredient", this.ingredient.toJson());
+            json.add("ingredient", this.ingredient.toJson(false));
             if (this.result.properties().isEmpty()) {
-                json.add("result", BlockStateIngredient.of(this.result.block()).toJson());
+                json.add("result", BlockStateIngredient.of(this.result.block()).toJson(false));
             } else {
-                json.add("result", BlockStateIngredient.of(this.result).toJson());
+                json.add("result", BlockStateIngredient.of(this.result).toJson(false));
             }
             if (this.function != null) {
                 json.addProperty("mcfunction", this.function.toString());

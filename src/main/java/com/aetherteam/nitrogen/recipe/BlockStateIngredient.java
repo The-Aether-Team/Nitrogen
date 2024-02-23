@@ -1,6 +1,7 @@
 package com.aetherteam.nitrogen.recipe;
 
 import com.google.gson.JsonElement;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
@@ -28,8 +29,8 @@ import java.util.stream.Stream;
 public class BlockStateIngredient implements Predicate<BlockState> {
     public static final BlockStateIngredient EMPTY = BlockStateIngredient.fromValues(Stream.empty());
 
-    private static final Codec<BlockStateIngredient.Value> VALUE_CODEC = Util.make(() -> ExtraCodecs.withAlternative(BlockStateIngredient.TagValue.CODEC, ExtraCodecs.withAlternative(BlockStateIngredient.StateValue.CODEC, BlockStateIngredient.BlockValue.CODEC)));
-    public static final Codec<BlockStateIngredient> CODEC = VALUE_CODEC.listOf().xmap(BlockStateIngredient::fromCollection, BlockStateIngredient::copyList);
+    public static final Codec<BlockStateIngredient> CODEC = codec(true);
+    public static final Codec<BlockStateIngredient> CODEC_NONEMPTY = codec(false);
 
     private final BlockStateIngredient.Value[] values;
     @Nullable
@@ -96,6 +97,11 @@ public class BlockStateIngredient implements Predicate<BlockState> {
         return fromValues(Stream.of(new BlockStateIngredient.TagValue(tag)));
     }
 
+    public static BlockStateIngredient fromValues(Stream<? extends BlockStateIngredient.Value> stream) {
+        BlockStateIngredient ingredient = new BlockStateIngredient(stream.toArray(Value[]::new));
+        return ingredient.values.length == 0 ? EMPTY : ingredient;
+    }
+
     /**
      * Warning for "ConstantConditions" is suppressed because the potential of {@link BlockStateIngredient#pairs} being null is avoided by {@link BlockStateIngredient#dissolve()}.
      */
@@ -103,6 +109,11 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     public final void toNetwork(FriendlyByteBuf buf) {
         this.dissolve();
         buf.writeCollection(Arrays.asList(this.pairs), BlockStateRecipeUtil::writePair);
+    }
+
+    public JsonElement toJson(boolean allowEmpty) {
+        Codec<BlockStateIngredient> codec = allowEmpty ? CODEC : CODEC_NONEMPTY;
+        return Util.getOrThrow(codec.encodeStart(JsonOps.INSTANCE, this), IllegalStateException::new);
     }
 
     public static BlockStateIngredient fromNetwork(FriendlyByteBuf buf) {
@@ -113,26 +124,36 @@ public class BlockStateIngredient implements Predicate<BlockState> {
         }).limit(size));
     }
 
-    public JsonElement toJson() {
-        return BlockStateIngredient.CODEC.encodeStart(JsonOps.INSTANCE, this).result().get();
+    public static BlockStateIngredient fromJson(JsonElement element, boolean nonEmpty) {
+        Codec<BlockStateIngredient> codec = nonEmpty ? CODEC : CODEC_NONEMPTY;
+        return Util.getOrThrow(codec.parse(JsonOps.INSTANCE, element), IllegalStateException::new);
     }
 
-    private List<BlockStateIngredient.Value> copyList() {
-        return Arrays.asList(this.values);
-    }
-
-    public static BlockStateIngredient fromValues(Stream<? extends BlockStateIngredient.Value> stream) {
-        BlockStateIngredient ingredient = new BlockStateIngredient(stream.toArray(Value[]::new));
-        return ingredient.values.length == 0 ? EMPTY : ingredient;
-    }
-
-    public static BlockStateIngredient fromCollection(Collection<? extends BlockStateIngredient.Value> stream) {
-        BlockStateIngredient ingredient = new BlockStateIngredient(stream.toArray(Value[]::new));
-        return ingredient.values.length == 0 ? EMPTY : ingredient;
+    private static Codec<BlockStateIngredient> codec(boolean allowEmpty) {
+        Codec<BlockStateIngredient.Value[]> codec = Codec.list(BlockStateIngredient.Value.CODEC)
+                .comapFlatMap(
+                        list -> !allowEmpty && list.size() < 1
+                                ? DataResult.error(() -> "Array cannot be empty, at least one item must be defined")
+                                : DataResult.success(list.toArray(new BlockStateIngredient.Value[0])),
+                        List::of
+                );
+        return ExtraCodecs.either(codec, BlockStateIngredient.Value.CODEC)
+                .flatComapMap(
+                        either -> either.map(BlockStateIngredient::new, value -> new BlockStateIngredient(new BlockStateIngredient.Value[]{value})),
+                        ingredient -> {
+                            if (ingredient.values.length == 1) {
+                                return DataResult.success(Either.right(ingredient.values[0]));
+                            } else {
+                                return ingredient.values.length == 0 && !allowEmpty
+                                        ? DataResult.error(() -> "Array cannot be empty, at least one item must be defined")
+                                        : DataResult.success(Either.left(ingredient.values));
+                            }
+                        }
+                );
     }
 
     public static class StateValue implements BlockStateIngredient.Value {
-        public static final Codec<BlockStateIngredient.Value> CODEC = BlockPropertyPair.BLOCKSTATE_CODEC.flatComapMap(StateValue::new, StateValue::cast);
+        public static final Codec<BlockStateIngredient.StateValue> CODEC = BlockPropertyPair.BLOCKSTATE_CODEC.flatComapMap(StateValue::new, StateValue::cast);
 
         private final Block block;
         private final Map<Property<?>, Comparable<?>> properties;
@@ -159,9 +180,9 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     }
 
     public static class BlockValue implements BlockStateIngredient.Value {
-        public static final Codec<BlockStateIngredient.Value> CODEC = RecordCodecBuilder.create(
+        public static final Codec<BlockStateIngredient.BlockValue> CODEC = RecordCodecBuilder.create(
                 instance -> instance.group(
-                        BlockPropertyPair.BLOCK_CODEC.fieldOf("block").forGetter(value -> ((BlockValue) value).block)
+                        BlockPropertyPair.BLOCK_CODEC.fieldOf("block").forGetter(value -> value.block)
                 ).apply(instance, BlockStateIngredient.BlockValue::new)
         );
 
@@ -178,9 +199,9 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     }
 
     public static class TagValue implements BlockStateIngredient.Value {
-        public static final Codec<BlockStateIngredient.Value> CODEC = RecordCodecBuilder.create(
+        public static final Codec<BlockStateIngredient.TagValue> CODEC = RecordCodecBuilder.create(
                 instance -> instance.group(
-                        TagKey.codec(Registries.BLOCK).fieldOf("tag").forGetter(value -> ((TagValue) value).tag)
+                        TagKey.codec(Registries.BLOCK).fieldOf("tag").forGetter(value -> value.tag)
                 ).apply(instance, BlockStateIngredient.TagValue::new)
         );
 
@@ -202,6 +223,29 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     }
 
     public interface Value {
+        Codec<BlockStateIngredient.Value> INNER_CODEC = ExtraCodecs.xor(BlockValue.CODEC, StateValue.CODEC)
+                .xmap(either -> either.map(block -> block, state -> state), value -> {
+                    if (value instanceof StateValue stateValue) {
+                        return Either.right(stateValue);
+                    } else if (value instanceof BlockValue blockValue) {
+                        return Either.left(blockValue);
+                    } else {
+                        throw new UnsupportedOperationException("This is neither a state nor a block value.");
+                    }
+                });
+        Codec<BlockStateIngredient.Value> CODEC = ExtraCodecs.xor(INNER_CODEC, TagValue.CODEC)
+                .xmap(either -> either.map(blockOrState -> blockOrState, tag -> tag), value -> {
+                    if (value instanceof TagValue tagValue) {
+                        return Either.right(tagValue);
+                    } else if (value instanceof StateValue stateValue) {
+                        return Either.left(stateValue);
+                    } else if (value instanceof BlockValue blockValue) {
+                        return Either.left(blockValue);
+                    } else {
+                        throw new UnsupportedOperationException("This is neither a tag nor a state nor a block value.");
+                    }
+                });
+
         Collection<BlockPropertyPair> getPairs();
     }
 }
