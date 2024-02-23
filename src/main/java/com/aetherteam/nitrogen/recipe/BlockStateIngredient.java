@@ -13,6 +13,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -27,7 +28,7 @@ import java.util.stream.Stream;
  * Modified to be based on a {@link Predicate}<{@link BlockState}>.
  */
 public class BlockStateIngredient implements Predicate<BlockState> {
-    public static final BlockStateIngredient EMPTY = BlockStateIngredient.fromValues(Stream.empty());
+    public static final BlockStateIngredient EMPTY = new BlockStateIngredient(Stream.empty());
 
     public static final Codec<BlockStateIngredient> CODEC = codec(true);
     public static final Codec<BlockStateIngredient> CODEC_NONEMPTY = codec(false);
@@ -35,6 +36,10 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     private final BlockStateIngredient.Value[] values;
     @Nullable
     private BlockPropertyPair[] pairs;
+
+    public BlockStateIngredient(Stream<? extends BlockStateIngredient.Value> values) {
+        this.values = values.toArray(BlockStateIngredient.Value[]::new);
+    }
 
     public BlockStateIngredient(BlockStateIngredient.Value[] values) {
         this.values = values;
