@@ -158,7 +158,7 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     }
 
     public static class StateValue implements BlockStateIngredient.Value {
-        public static final Codec<BlockStateIngredient.StateValue> CODEC = BlockPropertyPair.BLOCKSTATE_CODEC.flatComapMap(StateValue::new, StateValue::cast);
+        public static final Codec<BlockStateIngredient.Value> CODEC = BlockPropertyPair.BLOCKSTATE_CODEC.flatComapMap(StateValue::new, StateValue::cast);
 
         private final Block block;
         private final Map<Property<?>, Comparable<?>> properties;
@@ -185,9 +185,9 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     }
 
     public static class BlockValue implements BlockStateIngredient.Value {
-        public static final Codec<BlockStateIngredient.BlockValue> CODEC = RecordCodecBuilder.create(
+        public static final Codec<BlockStateIngredient.Value> CODEC = RecordCodecBuilder.create(
                 instance -> instance.group(
-                        BlockPropertyPair.BLOCK_CODEC.fieldOf("block").forGetter(value -> value.block)
+                        BlockPropertyPair.BLOCK_CODEC.fieldOf("block").forGetter(value -> ((BlockValue) value).block)
                 ).apply(instance, BlockStateIngredient.BlockValue::new)
         );
 
@@ -204,9 +204,9 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     }
 
     public static class TagValue implements BlockStateIngredient.Value {
-        public static final Codec<BlockStateIngredient.TagValue> CODEC = RecordCodecBuilder.create(
+        public static final Codec<BlockStateIngredient.Value> CODEC = RecordCodecBuilder.create(
                 instance -> instance.group(
-                        TagKey.codec(Registries.BLOCK).fieldOf("tag").forGetter(value -> value.tag)
+                        TagKey.codec(Registries.BLOCK).fieldOf("tag").forGetter(value -> ((TagValue) value).tag)
                 ).apply(instance, BlockStateIngredient.TagValue::new)
         );
 
@@ -228,28 +228,7 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     }
 
     public interface Value {
-        Codec<BlockStateIngredient.Value> INNER_CODEC = ExtraCodecs.xor(BlockValue.CODEC, StateValue.CODEC)
-                .xmap(either -> either.map(block -> block, state -> state), value -> {
-                    if (value instanceof StateValue stateValue) {
-                        return Either.right(stateValue);
-                    } else if (value instanceof BlockValue blockValue) {
-                        return Either.left(blockValue);
-                    } else {
-                        throw new UnsupportedOperationException("This is neither a state nor a block value.");
-                    }
-                });
-        Codec<BlockStateIngredient.Value> CODEC = ExtraCodecs.xor(INNER_CODEC, TagValue.CODEC)
-                .xmap(either -> either.map(blockOrState -> blockOrState, tag -> tag), value -> {
-                    if (value instanceof TagValue tagValue) {
-                        return Either.right(tagValue);
-                    } else if (value instanceof StateValue stateValue) {
-                        return Either.left(stateValue);
-                    } else if (value instanceof BlockValue blockValue) {
-                        return Either.left(blockValue);
-                    } else {
-                        throw new UnsupportedOperationException("This is neither a tag nor a state nor a block value.");
-                    }
-                });
+        Codec<BlockStateIngredient.Value> CODEC = Util.make(() -> ExtraCodecs.withAlternative(BlockStateIngredient.TagValue.CODEC, ExtraCodecs.withAlternative(BlockStateIngredient.StateValue.CODEC, BlockStateIngredient.BlockValue.CODEC)));
 
         Collection<BlockPropertyPair> getPairs();
     }
