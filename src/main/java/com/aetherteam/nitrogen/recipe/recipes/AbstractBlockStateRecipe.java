@@ -5,6 +5,7 @@ import com.aetherteam.nitrogen.recipe.BlockStateIngredient;
 import com.aetherteam.nitrogen.recipe.BlockStateRecipeUtil;
 import net.minecraft.commands.CommandFunction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -18,14 +19,14 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
     protected final BlockStateIngredient ingredient;
     protected final BlockPropertyPair result;
     protected final Optional<CommandFunction.CacheableFunction> function;
-    private final Optional<String> functionString;
+    private final Optional<ResourceLocation> functionId;
 
-    public AbstractBlockStateRecipe(RecipeType<?> type, BlockStateIngredient ingredient, BlockPropertyPair result, Optional<String> functionString) {
+    public AbstractBlockStateRecipe(RecipeType<?> type, BlockStateIngredient ingredient, BlockPropertyPair result, Optional<ResourceLocation> functionId) {
         this.type = type;
         this.ingredient = ingredient;
         this.result = result;
-        this.functionString = functionString.isEmpty() || functionString.get().isBlank() ? Optional.empty() : functionString;
-        this.function = this.functionString.map(BlockStateRecipeUtil::buildMCFunction);
+        this.functionId = functionId.isEmpty() ? Optional.empty() : functionId;
+        this.function = this.functionId.map(BlockStateRecipeUtil::buildMCFunction);
     }
 
     /**
@@ -84,8 +85,9 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
         return this.function;
     }
 
-    public Optional<String> getFunctionString() {
-        return this.functionString;
+    @Override
+    public Optional<ResourceLocation> getFunctionId() {
+        return this.functionId;
     }
 }
 

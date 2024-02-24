@@ -166,23 +166,6 @@ public final class BlockStateRecipeUtil {
         }
     }
 
-    /**
-     * Reads a {@link net.minecraft.commands.CommandFunction.CacheableFunction} from the networking buffer.
-     * @param buffer The networking {@link FriendlyByteBuf}.
-     * @return The {@link net.minecraft.commands.CommandFunction.CacheableFunction}.
-     */
-    @Deprecated // Use Below instead
-    public static CommandFunction.CacheableFunction readFunction(FriendlyByteBuf buffer) {
-        return buildMCFunction(buffer.readUtf());
-        //ResourceLocation functionLocation = functionString.isEmpty() ? null : new ResourceLocation(functionString);
-        //return functionLocation == null ? CommandFunction.CacheableFunction.NONE : new CommandFunction.CacheableFunction(functionLocation);
-    }
-
-    public static CommandFunction.CacheableFunction buildMCFunction(String functionString) {
-        ResourceLocation functionLocation = functionString == null ? null : new ResourceLocation(functionString);
-        return functionLocation == null ? CommandFunction.CacheableFunction.NONE : new CommandFunction.CacheableFunction(functionLocation);
-    }
-
     // JSON write methods.
     /**
      * Adds a {@link Biome} {@link ResourceKey} to a {@link JsonObject}.
@@ -318,6 +301,15 @@ public final class BlockStateRecipeUtil {
     }
 
     // Extra methods.
+    /**
+     * Builds a {@link net.minecraft.commands.CommandFunction.CacheableFunction} from a {@link ResourceLocation} ID.
+     * @param functionLocation The {@link ResourceLocation} ID.
+     * @return The {@link net.minecraft.commands.CommandFunction.CacheableFunction}.
+     */
+    public static CommandFunction.CacheableFunction buildMCFunction(@Nullable ResourceLocation functionLocation) {
+        return functionLocation == null ? CommandFunction.CacheableFunction.NONE : new CommandFunction.CacheableFunction(functionLocation);
+    }
+
     /**
      * Sets a property to a {@link BlockState} from a property map entry.<br><br>
      * Warning for "unchecked" is suppressed because casting within this method works fine.

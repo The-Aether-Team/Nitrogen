@@ -109,9 +109,7 @@ public class BlockStateRecipeBuilder implements RecipeBuilder {
             } else {
                 json.add("result", BlockStateIngredient.of(this.result).toJson(false));
             }
-            if (this.function.isPresent()) {
-                json.addProperty("mcfunction", this.function.toString());
-            }
+            this.function.ifPresent(resourceLocation -> json.addProperty("mcfunction", resourceLocation.toString()));
         }
 
         @Override
