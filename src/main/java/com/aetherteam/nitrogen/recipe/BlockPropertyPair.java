@@ -1,7 +1,8 @@
 package com.aetherteam.nitrogen.recipe;
 
 import com.aetherteam.nitrogen.util.DependentMapCodec;
-import com.mojang.serialization.*;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.block.Block;

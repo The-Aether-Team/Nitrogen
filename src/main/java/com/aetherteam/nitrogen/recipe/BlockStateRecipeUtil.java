@@ -1,9 +1,7 @@
 package com.aetherteam.nitrogen.recipe;
 
-import com.aetherteam.nitrogen.Nitrogen;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import com.mojang.serialization.JsonOps;
 import net.minecraft.commands.CommandFunction;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
@@ -26,7 +24,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -35,13 +32,13 @@ import java.util.Optional;
 
 public final class BlockStateRecipeUtil {
     /**
-     * Executes an mcfunction.
+     * Executes an {@link net.minecraft.commands.CommandFunction.CacheableFunction}.
      * @param level The {@link Level} to execute in.
      * @param pos The {@link BlockPos} to execute at.
      * @param function The {@link net.minecraft.commands.CommandFunction.CacheableFunction} to execute.
      */
-    public static void executeFunction(Level level, BlockPos pos, @Nullable CommandFunction.CacheableFunction function) {
-        if (level instanceof ServerLevel serverLevel && function != null) {
+    public static void executeFunction(Level level, BlockPos pos, CommandFunction.CacheableFunction function) {
+        if (level instanceof ServerLevel serverLevel && function != CommandFunction.CacheableFunction.NONE) {
             MinecraftServer minecraftServer = serverLevel.getServer();
             function.get(minecraftServer.getFunctions()).ifPresent(command -> {
                 CommandSourceStack context = minecraftServer.getFunctions().getGameLoopSender()
@@ -52,6 +49,15 @@ public final class BlockStateRecipeUtil {
         }
     }
 
+    /**
+     * Builds a {@link net.minecraft.commands.CommandFunction.CacheableFunction} from a {@link ResourceLocation} ID.
+     * @param functionLocation The {@link ResourceLocation} ID.
+     * @return The {@link net.minecraft.commands.CommandFunction.CacheableFunction}.
+     */
+    public static CommandFunction.CacheableFunction buildFunction(@Nullable ResourceLocation functionLocation) {
+        return functionLocation == null ? CommandFunction.CacheableFunction.NONE : new CommandFunction.CacheableFunction(functionLocation);
+    }
+
     // Buffer write methods.
     /**
      * Writes a {@link BlockPropertyPair} to the networking buffer.
@@ -60,7 +66,7 @@ public final class BlockStateRecipeUtil {
      */
     public static void writePair(FriendlyByteBuf buffer, BlockPropertyPair pair) {
         ResourceLocation blockLocation = BuiltInRegistries.BLOCK.getKey(pair.block());
-        if ((pair.block().defaultBlockState().isAir() && pair.properties().isEmpty()) || blockLocation == null) {
+        if (pair.block().defaultBlockState().isAir() && pair.properties().isEmpty()) {
             buffer.writeBoolean(false);
         } else {
             buffer.writeBoolean(true);
@@ -117,9 +123,6 @@ public final class BlockStateRecipeUtil {
             String blockString = buffer.readUtf();
             ResourceLocation blockLocation = new ResourceLocation(blockString);
             Block block = BuiltInRegistries.BLOCK.get(blockLocation);
-            if (block == null) {
-                throw new JsonSyntaxException("Unknown block '" + blockLocation + "'");
-            }
 
             Map<Property<?>, Comparable<?>> properties = new HashMap<>();
             CompoundTag tag = buffer.readNbt();
@@ -193,31 +196,6 @@ public final class BlockStateRecipeUtil {
 
     // JSON read methods.
     /**
-     * Reads a {@link BlockPropertyPair} from a {@link JsonObject}.
-     * @param json The {@link JsonObject}.
-     * @return The {@link BlockPropertyPair}.
-     */
-    public static BlockPropertyPair pairFromJson(JsonObject json) {
-        if (true) return BlockPropertyPair.BLOCKSTATE_CODEC.decode(JsonOps.INSTANCE, json).getOrThrow(false, Nitrogen.LOGGER::error).getFirst();
-
-        Block block;
-        Map<Property<?>, Comparable<?>> properties = Map.of();
-        if (json.has("block")) {
-            block = BlockStateRecipeUtil.blockFromJson(json);
-            if (json.has("properties")) {
-                if (json.get("properties").isJsonObject()) {
-                    properties = BlockStateRecipeUtil.propertiesFromJson(json, block);
-                } else {
-                    throw new JsonSyntaxException("Expected properties to be object");
-                }
-            }
-        } else {
-            throw new JsonSyntaxException("Missing block in result");
-        }
-        return BlockPropertyPair.of(block, properties);
-    }
-
-    /**
      * Reads a {@link Block} from a {@link JsonObject}.
      * @param json The {@link JsonObject}.
      * @return The {@link Block}.
@@ -226,9 +204,6 @@ public final class BlockStateRecipeUtil {
         String blockName = GsonHelper.getAsString(json, "block");
         ResourceLocation blockLocation = new ResourceLocation(blockName);
         Block block = BuiltInRegistries.BLOCK.get(blockLocation);
-        if (block == null) {
-            throw new JsonSyntaxException("Unknown block '" + blockLocation + "'");
-        }
         if (block.defaultBlockState().isAir()) {
             throw new JsonSyntaxException("Invalid block: " + blockLocation);
         } else {
@@ -301,15 +276,6 @@ public final class BlockStateRecipeUtil {
     }
 
     // Extra methods.
-    /**
-     * Builds a {@link net.minecraft.commands.CommandFunction.CacheableFunction} from a {@link ResourceLocation} ID.
-     * @param functionLocation The {@link ResourceLocation} ID.
-     * @return The {@link net.minecraft.commands.CommandFunction.CacheableFunction}.
-     */
-    public static CommandFunction.CacheableFunction buildMCFunction(@Nullable ResourceLocation functionLocation) {
-        return functionLocation == null ? CommandFunction.CacheableFunction.NONE : new CommandFunction.CacheableFunction(functionLocation);
-    }
-
     /**
      * Sets a property to a {@link BlockState} from a property map entry.<br><br>
      * Warning for "unchecked" is suppressed because casting within this method works fine.

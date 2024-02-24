@@ -26,7 +26,7 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
         this.ingredient = ingredient;
         this.result = result;
         this.functionId = functionId.isEmpty() ? Optional.empty() : functionId;
-        this.function = this.functionId.map(BlockStateRecipeUtil::buildMCFunction);
+        this.function = this.functionId.map(BlockStateRecipeUtil::buildFunction);
     }
 
     /**

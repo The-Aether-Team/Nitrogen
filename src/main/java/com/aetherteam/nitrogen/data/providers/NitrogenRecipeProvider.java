@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.state.properties.Property;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class NitrogenRecipeProvider extends RecipeProvider {
