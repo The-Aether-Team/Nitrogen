@@ -1,7 +1,6 @@
 package com.aetherteam.nitrogen.recipe;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import net.minecraft.commands.CommandFunction;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
@@ -14,18 +13,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.Vec3;
-import org.apache.commons.lang3.tuple.Pair;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -35,27 +30,29 @@ public final class BlockStateRecipeUtil {
      * Executes an {@link net.minecraft.commands.CommandFunction.CacheableFunction}.
      * @param level The {@link Level} to execute in.
      * @param pos The {@link BlockPos} to execute at.
-     * @param function The {@link net.minecraft.commands.CommandFunction.CacheableFunction} to execute.
+     * @param function The {@link Optional} {@link net.minecraft.commands.CommandFunction.CacheableFunction} to execute.
      */
-    public static void executeFunction(Level level, BlockPos pos, CommandFunction.CacheableFunction function) {
-        if (level instanceof ServerLevel serverLevel && function != CommandFunction.CacheableFunction.NONE) {
-            MinecraftServer minecraftServer = serverLevel.getServer();
-            function.get(minecraftServer.getFunctions()).ifPresent(command -> {
-                CommandSourceStack context = minecraftServer.getFunctions().getGameLoopSender()
-                        .withPosition(Vec3.atBottomCenterOf(pos))
-                        .withLevel(serverLevel);
-                minecraftServer.getFunctions().execute(command, context);
+    public static void executeFunction(Level level, BlockPos pos, Optional<CommandFunction.CacheableFunction> function) {
+        if (level instanceof ServerLevel serverLevel) {
+            function.ifPresent((cacheableFunction) -> {
+                MinecraftServer minecraftServer = serverLevel.getServer();
+                cacheableFunction.get(minecraftServer.getFunctions()).ifPresent(command -> {
+                    CommandSourceStack context = minecraftServer.getFunctions().getGameLoopSender()
+                            .withPosition(Vec3.atBottomCenterOf(pos))
+                            .withLevel(serverLevel);
+                    minecraftServer.getFunctions().execute(command, context);
+                });
             });
         }
     }
 
     /**
-     * Builds a {@link net.minecraft.commands.CommandFunction.CacheableFunction} from a {@link ResourceLocation} ID.
-     * @param functionLocation The {@link ResourceLocation} ID.
-     * @return The {@link net.minecraft.commands.CommandFunction.CacheableFunction}.
+     * Builds an {@link Optional} {@link net.minecraft.commands.CommandFunction.CacheableFunction} from an {@link Optional} {@link ResourceLocation} ID.
+     * @param functionLocation The {@link Optional} {@link ResourceLocation} ID.
+     * @return The {@link Optional} {@link net.minecraft.commands.CommandFunction.CacheableFunction}.
      */
-    public static CommandFunction.CacheableFunction buildFunction(@Nullable ResourceLocation functionLocation) {
-        return functionLocation == null ? CommandFunction.CacheableFunction.NONE : new CommandFunction.CacheableFunction(functionLocation);
+    public static Optional<CommandFunction.CacheableFunction> buildFunction(Optional<ResourceLocation> functionLocation) {
+        return functionLocation.map(CommandFunction.CacheableFunction::new);
     }
 
     // Buffer write methods.
@@ -81,31 +78,21 @@ public final class BlockStateRecipeUtil {
     }
 
     /**
-     * Writes a {@link Biome} {@link ResourceKey} to the networking buffer.
+     * Writes an {@link Optional} {@link Biome} {@link ResourceKey} to the networking buffer.
      * @param buffer The networking {@link FriendlyByteBuf}.
-     * @param biomeKey The {@link Biome} {@link ResourceKey}.
+     * @param biomeKey The {@link Optional} {@link Biome} {@link ResourceKey}.
      */
-    public static void writeBiomeKey(FriendlyByteBuf buffer, ResourceKey<Biome> biomeKey) {
-        if (biomeKey == null) {
-            buffer.writeBoolean(false);
-        } else {
-            buffer.writeBoolean(true);
-            buffer.writeResourceLocation(biomeKey.location());
-        }
+    public static void writeBiomeKey(FriendlyByteBuf buffer, Optional<ResourceKey<Biome>> biomeKey) {
+        buffer.writeOptional(biomeKey, (buf, key) -> buf.writeResourceLocation(key.location()));
     }
 
     /**
-     * Writes a {@link Biome} {@link TagKey} to the networking buffer.
+     * Writes an {@link Optional} {@link Biome} {@link TagKey} to the networking buffer.
      * @param buffer The networking {@link FriendlyByteBuf}.
-     * @param biomeTag The {@link Biome} {@link TagKey}.
+     * @param biomeTag The {@link Optional} {@link Biome} {@link TagKey}.
      */
-    public static void writeBiomeTag(FriendlyByteBuf buffer, TagKey<Biome> biomeTag) {
-        if (biomeTag == null) {
-            buffer.writeBoolean(false);
-        } else {
-            buffer.writeBoolean(true);
-            buffer.writeResourceLocation(biomeTag.location());
-        }
+    public static void writeBiomeTag(FriendlyByteBuf buffer, Optional<TagKey<Biome>> biomeTag) {
+        buffer.writeOptional(biomeTag, (buf, tag) -> buf.writeResourceLocation(tag.location()));
     }
 
     // Buffer read methods.
@@ -142,137 +129,42 @@ public final class BlockStateRecipeUtil {
     }
 
     /**
-     * Reads a {@link Biome} {@link ResourceKey} from the networking buffer.
+     * Reads an {@link Optional} {@link Biome} {@link ResourceKey} from the networking buffer.
      * @param buffer The networking {@link FriendlyByteBuf}.
-     * @return The {@link Biome} {@link ResourceKey}.
+     * @return The {@link Optional} {@link Biome} {@link ResourceKey}.
      */
-    public static ResourceKey<Biome> readBiomeKey(FriendlyByteBuf buffer) {
-        if (!buffer.readBoolean()) {
-            return null;
-        } else {
-            ResourceLocation biomeLocation = buffer.readResourceLocation();
-            return ResourceKey.create(Registries.BIOME, biomeLocation);
-        }
+    public static Optional<ResourceKey<Biome>> readBiomeKey(FriendlyByteBuf buffer) {
+        Optional<ResourceLocation> biomeLocation = buffer.readOptional(FriendlyByteBuf::readResourceLocation);
+        return biomeLocation.map(resourceLocation -> ResourceKey.create(Registries.BIOME, resourceLocation));
     }
 
     /**
-     * Reads a {@link Biome} {@link TagKey} from the networking buffer.
+     * Reads an {@link Optional} {@link Biome} {@link TagKey} from the networking buffer.
      * @param buffer The networking {@link FriendlyByteBuf}.
-     * @return The {@link Biome} {@link TagKey}.
+     * @return The {@link Optional} {@link Biome} {@link TagKey}.
      */
-    public static TagKey<Biome> readBiomeTag(FriendlyByteBuf buffer) {
-        if (!buffer.readBoolean()) {
-            return null;
-        } else {
-            ResourceLocation tagLocation = buffer.readResourceLocation();
-            return TagKey.create(Registries.BIOME, tagLocation);
-        }
+    public static Optional<TagKey<Biome>> readBiomeTag(FriendlyByteBuf buffer) {
+        Optional<ResourceLocation> biomeLocation = buffer.readOptional(FriendlyByteBuf::readResourceLocation);
+        return biomeLocation.map(resourceLocation -> TagKey.create(Registries.BIOME, resourceLocation));
     }
 
     // JSON write methods.
     /**
-     * Adds a {@link Biome} {@link ResourceKey} to a {@link JsonObject}.
+     * Adds an {@link Optional} {@link Biome} {@link ResourceKey} to a {@link JsonObject}.
      * @param json The {@link JsonObject}.
      * @param biomeKey The {@link Biome} {@link ResourceKey}.
      */
-    public static void biomeKeyToJson(JsonObject json, @Nullable ResourceKey<Biome> biomeKey) {
-        if (biomeKey != null) {
-            ResourceLocation biomeLocation = biomeKey.location();
-            json.addProperty("biome", biomeLocation.toString());
-        }
+    public static void biomeKeyToJson(JsonObject json, Optional<ResourceKey<Biome>> biomeKey) {
+        biomeKey.ifPresent((key) -> json.addProperty("biome", key.location().toString()));
     }
 
     /**
-     * Adds a {@link Biome} {@link TagKey} to a {@link JsonObject}.
+     * Adds an {@link Optional} {@link Biome} {@link TagKey} to a {@link JsonObject}.
      * @param json The {@link JsonObject}.
      * @param biomeTag The {@link Biome} {@link TagKey}.
      */
-    public static void biomeTagToJson(JsonObject json, @Nullable TagKey<Biome> biomeTag) {
-        if (biomeTag != null) {
-            ResourceLocation tagLocation = biomeTag.location();
-            json.addProperty("biome", "#" + tagLocation);
-        }
-    }
-
-    // JSON read methods.
-    /**
-     * Reads a {@link Block} from a {@link JsonObject}.
-     * @param json The {@link JsonObject}.
-     * @return The {@link Block}.
-     */
-    public static Block blockFromJson(JsonObject json) {
-        String blockName = GsonHelper.getAsString(json, "block");
-        ResourceLocation blockLocation = new ResourceLocation(blockName);
-        Block block = BuiltInRegistries.BLOCK.get(blockLocation);
-        if (block.defaultBlockState().isAir()) {
-            throw new JsonSyntaxException("Invalid block: " + blockLocation);
-        } else {
-            return block;
-        }
-    }
-
-    /**
-     * Reads a {@link Map} of {@link Property Properties} and {@link Comparable}s (representing block properties) from a {@link JsonObject}.<br><br>
-     * Warning for "unchecked" is suppressed because casting within this method works fine.
-     * @param json The {@link JsonObject}.
-     * @param block The {@link Block} that the properties are paired with.
-     * @return Block properties, as a {@link Map} of {@link Property Properties} and {@link Comparable}s.
-     */
-    @SuppressWarnings("unchecked")
-    public static Map<Property<?>, Comparable<?>> propertiesFromJson(JsonObject json, Block block) {
-        Map<Property<?>, Comparable<?>> properties = new HashMap<>();
-        StateDefinition<Block, BlockState> stateDefinition = block.getStateDefinition();
-        JsonObject propertyObject = GsonHelper.getAsJsonObject(json, "properties");
-        for (String propertyName : propertyObject.keySet()) {
-            Property<?> property = stateDefinition.getProperty(propertyName);
-            String valueName = GsonHelper.getAsString(propertyObject, propertyName);
-            if (property != null) {
-                Optional<Comparable<?>> comparable = (Optional<Comparable<?>>) property.getValue(valueName);
-                comparable.ifPresent(value -> properties.put(property, value));
-            }
-        }
-        return properties;
-    }
-
-    /**
-     * Reads a {@link Biome} {@link ResourceKey} or {@link TagKey} from a {@link JsonObject}.
-     * @param json The {@link JsonObject}.
-     * @return A {@link Pair} containing either a {@link Biome} {@link ResourceKey} or {@link TagKey} and a null value.
-     */
-    public static Pair<ResourceKey<Biome>, TagKey<Biome>> biomeRecipeDataFromJson(JsonObject json) {
-        ResourceKey<Biome> biomeKey = null;
-        TagKey<Biome> biomeTag = null;
-        if (json.has("biome")) {
-            String biomeName = GsonHelper.getAsString(json, "biome");
-            if (biomeName.startsWith("#")) {
-                biomeTag = biomeTagFromJson(json);
-            } else {
-                biomeKey = biomeKeyFromJson(json);
-            }
-        }
-        return Pair.of(biomeKey, biomeTag);
-    }
-
-    /**
-     * Reads a {@link Biome} {@link ResourceKey} from a {@link JsonObject}.
-     * @param json The {@link JsonObject}.
-     * @return The {@link Biome} {@link ResourceKey}.
-     */
-    public static ResourceKey<Biome> biomeKeyFromJson(JsonObject json) {
-        String biomeName = GsonHelper.getAsString(json, "biome");
-        String[] nameWithId = biomeName.split(":");
-        return ResourceKey.create(Registries.BIOME, (nameWithId.length > 1) ? new ResourceLocation(nameWithId[0], nameWithId[1]) : new ResourceLocation(biomeName));
-    }
-
-    /**
-     * Reads a {@link Biome} {@link TagKey} from a {@link JsonObject}.
-     * @param json The {@link JsonObject}.
-     * @return The {@link Biome} {@link TagKey}.
-     */
-    public static TagKey<Biome> biomeTagFromJson(JsonObject json) {
-        String biomeName = GsonHelper.getAsString(json, "biome").replace("#", "");
-        String[] nameWithId = biomeName.split(":");
-        return TagKey.create(Registries.BIOME, (nameWithId.length > 1) ? new ResourceLocation(nameWithId[0], nameWithId[1]) : new ResourceLocation(biomeName));
+    public static void biomeTagToJson(JsonObject json, Optional<TagKey<Biome>> biomeTag) {
+        biomeTag.ifPresent((tag) -> json.addProperty("biome", "#" + tag.location()));
     }
 
     // Extra methods.

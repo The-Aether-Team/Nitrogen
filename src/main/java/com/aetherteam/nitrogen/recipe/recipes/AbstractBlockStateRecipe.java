@@ -26,7 +26,7 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
         this.ingredient = ingredient;
         this.result = result;
         this.functionId = functionId.isEmpty() ? Optional.empty() : functionId;
-        this.function = this.functionId.map(BlockStateRecipeUtil::buildFunction);
+        this.function = BlockStateRecipeUtil.buildFunction(this.functionId);
     }
 
     /**
@@ -40,7 +40,7 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
         if (this.matches(level, pos, oldState)) {
             BlockState newState = this.getResultState(oldState);
             level.setBlockAndUpdate(pos, newState);
-            this.getFunction().ifPresent((mcFunction) -> BlockStateRecipeUtil.executeFunction(level, pos, mcFunction));
+            BlockStateRecipeUtil.executeFunction(level, pos, this.getFunction());
             return true;
         }
         return false;
