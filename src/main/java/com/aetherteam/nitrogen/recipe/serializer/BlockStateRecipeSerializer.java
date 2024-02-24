@@ -12,26 +12,20 @@ import net.minecraft.commands.CommandFunction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
-public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> implements RecipeSerializer<T> {
-    private final Function3<BlockStateIngredient, BlockPropertyPair, String, T> factory;
+import java.util.Optional;
 
-    private final MapCodec<T> flatCodec;
+public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> implements RecipeSerializer<T> {
+    private final Function3<BlockStateIngredient, BlockPropertyPair, Optional<String>, T> factory;
+
     private final Codec<T> codec;
 
-    public BlockStateRecipeSerializer(Function3<BlockStateIngredient, BlockPropertyPair, String, T> factory) {
+    public BlockStateRecipeSerializer(Function3<BlockStateIngredient, BlockPropertyPair, Optional<String>, T> factory) {
         this.factory = factory;
-
-        this.flatCodec = RecordCodecBuilder.mapCodec(inst -> inst.group(
+        this.codec = RecordCodecBuilder.create(inst -> inst.group(
                 BlockStateIngredient.CODEC.fieldOf("ingredient").forGetter(AbstractBlockStateRecipe::getIngredient),
                 BlockPropertyPair.BLOCKSTATE_CODEC.fieldOf("result").forGetter(AbstractBlockStateRecipe::getResult),
-                Codec.STRING.fieldOf("mcfunction").orElse("").forGetter(AbstractBlockStateRecipe::getFunctionString)
+                Codec.STRING.optionalFieldOf("mcfunction").forGetter(AbstractBlockStateRecipe::getFunctionString)
         ).apply(inst, this.factory));
-
-        this.codec = this.flatCodec.codec();
-    }
-
-    public MapCodec<T> flatCodec() {
-        return this.flatCodec;
     }
 
     @Override
@@ -44,15 +38,16 @@ public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> impl
         BlockStateIngredient ingredient = BlockStateIngredient.fromNetwork(buffer);
         BlockPropertyPair result = BlockStateRecipeUtil.readPair(buffer);
         String functionString = buffer.readUtf();
-        return this.factory.apply(ingredient, result, functionString);
+        Optional<String> function = functionString.isBlank() ? Optional.empty() : Optional.of(functionString);
+        return this.factory.apply(ingredient, result, function);
     }
 
     @Override
     public void toNetwork(FriendlyByteBuf buffer, T recipe) {
         recipe.getIngredient().toNetwork(buffer);
         BlockStateRecipeUtil.writePair(buffer, recipe.getResult());
-        CommandFunction.CacheableFunction function = recipe.getFunction();
-        buffer.writeUtf(function != null && function.getId() != null ? function.getId().toString() : "");
+        Optional<CommandFunction.CacheableFunction> function = recipe.getFunction();
+        buffer.writeUtf(function.isPresent() && function.get().getId() != null ? function.get().getId().toString() : "");
     }
 }
 

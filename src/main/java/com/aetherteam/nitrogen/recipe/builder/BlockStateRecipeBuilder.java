@@ -19,13 +19,13 @@ import net.minecraft.world.level.block.state.properties.Property;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Optional;
 
 public class BlockStateRecipeBuilder implements RecipeBuilder {
     private final BlockPropertyPair result;
     private final BlockStateIngredient ingredient;
     private final BlockStateRecipeSerializer<?> serializer;
-    @Nullable
-    private ResourceLocation function;
+    private Optional<ResourceLocation> function;
 
     public BlockStateRecipeBuilder(BlockPropertyPair result, BlockStateIngredient ingredient, BlockStateRecipeSerializer<?> serializer) {
         this.result = result;
@@ -50,7 +50,7 @@ public class BlockStateRecipeBuilder implements RecipeBuilder {
         return this;
     }
 
-    public RecipeBuilder function(@Nullable ResourceLocation function) {
+    public RecipeBuilder function(Optional<ResourceLocation> function) {
         this.function = function;
         return this;
     }
@@ -87,14 +87,13 @@ public class BlockStateRecipeBuilder implements RecipeBuilder {
         private final BlockStateIngredient ingredient;
         private final BlockPropertyPair result;
         private final RecipeSerializer<? extends AbstractBlockStateRecipe> serializer;
-        @Nullable
-        private final ResourceLocation function;
+        private final Optional<ResourceLocation> function;
 
         public Result(ResourceLocation id, BlockStateIngredient ingredient, BlockPropertyPair result, RecipeSerializer<? extends AbstractBlockStateRecipe> serializer) {
-            this(id, ingredient, result, serializer, null);
+            this(id, ingredient, result, serializer, Optional.empty());
         }
 
-        public Result(ResourceLocation id, BlockStateIngredient ingredient, BlockPropertyPair result, RecipeSerializer<? extends AbstractBlockStateRecipe> serializer, @Nullable ResourceLocation function) {
+        public Result(ResourceLocation id, BlockStateIngredient ingredient, BlockPropertyPair result, RecipeSerializer<? extends AbstractBlockStateRecipe> serializer, Optional<ResourceLocation> function) {
             this.id = id;
             this.ingredient = ingredient;
             this.result = result;
@@ -110,7 +109,7 @@ public class BlockStateRecipeBuilder implements RecipeBuilder {
             } else {
                 json.add("result", BlockStateIngredient.of(this.result).toJson(false));
             }
-            if (this.function != null) {
+            if (this.function.isPresent()) {
                 json.addProperty("mcfunction", this.function.toString());
             }
         }

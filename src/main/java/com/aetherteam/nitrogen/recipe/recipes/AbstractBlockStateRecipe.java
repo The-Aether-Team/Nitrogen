@@ -10,23 +10,22 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 
-import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Optional;
 
 public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
     protected final RecipeType<?> type;
     protected final BlockStateIngredient ingredient;
     protected final BlockPropertyPair result;
-    @Nullable
-    protected final CommandFunction.CacheableFunction function;
-    private final String functionString;
+    protected final Optional<CommandFunction.CacheableFunction> function;
+    private final Optional<String> functionString;
 
-    public AbstractBlockStateRecipe(RecipeType<?> type, BlockStateIngredient ingredient, BlockPropertyPair result, @Nullable String functionString) {
+    public AbstractBlockStateRecipe(RecipeType<?> type, BlockStateIngredient ingredient, BlockPropertyPair result, Optional<String> functionString) {
         this.type = type;
         this.ingredient = ingredient;
         this.result = result;
-        this.functionString = functionString == null || functionString.isBlank() ? "" : functionString;
-        this.function = BlockStateRecipeUtil.buildMCFunction(this.functionString);
+        this.functionString = functionString.isEmpty() || functionString.get().isBlank() ? Optional.empty() : functionString;
+        this.function = this.functionString.map(BlockStateRecipeUtil::buildMCFunction);
     }
 
     /**
@@ -40,7 +39,7 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
         if (this.matches(level, pos, oldState)) {
             BlockState newState = this.getResultState(oldState);
             level.setBlockAndUpdate(pos, newState);
-            BlockStateRecipeUtil.executeFunction(level, pos, this.getFunction());
+            this.getFunction().ifPresent((mcFunction) -> BlockStateRecipeUtil.executeFunction(level, pos, mcFunction));
             return true;
         }
         return false;
@@ -80,13 +79,12 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
         return this.result;
     }
 
-    @Nullable
     @Override
-    public CommandFunction.CacheableFunction getFunction() {
+    public Optional<CommandFunction.CacheableFunction> getFunction() {
         return this.function;
     }
 
-    public String getFunctionString() {
+    public Optional<String> getFunctionString() {
         return this.functionString;
     }
 }
