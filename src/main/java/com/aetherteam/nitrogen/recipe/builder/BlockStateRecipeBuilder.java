@@ -25,7 +25,7 @@ public class BlockStateRecipeBuilder implements RecipeBuilder {
     private final BlockPropertyPair result;
     private final BlockStateIngredient ingredient;
     private final BlockStateRecipeSerializer<?> serializer;
-    private Optional<ResourceLocation> function;
+    private Optional<ResourceLocation> function = Optional.empty();
 
     public BlockStateRecipeBuilder(BlockPropertyPair result, BlockStateIngredient ingredient, BlockStateRecipeSerializer<?> serializer) {
         this.result = result;
