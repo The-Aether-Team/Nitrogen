@@ -22,7 +22,7 @@ public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> impl
         this.factory = factory;
         this.codec = RecordCodecBuilder.create(inst -> inst.group(
                 BlockStateIngredient.CODEC.fieldOf("ingredient").forGetter(AbstractBlockStateRecipe::getIngredient),
-                BlockPropertyPair.BLOCKSTATE_CODEC.fieldOf("result").forGetter(AbstractBlockStateRecipe::getResult),
+                BlockPropertyPair.CODEC.fieldOf("result").forGetter(AbstractBlockStateRecipe::getResult),
                 ResourceLocation.CODEC.optionalFieldOf("mcfunction").forGetter(AbstractBlockStateRecipe::getFunctionId)
         ).apply(inst, this.factory));
     }

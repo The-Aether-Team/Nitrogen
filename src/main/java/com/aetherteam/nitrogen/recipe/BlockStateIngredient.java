@@ -86,7 +86,7 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     }
 
     public static BlockStateIngredient ofBlockPropertyPair(Stream<BlockPropertyPair> blockPropertyPairs) {
-        return fromValues(blockPropertyPairs.filter((pair) -> !pair.block().defaultBlockState().isAir()).map(BlockStateIngredient.StateValue::new));
+        return fromValues(blockPropertyPairs.filter((pair) -> !pair.block().defaultBlockState().isAir()).map(BlockStateIngredient.BlockStateValue::new));
     }
 
     public static BlockStateIngredient of(Block... blocks) {
@@ -94,7 +94,7 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     }
 
     public static BlockStateIngredient ofBlock(Stream<Block> blocks) {
-        return fromValues(blocks.filter((block) -> !block.defaultBlockState().isAir()).map(BlockStateIngredient.BlockValue::new));
+        return fromValues(blocks.filter((block) -> !block.defaultBlockState().isAir()).map(BlockStateIngredient.BlockStateValue::new));
     }
 
     public static BlockStateIngredient of(TagKey<Block> tag) {
@@ -124,7 +124,7 @@ public class BlockStateIngredient implements Predicate<BlockState> {
         var size = buf.readVarInt();
         return fromValues(Stream.generate(() -> {
             BlockPropertyPair pair = BlockStateRecipeUtil.readPair(buf);
-            return new BlockStateIngredient.StateValue(pair.block(), pair.properties());
+            return new BlockStateIngredient.BlockStateValue(pair.block(), pair.properties());
         }).limit(size));
     }
 
@@ -156,20 +156,15 @@ public class BlockStateIngredient implements Predicate<BlockState> {
                 );
     }
 
-    public static class StateValue implements BlockStateIngredient.Value {
-        public static final Codec<BlockStateIngredient.Value> CODEC = BlockPropertyPair.BLOCKSTATE_CODEC.flatComapMap(StateValue::new, StateValue::cast);
+    public record BlockStateValue(Block block, Optional<Map<Property<?>, Comparable<?>>> properties) implements BlockStateIngredient.Value {
+        public static final Codec<BlockStateIngredient.BlockStateValue> CODEC = BlockPropertyPair.CODEC.flatComapMap(BlockStateValue::new, BlockStateValue::cast);
 
-        private final Block block;
-        private final Map<Property<?>, Comparable<?>> properties;
-
-        public StateValue(Block block, Map<Property<?>, Comparable<?>> properties) {
-            this.block = block;
-            this.properties = properties;
+        public BlockStateValue(Block block) {
+            this(block, Optional.empty());
         }
 
-        public StateValue(BlockPropertyPair blockPropertyPair) {
-            this.block = blockPropertyPair.block();
-            this.properties = blockPropertyPair.properties();
+        public BlockStateValue(BlockPropertyPair pair) {
+            this(pair.block(), pair.properties());
         }
 
         @Override
@@ -178,56 +173,40 @@ public class BlockStateIngredient implements Predicate<BlockState> {
         }
 
         private static DataResult<? extends BlockPropertyPair> cast(Value value) {
-            StateValue cast = (StateValue) value;
-            return DataResult.success(new BlockPropertyPair(cast.block, cast.properties));
+            BlockStateValue cast = (BlockStateValue) value;
+            return DataResult.success(new BlockPropertyPair(cast.block(), cast.properties()));
         }
     }
 
-    public static class BlockValue implements BlockStateIngredient.Value {
-        public static final Codec<BlockStateIngredient.BlockValue> CODEC = RecordCodecBuilder.create(
-                instance -> instance.group(
-                        BlockPropertyPair.BLOCK_CODEC.fieldOf("block").forGetter(value -> value.block)
-                ).apply(instance, BlockStateIngredient.BlockValue::new)
-        );
-
-        private final Block block;
-
-        public BlockValue(Block block) {
-            this.block = block;
-        }
-
-        @Override
-        public Collection<BlockPropertyPair> getPairs() {
-            return Collections.singleton(BlockPropertyPair.of(this.block, Map.of()));
-        }
-    }
-
-    public static class TagValue implements BlockStateIngredient.Value {
+    public record TagValue(TagKey<Block> tag) implements BlockStateIngredient.Value {
         public static final Codec<BlockStateIngredient.TagValue> CODEC = RecordCodecBuilder.create(
                 instance -> instance.group(
                         TagKey.codec(Registries.BLOCK).fieldOf("tag").forGetter(value -> value.tag)
                 ).apply(instance, BlockStateIngredient.TagValue::new)
         );
 
-        private final TagKey<Block> tag;
-
-        public TagValue(TagKey<Block> tag) {
-            this.tag = tag;
-        }
-
         @Override
         public Collection<BlockPropertyPair> getPairs() {
             List<BlockPropertyPair> list = new ArrayList<>();
 
             Optional<HolderSet.Named<Block>> tags = BuiltInRegistries.BLOCK.getTag(this.tag);
-            tags.ifPresent(holders -> holders.stream().forEach((block) -> list.add(BlockPropertyPair.of(block.value(), Map.of()))));
+            tags.ifPresent(holders -> holders.stream().forEach((block) -> list.add(BlockPropertyPair.of(block.value(), Optional.empty()))));
 
             return list;
         }
     }
 
     public interface Value {
-        Codec<BlockStateIngredient.Value> CODEC = ExtraCodecs.withAlternative(ExtraCodecs.withAlternative(StateValue.CODEC, BlockValue.CODEC), TagValue.CODEC);
+        Codec<BlockStateIngredient.Value> CODEC = ExtraCodecs.xor(BlockStateIngredient.BlockStateValue.CODEC, BlockStateIngredient.TagValue.CODEC)
+                .xmap(either -> either.map(blockState -> blockState, tag -> tag), value -> {
+                    if (value instanceof BlockStateIngredient.TagValue tagValue) {
+                        return Either.right(tagValue);
+                    } else if (value instanceof BlockStateIngredient.BlockStateValue blockStateValue) {
+                        return Either.left(blockStateValue);
+                    } else {
+                        throw new UnsupportedOperationException("This is neither a blockstate value nor a tag value.");
+                    }
+                });
 
         Collection<BlockPropertyPair> getPairs();
     }
