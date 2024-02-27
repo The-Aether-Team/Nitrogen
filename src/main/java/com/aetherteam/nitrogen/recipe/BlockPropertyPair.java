@@ -1,6 +1,5 @@
 package com.aetherteam.nitrogen.recipe;
 
-import com.aetherteam.nitrogen.util.DependentMapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -9,72 +8,59 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Used to store a block alongside a block's properties.
  */
 public record BlockPropertyPair(Block block, Optional<Map<Property<?>, Comparable<?>>> properties) {
-//    @SuppressWarnings("unchecked")
-//    public static final Codec<BlockPropertyPair> BLOCKSTATE_CODEC = new DependentMapCodec<>(
-//            "block",
-//            "properties",
-//            BuiltInRegistries.BLOCK.byNameCodec(),
-//            block -> block.defaultBlockState().getProperties(),
-//            property -> (Codec<Comparable<?>>) property.codec(),
-//            Property::getName,
-//            BlockPropertyPair::new,
-//            BlockPropertyPair::block,
-//            BlockPropertyPair::properties
-//    );
-    public static final Codec<BlockPropertyPair> CODEC = RecordCodecBuilder.create(
-            instance -> instance.group(
-                    BlockPropertyPair.BLOCK_CODEC.fieldOf("block").forGetter(value -> value.block),
-                    BlockPropertyPair.PROPERTIES_CODEC.optionalFieldOf("properties").forGetter(value -> value.properties)
-            ).apply(instance, BlockPropertyPair::new)
+    public static final Codec<BlockPropertyPair> CODEC = RawPair.CODEC.xmap(
+            (rawPair) -> {
+                Block rawBlock = rawPair.block();
+                Optional<Map<String, String>> rawPropertiesOptional = rawPair.properties();
+                Optional<Map<Property<?>, Comparable<?>>> propertiesOptional = Optional.empty();
+                if (rawPropertiesOptional.isPresent()) {
+                    Map<String,  String> rawPropertiesMap = rawPropertiesOptional.get();
+                    StateDefinition<Block, BlockState> rawStateDefinition = rawBlock.getStateDefinition();
+                    Collection<Property<?>> availableProperties = rawStateDefinition.getProperties();
+                    Map<String, Property<?>> nameToPropertyMap = availableProperties.stream().collect(Collectors.toMap(Property::getName, (value) -> value));
+                    Map<Property<?>, Comparable<?>> properties = new HashMap<>();
+                    for (Map.Entry<String, String> rawPropertiesEntry : rawPropertiesMap.entrySet()) {
+                        String rawPropertyName = rawPropertiesEntry.getKey();
+                        String rawPropertyValue = rawPropertiesEntry.getValue();
+                        if (nameToPropertyMap.containsKey(rawPropertyName)) {
+                            Property<?> property = nameToPropertyMap.get(rawPropertyName);
+                            if (property != null) {
+                                Optional<Comparable<?>> comparableOptional = (Optional<Comparable<?>>) property.getValue(rawPropertyName);
+                                comparableOptional.ifPresent(value ->properties.put(property, value)); //todo i dont trust this to not just get the default value
+                            }
+                        }
+                    }
+                    propertiesOptional = Optional.of(properties);
+                }
+                return new BlockPropertyPair(rawBlock, propertiesOptional);
+            },
+            (blockPropertyPair) -> {
+                Block block = blockPropertyPair.block();
+                Optional<Map<Property<?>, Comparable<?>>> propertiesOptional = blockPropertyPair.properties();
+                Optional<Map<String, String>> rawPropertiesOptional = Optional.empty();
+                if (propertiesOptional.isPresent()) {
+                    Map<Property<?>, Comparable<?>> properties = propertiesOptional.get();
+                    Map<String, String> rawProperties = properties.entrySet().stream().collect(Collectors.toMap((entry) -> entry.getKey().getName(), (entry) -> entry.getValue().toString()));
+                    rawPropertiesOptional = Optional.of(rawProperties);
+                }
+                return new BlockPropertyPair.RawPair(block, rawPropertiesOptional);
+            }
     );
+
     public static final Codec<Block> BLOCK_CODEC = ExtraCodecs.validate(
             BuiltInRegistries.BLOCK.byNameCodec(),
             block -> block == Blocks.AIR ? DataResult.error(() -> "Crafting result must not be minecraft:air") : DataResult.success(block)
     );
-    public static final Codec<Map<Property<?>, Comparable<?>>> PROPERTIES_CODEC = null; //TODO;
-    /*
-    Example 1:
-                {
-                  "type": "aether:placement_conversion",
-                  "biome": "#aether:ultracold",
-                  "ingredient": {
-                    "block": "minecraft:lava"
-                  },
-                  "result": {
-                    "block": "aether:aerogel"
-                  }
-                }
-     */
-    /*
-    Example 2:
-                {
-                  "type": "aether:placement_conversion",
-                  "biome": "#aether:ultracold",
-                  "ingredient": {
-                    "block": "minecraft:candle_cake",
-                    "properties": {
-                      "lit": "true"
-                    }
-                  },
-                  "result": {
-                    "block": "minecraft:candle_cake",
-                    "properties": {
-                      "lit": "false"
-                    }
-                  }
-                }
-     */
 
     public static BlockPropertyPair of(Block block,  Optional<Map<Property<?>, Comparable<?>>> properties) {
         return new BlockPropertyPair(block, properties);
@@ -115,5 +101,14 @@ public record BlockPropertyPair(Block block, Optional<Map<Property<?>, Comparabl
      */
     public boolean matches(BlockState state) {
         return BlockPropertyPair.matches(state, this.block(), this.properties());
+    }
+
+    public record RawPair(Block block, Optional<Map<String, String>> properties) {
+        public static final Codec<RawPair> CODEC = RecordCodecBuilder.create(
+                instance -> instance.group(
+                        BlockPropertyPair.BLOCK_CODEC.fieldOf("block").forGetter(RawPair::block),
+                        ExtraCodecs.strictUnboundedMap(Codec.STRING, Codec.STRING).optionalFieldOf("properties").forGetter(RawPair::properties)
+                ).apply(instance, RawPair::new)
+        );
     }
 }

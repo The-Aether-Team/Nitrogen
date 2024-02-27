@@ -68,12 +68,14 @@ public final class BlockStateRecipeUtil {
         } else {
             buffer.writeBoolean(true);
             buffer.writeUtf(blockLocation.toString());
-            CompoundTag tag = new CompoundTag();
-            for (Map.Entry<Property<?>, Comparable<?>> entry : pair.properties().entrySet()) {
-                Property<?> property = entry.getKey();
-                tag.putString(property.getName(), getName(property, entry.getValue()));
-            }
-            buffer.writeNbt(tag);
+            buffer.writeOptional(pair.properties(), ((friendlyByteBuf, propertyComparableMap) -> {
+                CompoundTag tag = new CompoundTag();
+                for (Map.Entry<Property<?>, Comparable<?>> entry : propertyComparableMap.entrySet()) {
+                    Property<?> property = entry.getKey();
+                    tag.putString(property.getName(), getName(property, entry.getValue()));
+                }
+                friendlyByteBuf.writeNbt(tag);
+            }));
         }
     }
 
@@ -105,26 +107,28 @@ public final class BlockStateRecipeUtil {
     @SuppressWarnings("unchecked")
     public static BlockPropertyPair readPair(FriendlyByteBuf buffer) {
         if (!buffer.readBoolean()) {
-            return BlockPropertyPair.of(Blocks.AIR, new HashMap<>());
+            return BlockPropertyPair.of(Blocks.AIR, Optional.empty());
         } else {
             String blockString = buffer.readUtf();
             ResourceLocation blockLocation = new ResourceLocation(blockString);
             Block block = BuiltInRegistries.BLOCK.get(blockLocation);
 
-            Map<Property<?>, Comparable<?>> properties = new HashMap<>();
-            CompoundTag tag = buffer.readNbt();
-
-            if (tag != null) {
-                for (String propertyName : tag.getAllKeys()) {
-                    Property<?> property = block.getStateDefinition().getProperty(propertyName);
-                    if (property != null) {
-                        Optional<Comparable<?>> comparable = (Optional<Comparable<?>>) property.getValue(propertyName);
-                        comparable.ifPresent(value -> properties.put(property, value));
+            Optional<Map<Property<?>, Comparable<?>>> propertiesOptional = buffer.readOptional((friendlyByteBuf -> {
+                Map<Property<?>, Comparable<?>> properties = new HashMap<>();
+                CompoundTag tag = friendlyByteBuf.readNbt();
+                if (tag != null) {
+                    for (String propertyName : tag.getAllKeys()) {
+                        Property<?> property = block.getStateDefinition().getProperty(propertyName);
+                        if (property != null) {
+                            Optional<Comparable<?>> comparable = (Optional<Comparable<?>>) property.getValue(propertyName);
+                            comparable.ifPresent(value -> properties.put(property, value));
+                        }
                     }
                 }
-            }
+                return properties;
+            }));
 
-            return BlockPropertyPair.of(block, properties);
+            return BlockPropertyPair.of(block, propertiesOptional);
         }
     }
 
