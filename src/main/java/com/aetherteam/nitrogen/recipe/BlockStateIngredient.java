@@ -227,28 +227,7 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     }
 
     public interface Value {
-        Codec<BlockStateIngredient.Value> INNER_CODEC = ExtraCodecs.xor(BlockValue.CODEC, StateValue.CODEC)
-                .xmap(either -> either.map(block -> block, state -> state), value -> {
-                    if (value instanceof StateValue stateValue) {
-                        return Either.right(stateValue);
-                    } else if (value instanceof BlockValue blockValue) {
-                        return Either.left(blockValue);
-                    } else {
-                        throw new UnsupportedOperationException("This is neither a state nor a block value.");
-                    }
-                });
-        Codec<BlockStateIngredient.Value> CODEC = ExtraCodecs.xor(INNER_CODEC, TagValue.CODEC)
-                .xmap(either -> either.map(blockOrState -> blockOrState, tag -> tag), value -> {
-                    if (value instanceof TagValue tagValue) {
-                        return Either.right(tagValue);
-                    } else if (value instanceof StateValue stateValue) {
-                        return Either.left(stateValue);
-                    } else if (value instanceof BlockValue blockValue) {
-                        return Either.left(blockValue);
-                    } else {
-                        throw new UnsupportedOperationException("This is neither a tag nor a state nor a block value.");
-                    }
-                });
+        Codec<BlockStateIngredient.Value> CODEC = ExtraCodecs.withAlternative(ExtraCodecs.withAlternative(StateValue.CODEC, BlockValue.CODEC), TagValue.CODEC);
 
         Collection<BlockPropertyPair> getPairs();
     }
