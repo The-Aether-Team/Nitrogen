@@ -1,12 +1,10 @@
 package com.aetherteam.nitrogen.recipe;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -57,11 +55,6 @@ public record BlockPropertyPair(Block block, Optional<Map<Property<?>, Comparabl
             }
     );
 
-    public static final Codec<Block> BLOCK_CODEC = ExtraCodecs.validate(
-            BuiltInRegistries.BLOCK.byNameCodec(),
-            block -> block == Blocks.AIR ? DataResult.error(() -> "Crafting result must not be minecraft:air") : DataResult.success(block)
-    );
-
     public static BlockPropertyPair of(Block block,  Optional<Map<Property<?>, Comparable<?>>> properties) {
         return new BlockPropertyPair(block, properties);
     }
@@ -106,7 +99,7 @@ public record BlockPropertyPair(Block block, Optional<Map<Property<?>, Comparabl
     public record RawPair(Block block, Optional<Map<String, String>> properties) {
         public static final Codec<RawPair> CODEC = RecordCodecBuilder.create(
                 instance -> instance.group(
-                        BlockPropertyPair.BLOCK_CODEC.fieldOf("block").forGetter(RawPair::block),
+                        BuiltInRegistries.BLOCK.byNameCodec().fieldOf("block").forGetter(RawPair::block),
                         ExtraCodecs.strictUnboundedMap(Codec.STRING, Codec.STRING).optionalFieldOf("properties").forGetter(RawPair::properties)
                 ).apply(instance, RawPair::new)
         );

@@ -38,6 +38,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import org.joml.Vector3f;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -54,11 +55,14 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements EntryRen
         poseStack.pushPose();
         poseStack.translate(bounds.x, bounds.y, 0);
 
-        if (pair.block() != null && pair.properties() != null && minecraft.level != null) {
+        if (pair.block() != null && minecraft.level != null) {
             BlockState blockState = pair.block().defaultBlockState();
-            for (Map.Entry<Property<?>, Comparable<?>> propertyEntry : pair.properties().entrySet()) {
-                blockState = BlockStateRecipeUtil.setHelper(propertyEntry, blockState);
+            if (pair.properties().isPresent()) {
+                for (Map.Entry<Property<?>, Comparable<?>> propertyEntry : pair.properties().get().entrySet()) {
+                    blockState = BlockStateRecipeUtil.setHelper(propertyEntry, blockState);
+                }
             }
+
 
             poseStack.pushPose();
 
@@ -92,9 +96,9 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements EntryRen
 
             BlockPropertyPair pair = this.getMatchingPair(ingredient.getValue());
             Block block = pair.block();
-            Map<Property<?>, Comparable<?>> properties = pair.properties();
+            Optional<Map<Property<?>, Comparable<?>>> properties = pair.properties();
 
-            if (block != null && properties != null) {
+            if (block != null) {
                 // Display block name.
                 MutableComponent mutablecomponent = Component.empty().append(block.getName()).withStyle(ingredient.getValue().getRarity().color);
                 tooltip.add(mutablecomponent);
@@ -109,9 +113,9 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements EntryRen
                     tooltip.add(Component.translatable("item.disabled").withStyle(ChatFormatting.RED));
                 }
                 // Display block properties.
-                if (!properties.isEmpty()) {
+                if (properties.isPresent() && !properties.get().isEmpty()) {
                     tooltip.add(Component.translatable("gui.aether.jei.properties.tooltip").withStyle(ChatFormatting.GRAY));
-                    for (Map.Entry<Property<?>, Comparable<?>> entry : properties.entrySet()) {
+                    for (Map.Entry<Property<?>, Comparable<?>> entry : properties.get().entrySet()) {
                         tooltip.add(Component.literal(entry.getKey().getName() + ": " + entry.getValue().toString()).withStyle(ChatFormatting.DARK_GRAY));
                     }
                 }
@@ -127,11 +131,11 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements EntryRen
      * Warning for "deprecation" is suppressed because the non-sensitive version of {@link net.minecraft.world.level.block.Block#getCloneItemStack(BlockGetter, BlockPos, BlockState)} is needed in this context.
      */
     private BlockPropertyPair getMatchingPair(ItemStack ingredient) {
-        Map<Block, Map<Property<?>, Comparable<?>>> pairsMap = Stream.of(this.pairs).collect(Collectors.toMap(BlockPropertyPair::block, BlockPropertyPair::properties));
+        Map<Block, Optional<Map<Property<?>, Comparable<?>>>> pairsMap = Stream.of(this.pairs).collect(Collectors.toMap(BlockPropertyPair::block, BlockPropertyPair::properties));
         Block block = null;
-        Map<Property<?>, Comparable<?>> propertiesMap = null;
+        Optional<Map<Property<?>, Comparable<?>>> propertiesMap = Optional.empty();
         if (Minecraft.getInstance().level != null) {
-            for (Map.Entry<Block, Map<Property<?>, Comparable<?>>> entry : pairsMap.entrySet()) {
+            for (Map.Entry<Block, Optional<Map<Property<?>, Comparable<?>>>> entry : pairsMap.entrySet()) {
                 ItemStack stack = entry.getKey().getCloneItemStack(Minecraft.getInstance().level, BlockPos.ZERO, entry.getKey().defaultBlockState());
                 stack = stack.isEmpty() ? new ItemStack(Blocks.STONE) : stack;
                 if (stack.getItem() == ingredient.getItem()) {

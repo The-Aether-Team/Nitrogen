@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.Property;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
@@ -333,7 +334,7 @@ public abstract class NitrogenRecipeProvider extends RecipeProvider {
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ingredient), category, item, count).unlockedBy(getHasName(ingredient), has(ingredient)).save(output, this.name(getConversionRecipeName(item, ingredient) + "_stonecutting"));
     }
 
-    protected BlockPropertyPair pair(Block resultBlock, Map<Property<?>, Comparable<?>> resultProperties) {
+    protected BlockPropertyPair pair(Block resultBlock, Optional<Map<Property<?>, Comparable<?>>> resultProperties) {
         return BlockPropertyPair.of(resultBlock, resultProperties);
     }
 }

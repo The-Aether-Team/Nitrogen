@@ -41,8 +41,10 @@ public class REIUtils {
         ItemStack stack = ItemStack.EMPTY;
         if (Minecraft.getInstance().level != null) {
             BlockState resultState = recipeResult.block().defaultBlockState();
-            for (Map.Entry<Property<?>, Comparable<?>> propertyEntry : recipeResult.properties().entrySet()) {
-                resultState = BlockStateRecipeUtil.setHelper(propertyEntry, resultState);
+            if (recipeResult.properties().isPresent()) {
+                for (Map.Entry<Property<?>, Comparable<?>> propertyEntry : recipeResult.properties().get().entrySet()) {
+                    resultState = BlockStateRecipeUtil.setHelper(propertyEntry, resultState);
+                }
             }
             stack = recipeResult.block().getCloneItemStack(Minecraft.getInstance().level, BlockPos.ZERO, resultState);
         }

@@ -34,10 +34,10 @@ public class BlockStateRecipeBuilder implements RecipeBuilder {
     }
 
     public static BlockStateRecipeBuilder recipe(BlockStateIngredient ingredient, Block resultBlock, BlockStateRecipeSerializer<?> serializer) {
-        return recipe(ingredient, BlockPropertyPair.of(resultBlock, Map.of()), serializer);
+        return recipe(ingredient, BlockPropertyPair.of(resultBlock, Optional.empty()), serializer);
     }
 
-    public static BlockStateRecipeBuilder recipe(BlockStateIngredient ingredient, Block resultBlock, Map<Property<?>, Comparable<?>> resultProperties, BlockStateRecipeSerializer<?> serializer) {
+    public static BlockStateRecipeBuilder recipe(BlockStateIngredient ingredient, Block resultBlock, Optional<Map<Property<?>, Comparable<?>>> resultProperties, BlockStateRecipeSerializer<?> serializer) {
         return recipe(ingredient, BlockPropertyPair.of(resultBlock, resultProperties), serializer);
     }
 
