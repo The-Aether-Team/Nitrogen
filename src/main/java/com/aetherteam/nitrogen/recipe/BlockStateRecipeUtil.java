@@ -1,6 +1,9 @@
 package com.aetherteam.nitrogen.recipe;
 
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import net.minecraft.commands.CommandFunction;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
@@ -13,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -26,6 +30,14 @@ import java.util.Map;
 import java.util.Optional;
 
 public final class BlockStateRecipeUtil {
+    public static Codec<ResourceKey<Biome>> RESOURCE_KEY_CODEC = Codec.STRING.comapFlatMap((to) -> !to.startsWith("#")
+            ? DataResult.success(ResourceKey.create(Registries.BIOME, new ResourceLocation(to)))
+            : DataResult.error(() -> "Value is not a resource key"), (from) -> from.location().toString());
+    public static Codec<TagKey<Biome>> TAG_KEY_CODEC = Codec.STRING.comapFlatMap((to) -> to.startsWith("#") 
+            ? DataResult.success(TagKey.create(Registries.BIOME, new ResourceLocation(to.replace("#", ""))))
+            : DataResult.error(() -> "Value is not a tag key"), (from) -> "#" + from.location());
+    public static Codec<Either<ResourceKey<Biome>, TagKey<Biome>>> KEY_CODEC = ExtraCodecs.xor(RESOURCE_KEY_CODEC, TAG_KEY_CODEC);
+
     /**
      * Executes an {@link net.minecraft.commands.CommandFunction.CacheableFunction}.
      * @param level The {@link Level} to execute in.
@@ -79,24 +91,6 @@ public final class BlockStateRecipeUtil {
         }
     }
 
-    /**
-     * Writes an {@link Optional} {@link Biome} {@link ResourceKey} to the networking buffer.
-     * @param buffer The networking {@link FriendlyByteBuf}.
-     * @param biomeKey The {@link Optional} {@link Biome} {@link ResourceKey}.
-     */
-    public static void writeBiomeKey(FriendlyByteBuf buffer, Optional<ResourceKey<Biome>> biomeKey) {
-        buffer.writeOptional(biomeKey, (buf, key) -> buf.writeResourceLocation(key.location()));
-    }
-
-    /**
-     * Writes an {@link Optional} {@link Biome} {@link TagKey} to the networking buffer.
-     * @param buffer The networking {@link FriendlyByteBuf}.
-     * @param biomeTag The {@link Optional} {@link Biome} {@link TagKey}.
-     */
-    public static void writeBiomeTag(FriendlyByteBuf buffer, Optional<TagKey<Biome>> biomeTag) {
-        buffer.writeOptional(biomeTag, (buf, tag) -> buf.writeResourceLocation(tag.location()));
-    }
-
     // Buffer read methods.
     /**
      * Reads a {@link BlockPropertyPair} from the networking buffer.<br><br>
@@ -130,26 +124,6 @@ public final class BlockStateRecipeUtil {
 
             return BlockPropertyPair.of(block, propertiesOptional);
         }
-    }
-
-    /**
-     * Reads an {@link Optional} {@link Biome} {@link ResourceKey} from the networking buffer.
-     * @param buffer The networking {@link FriendlyByteBuf}.
-     * @return The {@link Optional} {@link Biome} {@link ResourceKey}.
-     */
-    public static Optional<ResourceKey<Biome>> readBiomeKey(FriendlyByteBuf buffer) {
-        Optional<ResourceLocation> biomeLocation = buffer.readOptional(FriendlyByteBuf::readResourceLocation);
-        return biomeLocation.map(resourceLocation -> ResourceKey.create(Registries.BIOME, resourceLocation));
-    }
-
-    /**
-     * Reads an {@link Optional} {@link Biome} {@link TagKey} from the networking buffer.
-     * @param buffer The networking {@link FriendlyByteBuf}.
-     * @return The {@link Optional} {@link Biome} {@link TagKey}.
-     */
-    public static Optional<TagKey<Biome>> readBiomeTag(FriendlyByteBuf buffer) {
-        Optional<ResourceLocation> biomeLocation = buffer.readOptional(FriendlyByteBuf::readResourceLocation);
-        return biomeLocation.map(resourceLocation -> TagKey.create(Registries.BIOME, resourceLocation));
     }
 
     // JSON write methods.
