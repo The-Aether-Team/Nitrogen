@@ -2,27 +2,19 @@ package com.aetherteam.nitrogen;
 
 import com.aetherteam.nitrogen.api.users.User;
 import com.aetherteam.nitrogen.api.users.UserData;
-import com.aetherteam.nitrogen.data.generators.NitrogenLanguageData;
+import com.aetherteam.nitrogen.data.NitrogenDataGenerators;
 import com.aetherteam.nitrogen.network.NitrogenPacketHandler;
 import com.aetherteam.nitrogen.network.PacketRelay;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.mojang.logging.LogUtils;
-import net.minecraft.SharedConstants;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.PackOutput;
-import net.minecraft.data.metadata.PackMetadataGenerator;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
@@ -41,25 +33,11 @@ public class Nitrogen {
 
     public Nitrogen(IEventBus bus, Dist dist) {
         bus.addListener(this::commonSetup);
-        bus.addListener(this::dataSetup);
+        bus.addListener(NitrogenDataGenerators::onInitializeDataGenerator);
     }
 
     public void commonSetup(FMLCommonSetupEvent event) {
         NitrogenPacketHandler.register();
-    }
-
-    public void dataSetup(GatherDataEvent event) {
-        DataGenerator generator = event.getGenerator();
-        PackOutput packOutput = generator.getPackOutput();
-
-        // Client Data
-        generator.addProvider(event.includeClient(), new NitrogenLanguageData(packOutput));
-
-        // pack.mcmeta
-        PackMetadataGenerator packMeta = new PackMetadataGenerator(packOutput);
-        Map<PackType, Integer> packTypes = Map.of(PackType.SERVER_DATA, SharedConstants.getCurrentVersion().getPackVersion(PackType.SERVER_DATA));
-        packMeta.add(PackMetadataSection.TYPE, new PackMetadataSection(Component.translatable("pack.nitrogen_internals.mod.description"), SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES), packTypes));
-        generator.addProvider(true, packMeta);
     }
 
     /**
