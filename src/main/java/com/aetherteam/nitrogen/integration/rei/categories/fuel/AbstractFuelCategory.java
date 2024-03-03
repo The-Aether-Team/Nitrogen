@@ -15,35 +15,39 @@ import java.util.List;
 
 public abstract class AbstractFuelCategory extends AbstractRecipeCategory<FuelDisplay> {
     private final ResourceLocation texture;
+    private final ResourceLocation backgroundTexture;
 
-    public AbstractFuelCategory(CategoryIdentifier<FuelDisplay> categoryIdentifier, ResourceLocation texture) {
-        super("", categoryIdentifier, 140, 37, (graphics, bounds, mouseX, mouseY, delta) -> {
-            graphics.blit(texture, bounds.x + 1, bounds.y, 176, 0, 14, 13);
-        });
+    public AbstractFuelCategory(CategoryIdentifier<FuelDisplay> categoryIdentifier, ResourceLocation texture, ResourceLocation backgroundTexture) {
+        super("", categoryIdentifier, 140, 37, (graphics, bounds, mouseX, mouseY, delta) -> graphics.blitSprite(texture, bounds.x + 1, bounds.y, 14, 14));
         this.texture = texture;
+        this.backgroundTexture = backgroundTexture;
     }
 
     public ResourceLocation getTexture() {
         return this.texture;
     }
 
+    public ResourceLocation getBackgroundTexture() {
+        return this.backgroundTexture;
+    }
+
     @Override
     public List<Widget> setupDisplay(FuelDisplay display, Rectangle bounds) {
-        var widgets = super.setupDisplay(display, bounds);
+        List<Widget> widgets = super.setupDisplay(display, bounds);
 
         widgets.add(
                 Widgets.createLabel(new Point(bounds.x + 26, bounds.getMaxY() - 15), createBurnTimeText(display.getBurnTime(), display.getUsage().getName()))
                         .color(0xFF404040, 0xFFBBBBBB).noShadow().leftAligned()
         );
 
-        var burnTime = display.getBurnTime();
-        var lastTick = new MutableDouble(0);
+        int burnTime = display.getBurnTime();
+        MutableDouble lastTick = new MutableDouble(0);
 
-        var startingPoint = startingOffset(bounds);
+        Point startingPoint = startingOffset(bounds);
 
         widgets.add(
                 Widgets.wrapRenderer(
-                        new Rectangle(startingPoint.x + 2, startingPoint.y + 4, 14, 11),
+                        new Rectangle(startingPoint.x + 2, startingPoint.y + 4, 14, 14),
                         (graphics, bound, mouseX, mouseY, delta) -> {
                             lastTick.getAndAdd(delta);
 
@@ -51,14 +55,14 @@ public abstract class AbstractFuelCategory extends AbstractRecipeCategory<FuelDi
                                 lastTick.setValue(0);
                             }
 
-                            var height = (int) Math.round(11 * (lastTick.getValue() / burnTime));
+                            int height = (int) Math.round(11 * (lastTick.getValue() / burnTime));
 
-                            graphics.blit(this.getTexture(), bound.x, bound.y, 190, 3, 13, 11);
+                            graphics.blitSprite(this.getBackgroundTexture(), bound.x - 1, bound.y - 3, 14, 14);
 
-                            var yPosition = bound.y + height;
+                            int yPosition = bound.y + height;
 
-                            graphics.enableScissor(bound.x, yPosition, bound.x + 14, yPosition + 11);
-                            graphics.blit(this.getTexture(), bound.x, bound.y, 176, 3, 14, 11);
+                            graphics.enableScissor(bound.x, yPosition - 3, bound.x + 14, yPosition + 11);
+                            graphics.blitSprite(this.getTexture(), bound.x, bound.y - 3, 14, 14);
                             graphics.disableScissor();
                         }
                 )

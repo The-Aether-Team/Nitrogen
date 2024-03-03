@@ -43,7 +43,7 @@ public abstract class AbstractRecipeCategory<T extends Display> implements Displ
 
     @Override
     public List<Widget> setupDisplay(T display, Rectangle bounds) {
-        var widgets = new ArrayList<Widget>();
+        List<Widget> widgets = new ArrayList<>();
         widgets.add(Widgets.createRecipeBase(new Rectangle(bounds.x, bounds.y, getDisplayWidth(display), getDisplayHeight())));
         return widgets;
     }

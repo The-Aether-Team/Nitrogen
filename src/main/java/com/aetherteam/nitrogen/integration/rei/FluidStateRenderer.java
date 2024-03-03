@@ -66,7 +66,7 @@ public class FluidStateRenderer implements EntryRenderer<FluidStack> {
 
     @Override
     public Tooltip getTooltip(EntryStack<FluidStack> entry, TooltipContext context) {
-        var fluidStack = entry.getValue();
+        FluidStack fluidStack = entry.getValue();
 
         try {
             return entry.getDefinition().getRenderer().getTooltip(entry, context);

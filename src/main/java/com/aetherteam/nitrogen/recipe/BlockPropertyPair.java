@@ -29,12 +29,11 @@ public record BlockPropertyPair(Block block, Optional<Map<Property<?>, Comparabl
                     Map<Property<?>, Comparable<?>> properties = new HashMap<>();
                     for (Map.Entry<String, String> rawPropertiesEntry : rawPropertiesMap.entrySet()) {
                         String rawPropertyName = rawPropertiesEntry.getKey();
-                        String rawPropertyValue = rawPropertiesEntry.getValue();
                         if (nameToPropertyMap.containsKey(rawPropertyName)) {
                             Property<?> property = nameToPropertyMap.get(rawPropertyName);
                             if (property != null) {
                                 Optional<Comparable<?>> comparableOptional = (Optional<Comparable<?>>) property.getValue(rawPropertyName);
-                                comparableOptional.ifPresent(value ->properties.put(property, value)); //todo i dont trust this to not just get the default value
+                                comparableOptional.ifPresent(value ->properties.put(property, value));
                             }
                         }
                     }
