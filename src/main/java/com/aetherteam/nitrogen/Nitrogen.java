@@ -2,16 +2,14 @@ package com.aetherteam.nitrogen;
 
 import com.aetherteam.nitrogen.api.users.User;
 import com.aetherteam.nitrogen.api.users.UserData;
-import com.aetherteam.nitrogen.data.generators.NitrogenLanguageData;
+import com.aetherteam.nitrogen.data.NitrogenDataGenerators;
 import com.aetherteam.nitrogen.network.NitrogenPacketHandler;
 import com.aetherteam.nitrogen.network.PacketRelay;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.mojang.logging.LogUtils;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -36,18 +34,11 @@ public class Nitrogen {
     public Nitrogen() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::commonSetup);
-        modEventBus.addListener(this::dataSetup);
+        modEventBus.addListener(NitrogenDataGenerators::onInitializeDataGenerator);
     }
 
     public void commonSetup(FMLCommonSetupEvent event) {
         NitrogenPacketHandler.register();
-    }
-
-    public void dataSetup(GatherDataEvent event) {
-        DataGenerator generator = event.getGenerator();
-
-        // Client Data
-        generator.addProvider(event.includeClient(), new NitrogenLanguageData(generator));
     }
 
     /**
