@@ -104,6 +104,6 @@ public abstract class AbstractFuelCategory extends AbstractRecipeCategory<FuelDi
     }
 
     private static Component createBurnTimeText(int burnTime, Component usage) {
-        return Component.translatable("gui.jei.category.smelting.time.seconds", burnTime / 20).append(" (").append(usage).append(")");
+        return Component.translatable("category.rei.campfire.time", burnTime / 20).append(" (").append(usage).append(")");
     }
 }
