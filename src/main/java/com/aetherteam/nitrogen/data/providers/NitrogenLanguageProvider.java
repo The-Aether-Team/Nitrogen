@@ -32,7 +32,7 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
     }
 
     public void addEffectDesc(Supplier<? extends MobEffect> key, String name) {
-        this.add("effect." + this.id + "." + key.get().getDescriptionId() + ".description", name);
+        this.add(key.get().getDescriptionId() + ".description", name);
     }
 
     public void addDimension(ResourceKey<Level> dimension, String name) {
