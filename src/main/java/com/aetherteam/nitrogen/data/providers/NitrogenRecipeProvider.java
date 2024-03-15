@@ -247,6 +247,47 @@ public abstract class NitrogenRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(material.get()), has(material.get()));
     }
 
+    protected ShapedRecipeBuilder makeHelmetWithTag(Supplier<? extends Item> helmet, TagKey<Item> materialTag, String unlockName) {
+        return ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, helmet.get())
+                .define('#', materialTag)
+                .pattern("###")
+                .pattern("# #")
+                .unlockedBy("has_" + unlockName, has(materialTag));
+    }
+
+    protected ShapedRecipeBuilder makeChestplateWithTag(Supplier<? extends Item> chestplate, TagKey<Item> materialTag, String unlockName) {
+        return ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, chestplate.get())
+                .define('#', materialTag)
+                .pattern("# #")
+                .pattern("###")
+                .pattern("###")
+                .unlockedBy("has_" + unlockName, has(materialTag));
+    }
+
+    protected ShapedRecipeBuilder makeLeggingsWithTag(Supplier<? extends Item> leggings, TagKey<Item> materialTag, String unlockName) {
+        return ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, leggings.get())
+                .define('#', materialTag)
+                .pattern("###")
+                .pattern("# #")
+                .pattern("# #")
+                .unlockedBy("has_" + unlockName, has(materialTag));
+    }
+
+    protected ShapedRecipeBuilder makeBootsWithTag(Supplier<? extends Item> boots, TagKey<Item> materialTag, String unlockName) {
+        return ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, boots.get())
+                .define('#', materialTag)
+                .pattern("# #")
+                .pattern("# #")
+                .unlockedBy("has_" + unlockName, has(materialTag));
+    }
+
+    protected ShapedRecipeBuilder makeGlovesWithTag(Supplier<? extends Item> gloves, TagKey<Item> materialTag, String unlockName) {
+        return ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, gloves.get())
+                .define('#', materialTag)
+                .pattern("# #")
+                .unlockedBy("has_" + unlockName, has(materialTag));
+    }
+
     protected ShapedRecipeBuilder makeHelmet(Supplier<? extends Item> helmet, Supplier<? extends Item> material) {
         return ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, helmet.get())
                 .define('#', material.get())
@@ -288,11 +329,23 @@ public abstract class NitrogenRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(material.get()), has(material.get()));
     }
 
-    protected ShapedRecipeBuilder makeGlovesWithTag(Supplier<? extends Item> gloves, TagKey<Item> materialTag, String unlockName) {
-        return ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, gloves.get())
-                .define('#', materialTag)
+    protected ShapedRecipeBuilder makeRingWithTag(Supplier<? extends Item> ring, Item material, String unlockName) {
+        return ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ring.get())
+                .define('#', material)
+                .pattern(" # ")
                 .pattern("# #")
-                .unlockedBy("has_" + unlockName, has(materialTag));
+                .pattern(" # ")
+                .unlockedBy("has_" + unlockName, has(material));
+    }
+
+    protected ShapedRecipeBuilder makePendantWithTag(Supplier<? extends Item> pendant, TagKey<Item> material, Ingredient string, String unlockName) {
+        return ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, pendant.get())
+                .define('S', string)
+                .define('#', material)
+                .pattern("SSS")
+                .pattern("S S")
+                .pattern(" # ")
+                .unlockedBy("has_" + unlockName, has(material));
     }
 
     protected ShapedRecipeBuilder makeRing(Supplier<? extends Item> ring, Item material) {
