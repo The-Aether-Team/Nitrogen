@@ -1,7 +1,7 @@
 <p align="center"><img width="250" height="250" src="assets/logo.webp"></p>
 
 # Nitrogen
-[![Modloader: Forge](https://img.shields.io/badge/mod%20loader-forge-CC974D?style=flat-square)](https://files.minecraftforge.net/net/minecraftforge/forge/)
+[![Modloader: Fabric](https://img.shields.io/badge/mod%20loader-fabric-CC974D?style=flat-square)](https://fabricmc.net/use/installer/)
 [![CircleCI](https://circleci.com/gh/The-Aether-Team/Nitrogen/tree/1.20.1-develop.svg?style=shield)](https://app.circleci.com/pipelines/github/The-Aether-Team/Nitrogen?branch=1.20.1-develop)
 [![Code license (LGPL v3.0)](https://img.shields.io/badge/code%20license-LGPL%20v3.0-green.svg?style=flat-square)](https://github.com/The-Aether-Team/Nitrogen/blob/1.20.1-develop/LICENSE.txt)
 
