@@ -77,7 +77,7 @@ public abstract class NitrogenBlockStateProvider extends BlockStateProvider {
         this.axisBlock(block, this.texture(this.name(baseBlock), "natural/"), this.texture(this.name(baseBlock), "natural/"));
     }
 
-    public void pane(IronBarsBlock block, GlassBlock glass, String location) {
+    public void pane(IronBarsBlock block, TransparentBlock glass, String location) {
         this.paneBlockWithRenderType(block, this.texture(this.name(glass), location), this.extend(this.texture(this.name(block), location), "_top"), ResourceLocation.tryParse("translucent"));
     }
 
@@ -320,8 +320,8 @@ public abstract class NitrogenBlockStateProvider extends BlockStateProvider {
     public void furnace(Block block) {
         String blockName = this.name(block);
         ResourceLocation side = this.extend(this.texture(this.name(block), "utility/"), "_side");
-        ResourceLocation front_on =  this.extend(this.texture(this.name(block), "utility/"), "_front_on");
-        ResourceLocation front =  this.extend(this.texture(this.name(block), "utility/"), "_front");
+        ResourceLocation front_on = this.extend(this.texture(this.name(block), "utility/"), "_front_on");
+        ResourceLocation front = this.extend(this.texture(this.name(block), "utility/"), "_front");
         ResourceLocation top = this.extend(this.texture(this.name(block), "utility/"), "_top");
         ModelFile normal = this.models().orientable(blockName, side, front, top);
         ModelFile lit = this.models().orientable(blockName + "_on", side, front_on, top);

@@ -1,7 +1,6 @@
 package com.aetherteam.nitrogen.api.users;
 
 import com.aetherteam.nitrogen.Nitrogen;
-import com.aetherteam.nitrogen.network.NitrogenPacketHandler;
 import com.aetherteam.nitrogen.network.PacketRelay;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.google.common.collect.ImmutableMap;
@@ -34,6 +33,7 @@ public final class UserData {
 
         /**
          * Sets the client's {@link User}.
+         *
          * @param clientUser The {@link User}.
          */
         public static void setClientUser(User clientUser) {
@@ -46,6 +46,7 @@ public final class UserData {
 
         /**
          * Initializes data to {@link Server#STORED_USERS} from the data stored in the world files.
+         *
          * @param server The {@link MinecraftServer}.
          */
         public static void initializeFromCache(MinecraftServer server) {
@@ -54,9 +55,10 @@ public final class UserData {
 
         /**
          * Queries the Patreon database to see if a UUID for a player is stored in it.
-         * @param server The {@link MinecraftServer}.
+         *
+         * @param server       The {@link MinecraftServer}.
          * @param serverPlayer The {@link ServerPlayer} to query for.
-         * @param uuid The {@link UUID} to query with.
+         * @param uuid         The {@link UUID} to query with.
          */
         public static void sendUserRequest(MinecraftServer server, ServerPlayer serverPlayer, UUID uuid) {
             HttpClient client = HttpClient.newBuilder()
@@ -76,10 +78,11 @@ public final class UserData {
 
         /**
          * Parse the response from the Patreon database.
-         * @param server The {@link MinecraftServer}.
+         *
+         * @param server       The {@link MinecraftServer}.
          * @param serverPlayer The {@link ServerPlayer} to query for.
-         * @param uuid The {@link UUID} to query with.
-         * @param response The database response {@link String}.
+         * @param uuid         The {@link UUID} to query with.
+         * @param response     The database response {@link String}.
          */
         private static void parseUserData(MinecraftServer server, ServerPlayer serverPlayer, UUID uuid, String response) {
             JsonElement data = JsonParser.parseString(response); // Format the response to JSON.
@@ -160,7 +163,7 @@ public final class UserData {
                         User user = new User(currentTier, highestPastTier, ZonedDateTime.now(ZoneId.of("UTC")).plusDays(1).format(User.DATE_FORMAT), highestGroup);
                         modifySavedData(server, uuid, user);
                         STORED_USERS.put(uuid, user);
-                        PacketRelay.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
+                        PacketRelay.sendToPlayer(new UpdateUserInfoPacket(user), serverPlayer);
                     }
                 }
             }
@@ -176,6 +179,7 @@ public final class UserData {
 
     /**
      * Calls {@link UserSavedData#getStoredUsers()}.
+     *
      * @param server The {@link MinecraftServer}.
      * @return A {@link Map} of {@link UUID}s and {@link User}s.
      */
@@ -185,9 +189,10 @@ public final class UserData {
 
     /**
      * Calls {@link UserSavedData#modifyStoredUsers(UUID, User)}.
+     *
      * @param server The {@link MinecraftServer}.
-     * @param uuid The player {@link UUID}.
-     * @param user The {@link User}.
+     * @param uuid   The player {@link UUID}.
+     * @param user   The {@link User}.
      */
     private static void modifySavedData(MinecraftServer server, UUID uuid, User user) {
         getSavedData(server).modifyStoredUsers(uuid, user);
@@ -195,8 +200,9 @@ public final class UserData {
 
     /**
      * Calls {@link UserSavedData#removeStoredUsers(UUID)}.
+     *
      * @param server The {@link MinecraftServer}.
-     * @param uuid The player {@link UUID}.
+     * @param uuid   The player {@link UUID}.
      */
     private static void removeSavedData(MinecraftServer server, UUID uuid) {
         getSavedData(server).removeStoredUsers(uuid);

@@ -1,13 +1,14 @@
 package com.aetherteam.nitrogen.network.packet;
 
-import com.aetherteam.nitrogen.capability.CapabilityUtil;
-import com.aetherteam.nitrogen.capability.INBTSynchable;
+import com.aetherteam.nitrogen.attachment.AttachmentUtil;
+import com.aetherteam.nitrogen.attachment.INBTSynchable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import org.apache.commons.lang3.tuple.Triple;
+
+import java.util.function.Supplier;
 
 /**
  * An abstract packet used by level capabilities for data syncing.
@@ -24,13 +25,13 @@ public abstract class SyncLevelPacket<T extends INBTSynchable<CompoundTag>> exte
     @Override
     public void execute(Player playerEntity) {
         if (playerEntity != null && playerEntity.getServer() != null && this.value != null) {
-            CapabilityUtil.syncLevelCapability(this, playerEntity, this.key, this.value, false);
+            AttachmentUtil.syncLevelCapability(this, playerEntity, this.key, this.value, false);
         } else {
             if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null && this.value != null) {
-                CapabilityUtil.syncLevelCapability(this, playerEntity, this.key, this.value, true);
+                AttachmentUtil.syncLevelCapability(this, playerEntity, this.key, this.value, true);
             }
         }
     }
 
-    public abstract LazyOptional<T> getCapability(Level level);
+    public abstract Supplier<AttachmentType<T>> getAttachment();
 }

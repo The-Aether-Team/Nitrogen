@@ -1,7 +1,6 @@
 package com.aetherteam.nitrogen.data.providers;
 
 import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceLocation;
@@ -14,14 +13,13 @@ import net.minecraft.world.level.block.state.properties.Property;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 public abstract class NitrogenRecipeProvider extends RecipeProvider {
     protected final String id;
 
-    public NitrogenRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String id) {
-        super(output, lookupProvider);
+    public NitrogenRecipeProvider(PackOutput output, String id) {
+        super(output);
         this.id = id;
     }
 

@@ -31,6 +31,7 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
 
     /**
      * Checks whether a player is within the room bounds.
+     *
      * @param entity The player {@link Entity}.
      * @return The {@link Boolean} result.
      */
@@ -43,6 +44,7 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
 
     /**
      * Checks whether a player is within the interior of the room bounds, not including the wall, floor, or ceiling positions.
+     *
      * @param entity The player {@link Entity}.
      * @return The {@link Boolean} result.
      */
@@ -55,6 +57,7 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
 
     /**
      * Checks whether this player is tracked within the list of players inside the boss room.
+     *
      * @param player The {@link Player}.
      * @return The {@link Boolean} result.
      */
@@ -91,6 +94,7 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
 
     /**
      * Marks every player in the boss room as having killed the boss, so they all get achievements.
+     *
      * @param damageSource The {@link DamageSource} used to kill the boss.
      */
     public void grantAdvancements(DamageSource damageSource) {
@@ -106,6 +110,7 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
 
     /**
      * Iterates on every block within the bounds of the dungeon
+     *
      * @param function A {@link Function} of two {@link BlockState}s, used to modify blocks within the room.
      */
     public void modifyRoom(Function<BlockState, BlockState> function) {

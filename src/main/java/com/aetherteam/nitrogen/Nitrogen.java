@@ -3,9 +3,9 @@ package com.aetherteam.nitrogen;
 import com.aetherteam.nitrogen.api.users.User;
 import com.aetherteam.nitrogen.api.users.UserData;
 import com.aetherteam.nitrogen.data.NitrogenDataGenerators;
-import com.aetherteam.nitrogen.network.NitrogenPacketHandler;
 import com.aetherteam.nitrogen.network.PacketRelay;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
+import com.aetherteam.nitrogen.network.packet.serverbound.TriggerUpdateInfoPacket;
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,9 +14,10 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import org.slf4j.Logger;
 
 import java.time.LocalDateTime;
@@ -32,12 +33,14 @@ public class Nitrogen {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public Nitrogen(IEventBus bus, Dist dist) {
-        bus.addListener(this::commonSetup);
         bus.addListener(NitrogenDataGenerators::onInitializeDataGenerator);
+        bus.addListener(this::registerPackets);
     }
 
-    public void commonSetup(FMLCommonSetupEvent event) {
-        NitrogenPacketHandler.register();
+    private void registerPackets(RegisterPayloadHandlerEvent event) {
+        IPayloadRegistrar registrar = event.registrar(MODID).versioned("1.0.0").optional();
+        registrar.play(UpdateUserInfoPacket.ID, UpdateUserInfoPacket::decode, payload -> payload.client(UpdateUserInfoPacket::handle));
+        registrar.play(TriggerUpdateInfoPacket.ID, TriggerUpdateInfoPacket::decode, payload -> payload.server(TriggerUpdateInfoPacket::handle));
     }
 
     /**
@@ -64,7 +67,7 @@ public class Nitrogen {
                 if (user != null && user.getRenewalDate() != null && isAfterRenewalTime(user)) { // Check renewal time.
                     UserData.Server.sendUserRequest(serverPlayer.getServer(), serverPlayer, uuid);
                 } else { // Sync to client.
-                    PacketRelay.sendToPlayer(NitrogenPacketHandler.INSTANCE, new UpdateUserInfoPacket(user), serverPlayer);
+                    PacketRelay.sendToPlayer(new UpdateUserInfoPacket(user), serverPlayer);
                 }
             } else { // Query database if no User is found with the server.
                 UserData.Server.sendUserRequest(serverPlayer.getServer(), serverPlayer, uuid);
@@ -74,6 +77,7 @@ public class Nitrogen {
 
     /**
      * Checks if the current time is past the time when a {@link User}'s information has to be re-verified.
+     *
      * @param user The {@link User}.
      * @return The {@link Boolean} result.
      */

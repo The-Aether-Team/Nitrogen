@@ -22,7 +22,7 @@ public record BlockPropertyPair(Block block, Optional<Map<Property<?>, Comparabl
                 Optional<Map<String, String>> rawPropertiesOptional = rawPair.properties();
                 Optional<Map<Property<?>, Comparable<?>>> propertiesOptional = Optional.empty();
                 if (rawPropertiesOptional.isPresent()) {
-                    Map<String,  String> rawPropertiesMap = rawPropertiesOptional.get();
+                    Map<String, String> rawPropertiesMap = rawPropertiesOptional.get();
                     StateDefinition<Block, BlockState> rawStateDefinition = rawBlock.getStateDefinition();
                     Collection<Property<?>> availableProperties = rawStateDefinition.getProperties();
                     Map<String, Property<?>> nameToPropertyMap = availableProperties.stream().collect(Collectors.toMap(Property::getName, (value) -> value));
@@ -33,7 +33,7 @@ public record BlockPropertyPair(Block block, Optional<Map<Property<?>, Comparabl
                             Property<?> property = nameToPropertyMap.get(rawPropertyName);
                             if (property != null) {
                                 Optional<Comparable<?>> comparableOptional = (Optional<Comparable<?>>) property.getValue(rawPropertyName);
-                                comparableOptional.ifPresent(value ->properties.put(property, value));
+                                comparableOptional.ifPresent(value -> properties.put(property, value));
                             }
                         }
                     }
@@ -54,14 +54,15 @@ public record BlockPropertyPair(Block block, Optional<Map<Property<?>, Comparabl
             }
     );
 
-    public static BlockPropertyPair of(Block block,  Optional<Map<Property<?>, Comparable<?>>> properties) {
+    public static BlockPropertyPair of(Block block, Optional<Map<Property<?>, Comparable<?>>> properties) {
         return new BlockPropertyPair(block, properties);
     }
 
     /**
      * Checks if the {@link BlockState} matches the block, before calling {@link BlockPropertyPair#propertiesMatch(BlockState, Optional)}.
-     * @param state The {@link BlockState}.
-     * @param block The {@link Block}.
+     *
+     * @param state      The {@link BlockState}.
+     * @param block      The {@link Block}.
      * @param properties The {@link Optional} {@link Map} of {@link Property} keys and {@link Comparable} values.
      * @return Whether the block and properties match the {@link BlockState}.
      */
@@ -74,7 +75,8 @@ public record BlockPropertyPair(Block block, Optional<Map<Property<?>, Comparabl
 
     /**
      * Checks if the set of given properties all exist within the set of properties of the given {@link BlockState}.
-     * @param state The {@link BlockState}.
+     *
+     * @param state      The {@link BlockState}.
      * @param properties The {@link Optional} {@link Map} of {@link Property} keys and {@link Comparable} values.
      * @return Whether all the properties are found within the {@link BlockState}.
      */
@@ -88,6 +90,7 @@ public record BlockPropertyPair(Block block, Optional<Map<Property<?>, Comparabl
 
     /**
      * Calls {@link BlockPropertyPair#matches(BlockState, Block, Optional)} with the provided values from this {@link BlockPropertyPair}.
+     *
      * @param state A {@link BlockState} from the world.
      * @return Whether the block and properties match the {@link BlockState}.
      */

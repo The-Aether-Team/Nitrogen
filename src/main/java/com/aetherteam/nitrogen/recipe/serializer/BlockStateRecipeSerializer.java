@@ -4,7 +4,6 @@ import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
 import com.aetherteam.nitrogen.recipe.BlockStateIngredient;
 import com.aetherteam.nitrogen.recipe.BlockStateRecipeUtil;
 import com.aetherteam.nitrogen.recipe.recipes.AbstractBlockStateRecipe;
-import com.mojang.datafixers.util.Function3;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,17 +13,17 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import java.util.Optional;
 
 public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> implements RecipeSerializer<T> {
-    private final Function3<BlockStateIngredient, BlockPropertyPair, Optional<ResourceLocation>, T> factory;
+    private final AbstractBlockStateRecipe.Factory<T> factory;
 
     private final Codec<T> codec;
 
-    public BlockStateRecipeSerializer(Function3<BlockStateIngredient, BlockPropertyPair, Optional<ResourceLocation>, T> factory) {
+    public BlockStateRecipeSerializer(AbstractBlockStateRecipe.Factory<T> factory) {
         this.factory = factory;
         this.codec = RecordCodecBuilder.create(inst -> inst.group(
                 BlockStateIngredient.CODEC.fieldOf("ingredient").forGetter(AbstractBlockStateRecipe::getIngredient),
                 BlockPropertyPair.CODEC.fieldOf("result").forGetter(AbstractBlockStateRecipe::getResult),
                 ResourceLocation.CODEC.optionalFieldOf("mcfunction").forGetter(AbstractBlockStateRecipe::getFunctionId)
-        ).apply(inst, this.factory));
+        ).apply(inst, this.factory::create));
     }
 
     @Override
@@ -37,7 +36,7 @@ public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> impl
         BlockStateIngredient ingredient = BlockStateIngredient.fromNetwork(buffer);
         BlockPropertyPair result = BlockStateRecipeUtil.readPair(buffer);
         Optional<ResourceLocation> function = buffer.readOptional(FriendlyByteBuf::readResourceLocation);
-        return this.factory.apply(ingredient, result, function);
+        return this.factory.create(ingredient, result, function);
     }
 
     @Override

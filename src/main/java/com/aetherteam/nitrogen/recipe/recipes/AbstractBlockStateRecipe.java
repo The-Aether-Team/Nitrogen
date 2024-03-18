@@ -3,7 +3,7 @@ package com.aetherteam.nitrogen.recipe.recipes;
 import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
 import com.aetherteam.nitrogen.recipe.BlockStateIngredient;
 import com.aetherteam.nitrogen.recipe.BlockStateRecipeUtil;
-import net.minecraft.commands.CommandFunction;
+import net.minecraft.commands.CacheableFunction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -18,7 +18,7 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
     protected final RecipeType<?> type;
     protected final BlockStateIngredient ingredient;
     protected final BlockPropertyPair result;
-    protected final Optional<CommandFunction.CacheableFunction> function;
+    protected final Optional<CacheableFunction> function;
     private final Optional<ResourceLocation> functionId;
 
     public AbstractBlockStateRecipe(RecipeType<?> type, BlockStateIngredient ingredient, BlockPropertyPair result, Optional<ResourceLocation> functionId) {
@@ -31,8 +31,9 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
 
     /**
      * Replaces an old {@link BlockState} with a new one from {@link AbstractBlockStateRecipe#getResultState(BlockState)}. Also executes a mcfunction if the recipe has one.
-     * @param level The {@link Level} the recipe is performed in.
-     * @param pos The {@link BlockPos} the recipe is performed at.
+     *
+     * @param level    The {@link Level} the recipe is performed in.
+     * @param pos      The {@link BlockPos} the recipe is performed at.
      * @param oldState The original {@link BlockState} being interacted with.
      * @return Whether the new {@link BlockState} was set.
      */
@@ -53,6 +54,7 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
     /**
      * Sets up a new {@link BlockState} with the result {@link BlockPropertyPair#block()} and the original {@link BlockState}'s properties.
      * Then the new {@link BlockState}'s properties are modified based on the result {@link BlockPropertyPair#properties()} using {@link BlockStateRecipeUtil#setHelper(Map.Entry, BlockState)}.
+     *
      * @param originalState The original {@link BlockState} being interacted with.
      * @return The new result {@link BlockState}.
      */
@@ -83,13 +85,17 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
     }
 
     @Override
-    public Optional<CommandFunction.CacheableFunction> getFunction() {
+    public Optional<CacheableFunction> getFunction() {
         return this.function;
     }
 
     @Override
     public Optional<ResourceLocation> getFunctionId() {
         return this.functionId;
+    }
+
+    public interface Factory<T extends AbstractBlockStateRecipe> {
+        T create(BlockStateIngredient ingredient, BlockPropertyPair result, Optional<ResourceLocation> functionId);
     }
 }
 

@@ -1,18 +1,28 @@
 package com.aetherteam.nitrogen.network.packet.clientbound;
 
+import com.aetherteam.nitrogen.Nitrogen;
 import com.aetherteam.nitrogen.api.users.User;
 import com.aetherteam.nitrogen.api.users.UserData;
 import com.aetherteam.nitrogen.network.BasePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 /**
  * Updates the {@link User} on the client.
  */
 public record UpdateUserInfoPacket(User user) implements BasePacket {
+
+    public static final ResourceLocation ID = new ResourceLocation(Nitrogen.MODID, "update_user_info");
+
     @Override
-    public void encode(FriendlyByteBuf buffer) {
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    @Override
+    public void write(FriendlyByteBuf buffer) {
         User.write(buffer, this.user());
     }
 

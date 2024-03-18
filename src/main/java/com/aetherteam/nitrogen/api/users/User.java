@@ -33,6 +33,7 @@ public final class User {
 
     /**
      * Sets a new past highest Patreon {@link Tier} level.
+     *
      * @param highestPastTier The Patreon {@link Tier}.
      */
     private void updateHighestPastTier(@Nullable Tier highestPastTier) {
@@ -57,6 +58,7 @@ public final class User {
 
     /**
      * Sets a new current Patreon {@link Tier} for this user.
+     *
      * @param currentTier The Patreon {@link Tier}.
      */
     private void updateCurrentTier(@Nullable Tier currentTier) {
@@ -80,6 +82,7 @@ public final class User {
 
     /**
      * Sets a new renewal date for when this user's information has to be re-verified.
+     *
      * @param renewalDate The {@link String} for the date.
      */
     private void updateRenewalDate(String renewalDate) {
@@ -96,6 +99,7 @@ public final class User {
 
     /**
      * Sets a new highest {@link Group} value for the user.
+     *
      * @param highestGroup The {@link Group}.
      */
     private void updateHighestGroup(@Nullable Group highestGroup) {
@@ -104,6 +108,7 @@ public final class User {
 
     /**
      * Reads a {@link User} from a {@link FriendlyByteBuf} network buffer.
+     *
      * @param buffer The {@link FriendlyByteBuf} buffer.
      * @return A {@link User}.
      */
@@ -126,8 +131,9 @@ public final class User {
 
     /**
      * Writes a {@link User} to a {@link FriendlyByteBuf} network buffer.
+     *
      * @param buffer The {@link FriendlyByteBuf} buffer.
-     * @param user A {@link User}.
+     * @param user   A {@link User}.
      */
     public static void write(FriendlyByteBuf buffer, User user) {
         if (user == null) {
@@ -173,7 +179,7 @@ public final class User {
         }
 
         public static Tier byId(int id) {
-            switch(id) {
+            switch (id) {
                 case 2429462 -> {
                     return HUMAN;
                 }
