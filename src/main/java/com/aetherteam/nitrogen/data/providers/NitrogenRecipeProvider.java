@@ -329,7 +329,7 @@ public abstract class NitrogenRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(material.get()), has(material.get()));
     }
 
-    protected ShapedRecipeBuilder makeRingWithTag(Supplier<? extends Item> ring, Item material, String unlockName) {
+    protected ShapedRecipeBuilder makeRingWithTag(Supplier<? extends Item> ring, TagKey<Item> material, String unlockName) {
         return ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ring.get())
                 .define('#', material)
                 .pattern(" # ")
