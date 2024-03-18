@@ -3,6 +3,7 @@ package com.aetherteam.nitrogen.data.providers;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -27,7 +28,7 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
     }
 
     public void addEffectDesc(Supplier<? extends MobEffect> key, String name) {
-        this.add("effect." + this.id + "." + key.get().getDescriptionId() + ".description", name);
+        this.add(key.get().getDescriptionId() + ".description", name);
     }
 
     public void addDimension(ResourceKey<Level> dimension, String name) {
