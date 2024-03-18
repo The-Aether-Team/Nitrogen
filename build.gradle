@@ -72,17 +72,17 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
     for (String module in project.porting_lib_modules.split(",")) {
-        modApi("io.github.fabricators_of_create.Porting-Lib:$module:${project.porting_lib_version}")
+        modApi "io.github.fabricators_of_create.Porting-Lib:$module:${project.porting_lib_version}"
     }
 
-    compileOnly "mezz.jei:jei-${project.mc_version}-common:${project.jei_version}"
-    compileOnly "mezz.jei:jei-${project.mc_version}-forge:${project.jei_version}"
+    modCompileOnly "mezz.jei:jei-${project.mc_version}-common:${project.jei_version}"
+    modCompileOnly "mezz.jei:jei-${project.mc_version}-forge:${project.jei_version}"
 
-    compileOnly fg.deobf("me.shedaniel:RoughlyEnoughItems-api-forge:$rei_version")
-    compileOnly fg.deobf("me.shedaniel:RoughlyEnoughItems-default-plugin-forge:$rei_version")
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:$rei_version"
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:$rei_version"
 
-    compileOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:$cloth_config_version")
-    compileOnly fg.deobf("dev.architectury:architectury-forge:$architectury_version")
+    modCompileOnly "me.shedaniel.cloth:cloth-config-fabric:$cloth_config_version"
+    modCompileOnly "dev.architectury:architectury-fabric:$architectury_version"
 }
 
 repositories {

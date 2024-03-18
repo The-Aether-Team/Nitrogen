@@ -5,6 +5,7 @@ import com.aetherteam.nitrogen.recipe.BlockStateRecipeUtil;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.entry.EntryStack;
 import me.shedaniel.rei.api.common.util.EntryStacks;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
@@ -13,7 +14,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraftforge.fluids.FluidType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public class REIUtils {
         List<EntryStack<?>> inputIngredients = new ArrayList<>();
         for (BlockPropertyPair pair : pairs) {
             if (pair.block() instanceof LiquidBlock liquidBlock) {
-                inputIngredients.add(EntryStacks.of(liquidBlock.getFluidState(liquidBlock.defaultBlockState()).getType(), FluidType.BUCKET_VOLUME));
+                inputIngredients.add(EntryStacks.of(liquidBlock.getFluidState(liquidBlock.defaultBlockState()).getType(), FluidConstants.BUCKET));
             } else {
                 inputIngredients.add(EntryStacks.of(setupIngredient(pair)));
             }

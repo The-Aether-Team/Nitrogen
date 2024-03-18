@@ -1,7 +1,7 @@
 package com.aetherteam.nitrogen.integration.rei;
 
 import com.aetherteam.nitrogen.Nitrogen;
-import com.aetherteam.nitrogen.integration.jei.FakeLevel;
+import com.aetherteam.nitrogen.integration.recipeviewer.FakeLevel;
 import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
 import com.aetherteam.nitrogen.recipe.BlockStateRecipeUtil;
 import com.mojang.blaze3d.platform.Lighting;
