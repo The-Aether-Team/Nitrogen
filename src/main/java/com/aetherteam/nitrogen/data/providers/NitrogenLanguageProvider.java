@@ -5,10 +5,13 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.levelgen.structure.Structure;
 
 import java.util.function.Supplier;
 
@@ -28,8 +31,20 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
         this.add("trim_material." + this.id + "." + key, name + " Material");
     }
 
+    public void addEffectDesc(Supplier<? extends MobEffect> key, String name) {
+        this.add(key.get().getDescriptionId() + ".description", name);
+    }
+
+    public void addDimension(ResourceKey<Level> dimension, String name) {
+        this.add("dimension." + this.id + "." + dimension.location().getPath(), name);
+    }
+
     public void addBiome(ResourceKey<Biome> biome, String name) {
         this.add("biome." + this.id + "." + biome.location().getPath(), name);
+    }
+
+    public void addStructure(ResourceKey<Structure> structure, String name) {
+        this.add("structure." + this.id + "." + structure.location().getPath(), name);
     }
 
     public void addContainerType(Supplier<? extends MenuType<?>> key, String name) {

@@ -13,6 +13,7 @@ public class FuelDisplay extends BasicDisplay {
     private final CategoryIdentifier<FuelDisplay> id;
     private final int burnTime;
     private final Block usage;
+
     public FuelDisplay(CategoryIdentifier<FuelDisplay> id, Collection<ItemStack> input, int burnTime, Block usage) {
         super(List.of(EntryIngredients.ofItemStacks(input)), List.of());
         this.id = id;

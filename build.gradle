@@ -3,6 +3,7 @@ plugins {
     id 'maven-publish'
     id 'fabric-loom' version '1.4-SNAPSHOT'
     id 'io.github.0ffz.github-packages' version '[1,2)'
+//    id 'io.github.p03w.machete' version '2.0.1'
 }
 
 version = "${mc_version}-${mod_version}-fabric"
@@ -45,6 +46,22 @@ loom {
     }
 }
 
+//processResources {
+//    exclude '.cache/'
+//}
+//
+//machete {
+//    jij.enabled = false
+//    json.enabled = true
+//    png.enabled = false
+//    sourceFileStriping.enabled = false
+//    lvtStriping.enabled = false
+//}
+//
+//tasks.jar.finalizedBy('optimizeOutputsOfJar')
+
+//tasks.sourceJar.finalizedBy('optimizeOutputsOfJar')
+
 dependencies {
     minecraft "com.mojang:minecraft:${project.mc_version}"
     mappings loom.layered() {
@@ -58,18 +75,22 @@ dependencies {
         modApi("io.github.fabricators_of_create.Porting-Lib:$module:${project.porting_lib_version}")
     }
 
-    modImplementation "mezz.jei:jei-${project.mc_version}-common:${project.jei_version}"
-    modImplementation "mezz.jei:jei-${project.mc_version}-fabric:${project.jei_version}"
+    compileOnly "mezz.jei:jei-${project.mc_version}-common:${project.jei_version}"
+    compileOnly "mezz.jei:jei-${project.mc_version}-forge:${project.jei_version}"
 
-    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}"
-    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+    compileOnly fg.deobf("me.shedaniel:RoughlyEnoughItems-api-forge:$rei_version")
+    compileOnly fg.deobf("me.shedaniel:RoughlyEnoughItems-default-plugin-forge:$rei_version")
+
+    compileOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:$cloth_config_version")
+    compileOnly fg.deobf("dev.architectury:architectury-forge:$architectury_version")
 }
 
 repositories {
     maven { url = "https://maven.blamejared.com" }
+    maven { url = "https://maven.shedaniel.me/" }
+    maven { url = "https://maven.architectury.dev/" }
     maven { url = "https://maven.parchmentmc.org" }
     maven { url = "https://jitpack.io" }
-    maven { url = "https://maven.shedaniel.me/" }
     maven { url = "https://mvn.devos.one/snapshots/" }
     maven { url = "https://maven.ladysnake.org/releases" }
     maven {

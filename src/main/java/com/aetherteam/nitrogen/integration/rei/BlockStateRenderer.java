@@ -1,7 +1,7 @@
 package com.aetherteam.nitrogen.integration.rei;
 
 import com.aetherteam.nitrogen.Nitrogen;
-import com.aetherteam.nitrogen.integration.recipeviewer.FakeBlockLevel;
+import com.aetherteam.nitrogen.integration.jei.FakeLevel;
 import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
 import com.aetherteam.nitrogen.recipe.BlockStateRecipeUtil;
 import com.mojang.blaze3d.platform.Lighting;
@@ -45,10 +45,14 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements EntryRen
     @Override
     public void render(EntryStack<ItemStack> entry, GuiGraphics guiGraphics, Rectangle bounds, int mouseX, int mouseY, float delta) {
         PoseStack poseStack = guiGraphics.pose();
+
         Minecraft minecraft = Minecraft.getInstance();
         BlockRenderDispatcher blockRenderDispatcher = minecraft.getBlockRenderer();
 
         BlockPropertyPair pair = this.getMatchingPair(entry.getValue());
+
+        poseStack.pushPose();
+        poseStack.translate(bounds.x, bounds.y, 0);
 
         if (pair.block() != null && pair.properties() != null && minecraft.level != null) {
             BlockState blockState = pair.block().defaultBlockState();
@@ -68,13 +72,15 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements EntryRen
             ModelBlockRenderer modelBlockRenderer = blockRenderDispatcher.getModelRenderer();
             MultiBufferSource.BufferSource bufferSource = minecraft.renderBuffers().bufferSource();
             BakedModel model = blockRenderDispatcher.getBlockModel(blockState);
-            modelBlockRenderer.tesselateBlock(new FakeBlockLevel(blockState), model, blockState, BlockPos.ZERO, poseStack, bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), false, minecraft.level.getRandom(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+            modelBlockRenderer.tesselateBlock(FakeLevel.of(blockState), model, blockState, BlockPos.ZERO, poseStack, bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), false, minecraft.level.getRandom(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
             bufferSource.endBatch();
 
             Lighting.setupFor3DItems();
 
             poseStack.popPose();
         }
+
+        poseStack.popPose();
     }
 
     @Override
