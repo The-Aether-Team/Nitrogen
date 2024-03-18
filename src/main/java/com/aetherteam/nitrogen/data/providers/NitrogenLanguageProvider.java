@@ -26,6 +26,10 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
         this.add(key.get().getDescriptionId() + ".desc", name);
     }
 
+    public void addEffectDesc(Supplier<? extends MobEffect> key, String name) {
+        this.add("effect." + this.id + "." + key.get().getDescriptionId() + ".description", name);
+    }
+
     public void addDimension(ResourceKey<Level> dimension, String name) {
         this.add("dimension." + this.id + "." + dimension.location().getPath(), name);
     }
