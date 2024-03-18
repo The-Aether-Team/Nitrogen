@@ -3,7 +3,6 @@ package com.aetherteam.nitrogen.network.packet;
 import com.aetherteam.nitrogen.attachment.AttachmentUtil;
 import com.aetherteam.nitrogen.attachment.INBTSynchable;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import org.apache.commons.lang3.tuple.Triple;
@@ -13,7 +12,7 @@ import java.util.function.Supplier;
 /**
  * An abstract packet used by level capabilities for data syncing.
  */
-public abstract class SyncLevelPacket<T extends INBTSynchable<CompoundTag>> extends SyncPacket {
+public abstract class SyncLevelPacket<T extends INBTSynchable> extends SyncPacket {
     public SyncLevelPacket(Triple<String, INBTSynchable.Type, Object> values) {
         super(values);
     }

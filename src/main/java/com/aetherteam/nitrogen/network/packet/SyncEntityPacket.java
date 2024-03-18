@@ -2,7 +2,6 @@ package com.aetherteam.nitrogen.network.packet;
 
 import com.aetherteam.nitrogen.attachment.INBTSynchable;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -15,7 +14,7 @@ import java.util.function.Supplier;
 /**
  * An abstract packet used by entity attachments for data syncing.
  */
-public abstract class SyncEntityPacket<T extends INBTSynchable<CompoundTag>> extends SyncPacket {
+public abstract class SyncEntityPacket<T extends INBTSynchable> extends SyncPacket {
     private final int entityID;
 
     public SyncEntityPacket(Quartet<Integer, String, INBTSynchable.Type, Object> values) {

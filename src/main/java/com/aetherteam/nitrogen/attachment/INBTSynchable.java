@@ -2,12 +2,10 @@ package com.aetherteam.nitrogen.attachment;
 
 import com.aetherteam.nitrogen.network.BasePacket;
 import com.aetherteam.nitrogen.network.PacketRelay;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.apache.commons.lang3.tuple.Triple;
 import oshi.util.tuples.Quintet;
 
@@ -16,7 +14,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public interface INBTSynchable<T extends Tag> extends INBTSerializable<T> {
+public interface INBTSynchable {
     /**
      * Sets a value to be synced to the given direction.
      *
@@ -24,8 +22,8 @@ public interface INBTSynchable<T extends Tag> extends INBTSerializable<T> {
      * @param key       The {@link String} key for the field to sync.
      * @param value     The {@link Object} value to sync to the field.
      */
-    default void setSynched(Direction direction, String key, Object value) {
-        this.setSynched(direction, key, value, null);
+    default void setSynched(int entityID, Direction direction, String key, Object value) {
+        this.setSynched(entityID, direction, key, value, null);
     }
 
     /**
@@ -43,27 +41,27 @@ public interface INBTSynchable<T extends Tag> extends INBTSerializable<T> {
      *                  {@link Direction#DIMENSION} - {@link ResourceKey}<{@link Level}>>. This represents the dimension to send the packet to.
      */
     @SuppressWarnings("unchecked")
-    default void setSynched(Direction direction, String key, Object value, @Nullable Object extra) {
+    default void setSynched(int entityID, Direction direction, String key, Object value, @Nullable Object extra) {
         switch (direction) {
             case SERVER ->
-                    PacketRelay.sendToServer(this.getSyncPacket(key, this.getSynchableFunctions().get(key).getLeft(), value));
+                    PacketRelay.sendToServer(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
             case CLIENT ->
-                    PacketRelay.sendToAll(this.getSyncPacket(key, this.getSynchableFunctions().get(key).getLeft(), value));
+                    PacketRelay.sendToAll(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
             case NEAR -> {
                 if (extra instanceof Quintet<?, ?, ?, ?, ?> quintet) {
                     Quintet<Double, Double, Double, Double, ResourceKey<Level>> nearValues = (Quintet<Double, Double, Double, Double, ResourceKey<Level>>) quintet;
-                    PacketRelay.sendToNear(this.getSyncPacket(key, this.getSynchableFunctions().get(key).getLeft(), value), nearValues.getA(), nearValues.getB(), nearValues.getC(), nearValues.getD(), nearValues.getE());
+                    PacketRelay.sendToNear(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value), nearValues.getA(), nearValues.getB(), nearValues.getC(), nearValues.getD(), nearValues.getE());
                 }
             }
             case PLAYER -> {
                 if (extra instanceof ServerPlayer serverPlayer) {
-                    PacketRelay.sendToPlayer(this.getSyncPacket(key, this.getSynchableFunctions().get(key).getLeft(), value), serverPlayer);
+                    PacketRelay.sendToPlayer(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value), serverPlayer);
                 }
             }
             case DIMENSION -> {
                 if (extra instanceof ResourceKey<?> resourceKey) {
                     ResourceKey<Level> dimensionValue = (ResourceKey<Level>) resourceKey;
-                    PacketRelay.sendToDimension(this.getSyncPacket(key, this.getSynchableFunctions().get(key).getLeft(), value), dimensionValue);
+                    PacketRelay.sendToDimension(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value), dimensionValue);
                 }
             }
         }
@@ -75,8 +73,8 @@ public interface INBTSynchable<T extends Tag> extends INBTSerializable<T> {
      *
      * @param direction The network {@link Direction} to send the packet.
      */
-    default void forceSync(Direction direction) {
-        this.forceSync(direction, null);
+    default void forceSync(int entityID, Direction direction) {
+        this.forceSync(entityID, direction, null);
     }
 
     /**
@@ -90,9 +88,9 @@ public interface INBTSynchable<T extends Tag> extends INBTSerializable<T> {
      *                  {@link Direction#PLAYER} - {@link ServerPlayer}.<br><br>
      *                  {@link Direction#DIMENSION} - {@link ResourceKey}<{@link Level}>>. This represents the dimension to send the packet to.
      */
-    default void forceSync(Direction direction, @Nullable Object extra) {
+    default void forceSync(int entityID, Direction direction, @Nullable Object extra) {
         for (Map.Entry<String, Triple<Type, Consumer<Object>, Supplier<Object>>> entry : this.getSynchableFunctions().entrySet()) {
-            this.setSynched(direction, entry.getKey(), entry.getValue().getRight().get(), extra);
+            this.setSynched(entityID, direction, entry.getKey(), entry.getValue().getRight().get(), extra);
         }
     }
 
@@ -112,7 +110,7 @@ public interface INBTSynchable<T extends Tag> extends INBTSerializable<T> {
      * @param value The {@link Object} value to sync to the field.
      * @return The {@link BasePacket} for syncing.
      */
-    BasePacket getSyncPacket(String key, INBTSynchable.Type type, Object value);
+    BasePacket getSyncPacket(int entityID, String key, INBTSynchable.Type type, Object value);
 
     enum Direction {
         SERVER,
