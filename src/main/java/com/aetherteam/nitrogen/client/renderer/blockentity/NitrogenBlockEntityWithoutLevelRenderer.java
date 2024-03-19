@@ -24,7 +24,7 @@ public class NitrogenBlockEntityWithoutLevelRenderer extends BlockEntityWithoutL
     public void renderByItem(ItemStack stack, ItemDisplayContext context, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
         Item item = stack.getItem();
         if (item instanceof EntityBlockItem blockItem && blockItem.getBlockEntity().isPresent()) {
-            BlockEntity blockEntity = blockItem.getBlockEntity().orElseThrow(() -> new UnsupportedOperationException("BlockEntity was expected, but not supplied."));
+            BlockEntity blockEntity = blockItem.getBlockEntity().orElseThrow(() -> new UnsupportedOperationException("BlockEntity was expected, but not supplied.")).get();
             Minecraft.getInstance().getBlockEntityRenderDispatcher().renderItem(blockEntity, poseStack, buffer, packedLight, packedOverlay);
         } else {
             super.renderByItem(stack, context, poseStack, buffer, packedLight, packedOverlay);
