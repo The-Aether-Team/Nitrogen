@@ -58,7 +58,7 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
 
         BlockPropertyPair pair = this.getMatchingPair(ingredient);
 
-        if (pair.block() != null && pair.properties() != null && minecraft.level != null) {
+        if (pair.block() != null && minecraft.level != null) {
             BlockState blockState = pair.block().defaultBlockState();
             if (pair.properties().isPresent()) {
                 for (Map.Entry<Property<?>, Comparable<?>> propertyEntry : pair.properties().get().entrySet()) {
@@ -105,16 +105,14 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
                 list.add(mutablecomponent);
                 if (tooltipFlag.isAdvanced()) {
                     ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(block);
-                    if (blockKey != null) {
-                        list.add(Component.literal(blockKey.toString()).withStyle(ChatFormatting.DARK_GRAY));
-                    }
+                    list.add(Component.literal(blockKey.toString()).withStyle(ChatFormatting.DARK_GRAY));
                 }
                 // Display whether this blockstate is enabled.
                 if (player != null && !ingredient.getItem().isEnabled(player.level().enabledFeatures())) {
                     list.add(Component.translatable("item.disabled").withStyle(ChatFormatting.RED));
                 }
                 // Display block properties.
-                if (properties.isPresent()) {
+                if (properties.isPresent() && !properties.get().isEmpty()) {
                     list.add(Component.translatable("gui.aether.jei.properties.tooltip").withStyle(ChatFormatting.GRAY));
                     for (Map.Entry<Property<?>, Comparable<?>> entry : properties.get().entrySet()) {
                         list.add(Component.literal(entry.getKey().getName() + ": " + entry.getValue().toString()).withStyle(ChatFormatting.DARK_GRAY));
