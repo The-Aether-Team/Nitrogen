@@ -59,7 +59,7 @@ public abstract class FakeLevel implements BlockAndTintGetter {
         return 0;
     }
 
-    public static FakeLevel of(FluidState fluidState){
+    public static FakeLevel of(FluidState fluidState) {
         return new FakeLevel() {
             @Override
             public BlockState getBlockState(BlockPos pos) {
@@ -73,7 +73,7 @@ public abstract class FakeLevel implements BlockAndTintGetter {
         };
     }
 
-    public static FakeLevel of(BlockState blockState){
+    public static FakeLevel of(BlockState blockState) {
         return new FakeLevel() {
             @Override
             public BlockState getBlockState(BlockPos pos) {

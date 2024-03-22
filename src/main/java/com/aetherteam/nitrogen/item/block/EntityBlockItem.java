@@ -6,23 +6,23 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.common.util.NonNullSupplier;
 
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Used for {@link BlockItem}s that have a {@link BlockEntityWithoutLevelRenderer} attached.
  */
 public class EntityBlockItem extends BlockItem {
-    private final LazyOptional<? extends BlockEntity> blockEntity;
+    private final Optional<Supplier<? extends BlockEntity>> blockEntity;
 
-    public <B extends Block> EntityBlockItem(B block, NonNullSupplier<? extends BlockEntity> blockEntity, Properties properties) {
+    public <B extends Block> EntityBlockItem(B block, Supplier<? extends BlockEntity> blockEntity, Properties properties) {
         super(block, properties);
-        this.blockEntity = LazyOptional.of(blockEntity);
+        this.blockEntity = Optional.ofNullable(blockEntity);
     }
 
-    public LazyOptional<? extends BlockEntity> getBlockEntity() {
+    public Optional<Supplier<? extends BlockEntity>> getBlockEntity() {
         return this.blockEntity;
     }
 

@@ -1,6 +1,6 @@
 package com.aetherteam.nitrogen.network.packet;
 
-import com.aetherteam.nitrogen.capability.INBTSynchable;
+import com.aetherteam.nitrogen.attachment.INBTSynchable;
 import com.aetherteam.nitrogen.network.BasePacket;
 import net.minecraft.network.FriendlyByteBuf;
 import org.apache.commons.lang3.tuple.Triple;
@@ -26,7 +26,7 @@ public abstract class SyncPacket implements BasePacket {
     }
 
     @Override
-    public void encode(FriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeUtf(this.key);
         buf.writeInt(this.type.ordinal());
         if (this.value != null) {

@@ -135,28 +135,29 @@ public class BlockStateIngredient implements Predicate<BlockState> {
 
     private static Codec<BlockStateIngredient> codec(boolean allowEmpty) {
         Codec<BlockStateIngredient.Value[]> codec = Codec.list(BlockStateIngredient.Value.CODEC)
-                .comapFlatMap(
-                        list -> !allowEmpty && list.size() < 1
-                                ? DataResult.error(() -> "Array cannot be empty, at least one item must be defined")
-                                : DataResult.success(list.toArray(new BlockStateIngredient.Value[0])),
-                        List::of
-                );
+            .comapFlatMap(
+                list -> !allowEmpty && list.size() < 1
+                    ? DataResult.error(() -> "Array cannot be empty, at least one item must be defined")
+                    : DataResult.success(list.toArray(new BlockStateIngredient.Value[0])),
+                List::of
+            );
         return ExtraCodecs.either(codec, BlockStateIngredient.Value.CODEC)
-                .flatComapMap(
-                        either -> either.map(BlockStateIngredient::new, value -> new BlockStateIngredient(new BlockStateIngredient.Value[]{value})),
-                        ingredient -> {
-                            if (ingredient.values.length == 1) {
-                                return DataResult.success(Either.right(ingredient.values[0]));
-                            } else {
-                                return ingredient.values.length == 0 && !allowEmpty
-                                        ? DataResult.error(() -> "Array cannot be empty, at least one item must be defined")
-                                        : DataResult.success(Either.left(ingredient.values));
-                            }
-                        }
-                );
+            .flatComapMap(
+                either -> either.map(BlockStateIngredient::new, value -> new BlockStateIngredient(new BlockStateIngredient.Value[]{value})),
+                ingredient -> {
+                    if (ingredient.values.length == 1) {
+                        return DataResult.success(Either.right(ingredient.values[0]));
+                    } else {
+                        return ingredient.values.length == 0 && !allowEmpty
+                            ? DataResult.error(() -> "Array cannot be empty, at least one item must be defined")
+                            : DataResult.success(Either.left(ingredient.values));
+                    }
+                }
+            );
     }
 
-    public record BlockStateValue(Block block, Optional<Map<Property<?>, Comparable<?>>> properties) implements BlockStateIngredient.Value {
+    public record BlockStateValue(Block block,
+                                  Optional<Map<Property<?>, Comparable<?>>> properties) implements BlockStateIngredient.Value {
         public static final Codec<BlockStateIngredient.BlockStateValue> CODEC = BlockPropertyPair.CODEC.flatComapMap(BlockStateValue::new, BlockStateValue::cast);
 
         public BlockStateValue(Block block) {
@@ -180,9 +181,9 @@ public class BlockStateIngredient implements Predicate<BlockState> {
 
     public record TagValue(TagKey<Block> tag) implements BlockStateIngredient.Value {
         public static final Codec<BlockStateIngredient.TagValue> CODEC = RecordCodecBuilder.create(
-                instance -> instance.group(
-                        TagKey.codec(Registries.BLOCK).fieldOf("tag").forGetter(value -> value.tag)
-                ).apply(instance, BlockStateIngredient.TagValue::new)
+            instance -> instance.group(
+                TagKey.codec(Registries.BLOCK).fieldOf("tag").forGetter(value -> value.tag)
+            ).apply(instance, BlockStateIngredient.TagValue::new)
         );
 
         @Override
@@ -198,15 +199,15 @@ public class BlockStateIngredient implements Predicate<BlockState> {
 
     public interface Value {
         Codec<BlockStateIngredient.Value> CODEC = ExtraCodecs.xor(BlockStateIngredient.BlockStateValue.CODEC, BlockStateIngredient.TagValue.CODEC)
-                .xmap(either -> either.map(blockState -> blockState, tag -> tag), value -> {
-                    if (value instanceof BlockStateIngredient.TagValue tagValue) {
-                        return Either.right(tagValue);
-                    } else if (value instanceof BlockStateIngredient.BlockStateValue blockStateValue) {
-                        return Either.left(blockStateValue);
-                    } else {
-                        throw new UnsupportedOperationException("This is neither a blockstate value nor a tag value.");
-                    }
-                });
+            .xmap(either -> either.map(blockState -> blockState, tag -> tag), value -> {
+                if (value instanceof BlockStateIngredient.TagValue tagValue) {
+                    return Either.right(tagValue);
+                } else if (value instanceof BlockStateIngredient.BlockStateValue blockStateValue) {
+                    return Either.left(blockStateValue);
+                } else {
+                    throw new UnsupportedOperationException("This is neither a blockstate value nor a tag value.");
+                }
+            });
 
         Collection<BlockPropertyPair> getPairs();
     }
