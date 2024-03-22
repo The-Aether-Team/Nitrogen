@@ -39,13 +39,13 @@ public abstract class AbstractFuelCategory implements IRecipeCategory<FuelRecipe
         int textPadding = 20;
 
         this.background = helper.drawableBuilder(this.getBackgroundTexture(), 55, 36, 18, backgroundHeight).addPadding(0, 0, 0, textPadding + maxStringWidth).build();
-        this.icon = helper.drawableBuilder(this.getIconTexture(), 0, 0, 14, 13).setTextureSize(14, 14).build();
+        this.icon = helper.drawableBuilder(this.getIconTexture(), 0, 0, 14, 14).setTextureSize(14, 14).build();
 
         this.cachedFuelIndicator = CacheBuilder.newBuilder().maximumSize(25)
             .build(new CacheLoader<>() {
                 @Override
                 public IDrawableAnimated load(Integer burnTime) {
-                    return helper.drawableBuilder(AbstractFuelCategory.this.getIconTexture(), 0, 0, 14, 13).setTextureSize(14, 14).buildAnimated(burnTime, IDrawableAnimated.StartDirection.TOP, true);
+                    return helper.drawableBuilder(AbstractFuelCategory.this.getIconTexture(), 0, 0, 14, 14).setTextureSize(14, 14).buildAnimated(burnTime, IDrawableAnimated.StartDirection.TOP, true);
                 }
             });
     }
@@ -73,7 +73,7 @@ public abstract class AbstractFuelCategory implements IRecipeCategory<FuelRecipe
     public void draw(FuelRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
         int burnTime = recipe.getBurnTime();
         IDrawableAnimated fuelIndicator = this.cachedFuelIndicator.getUnchecked(burnTime);
-        fuelIndicator.draw(guiGraphics, 2, 0);
+        fuelIndicator.draw(guiGraphics, 2, -1);
 
         Font font = Minecraft.getInstance().font;
         Component burnTimeText = createBurnTimeText(recipe.getBurnTime(), recipe.getUsage().getName());
