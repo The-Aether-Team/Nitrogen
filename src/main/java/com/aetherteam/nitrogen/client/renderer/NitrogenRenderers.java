@@ -8,7 +8,7 @@ import net.neoforged.neoforge.common.util.Lazy;
 
 public class NitrogenRenderers {
     public static final Lazy<BlockEntityWithoutLevelRenderer> blockEntityWithoutLevelRenderer = () ->
-            new NitrogenBlockEntityWithoutLevelRenderer(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
+        new NitrogenBlockEntityWithoutLevelRenderer(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
 
     public static final IClientItemExtensions entityBlockItemRenderProperties = new IClientItemExtensions() {
         @Override

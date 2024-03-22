@@ -19,10 +19,10 @@ public class NitrogenPlacedFeatureBuilders {
      */
     private static ImmutableList.Builder<PlacementModifier> treePlacementBase(PlacementModifier count) {
         return ImmutableList.<PlacementModifier>builder()
-                .add(count)
-                .add(SurfaceWaterDepthFilter.forMaxDepth(0))
-                .add(PlacementUtils.HEIGHTMAP_OCEAN_FLOOR)
-                .add(BiomeFilter.biome());
+            .add(count)
+            .add(SurfaceWaterDepthFilter.forMaxDepth(0))
+            .add(PlacementUtils.HEIGHTMAP_OCEAN_FLOOR)
+            .add(BiomeFilter.biome());
     }
 
     /**

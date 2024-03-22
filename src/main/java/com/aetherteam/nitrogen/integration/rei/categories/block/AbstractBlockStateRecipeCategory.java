@@ -33,17 +33,17 @@ public abstract class AbstractBlockStateRecipeCategory<R extends AbstractBlockSt
 
         if (pairs != null) {
             widgets.add(
-                    Widgets.createSlot(new Point(startingPoint.x + 8, startingPoint.y + 6))
-                            .markInput()
-                            .entries(REIClientUtils.setupRendering(display.getInputEntries().get(0), pairs, tooltip -> populateTooltip(display, tooltip)))
+                Widgets.createSlot(new Point(startingPoint.x + 8, startingPoint.y + 6))
+                    .markInput()
+                    .entries(REIClientUtils.setupRendering(display.getInputEntries().get(0), pairs, tooltip -> populateTooltip(display, tooltip)))
             );
             widgets.add(
-                    Widgets.createArrow(new Point(bounds.getCenterX() - (24 / 2), bounds.getCenterY() - (17 / 2)))
+                Widgets.createArrow(new Point(bounds.getCenterX() - (24 / 2), bounds.getCenterY() - (17 / 2)))
             );
             widgets.add(
-                    Widgets.createSlot(new Point(startingPoint.x + 60, startingPoint.y + 6))
-                            .markOutput()
-                            .entries(REIClientUtils.setupRendering(display.getOutputEntries().get(0), recipeResult, null))
+                Widgets.createSlot(new Point(startingPoint.x + 60, startingPoint.y + 6))
+                    .markOutput()
+                    .entries(REIClientUtils.setupRendering(display.getOutputEntries().get(0), recipeResult, null))
             );
         }
 

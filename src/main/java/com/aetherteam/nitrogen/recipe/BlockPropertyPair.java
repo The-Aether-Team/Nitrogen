@@ -17,41 +17,41 @@ import java.util.stream.Collectors;
  */
 public record BlockPropertyPair(Block block, Optional<Map<Property<?>, Comparable<?>>> properties) {
     public static final Codec<BlockPropertyPair> CODEC = RawPair.CODEC.xmap(
-            (rawPair) -> {
-                Block rawBlock = rawPair.block();
-                Optional<Map<String, String>> rawPropertiesOptional = rawPair.properties();
-                Optional<Map<Property<?>, Comparable<?>>> propertiesOptional = Optional.empty();
-                if (rawPropertiesOptional.isPresent()) {
-                    Map<String, String> rawPropertiesMap = rawPropertiesOptional.get();
-                    StateDefinition<Block, BlockState> rawStateDefinition = rawBlock.getStateDefinition();
-                    Collection<Property<?>> availableProperties = rawStateDefinition.getProperties();
-                    Map<String, Property<?>> nameToPropertyMap = availableProperties.stream().collect(Collectors.toMap(Property::getName, (value) -> value));
-                    Map<Property<?>, Comparable<?>> properties = new HashMap<>();
-                    for (Map.Entry<String, String> rawPropertiesEntry : rawPropertiesMap.entrySet()) {
-                        String rawPropertyName = rawPropertiesEntry.getKey();
-                        if (nameToPropertyMap.containsKey(rawPropertyName)) {
-                            Property<?> property = nameToPropertyMap.get(rawPropertyName);
-                            if (property != null) {
-                                Optional<Comparable<?>> comparableOptional = (Optional<Comparable<?>>) property.getValue(rawPropertyName);
-                                comparableOptional.ifPresent(value -> properties.put(property, value));
-                            }
+        (rawPair) -> {
+            Block rawBlock = rawPair.block();
+            Optional<Map<String, String>> rawPropertiesOptional = rawPair.properties();
+            Optional<Map<Property<?>, Comparable<?>>> propertiesOptional = Optional.empty();
+            if (rawPropertiesOptional.isPresent()) {
+                Map<String, String> rawPropertiesMap = rawPropertiesOptional.get();
+                StateDefinition<Block, BlockState> rawStateDefinition = rawBlock.getStateDefinition();
+                Collection<Property<?>> availableProperties = rawStateDefinition.getProperties();
+                Map<String, Property<?>> nameToPropertyMap = availableProperties.stream().collect(Collectors.toMap(Property::getName, (value) -> value));
+                Map<Property<?>, Comparable<?>> properties = new HashMap<>();
+                for (Map.Entry<String, String> rawPropertiesEntry : rawPropertiesMap.entrySet()) {
+                    String rawPropertyName = rawPropertiesEntry.getKey();
+                    if (nameToPropertyMap.containsKey(rawPropertyName)) {
+                        Property<?> property = nameToPropertyMap.get(rawPropertyName);
+                        if (property != null) {
+                            Optional<Comparable<?>> comparableOptional = (Optional<Comparable<?>>) property.getValue(rawPropertyName);
+                            comparableOptional.ifPresent(value -> properties.put(property, value));
                         }
                     }
-                    propertiesOptional = Optional.of(properties);
                 }
-                return new BlockPropertyPair(rawBlock, propertiesOptional);
-            },
-            (blockPropertyPair) -> {
-                Block block = blockPropertyPair.block();
-                Optional<Map<Property<?>, Comparable<?>>> propertiesOptional = blockPropertyPair.properties();
-                Optional<Map<String, String>> rawPropertiesOptional = Optional.empty();
-                if (propertiesOptional.isPresent()) {
-                    Map<Property<?>, Comparable<?>> properties = propertiesOptional.get();
-                    Map<String, String> rawProperties = properties.entrySet().stream().collect(Collectors.toMap((entry) -> entry.getKey().getName(), (entry) -> entry.getValue().toString()));
-                    rawPropertiesOptional = Optional.of(rawProperties);
-                }
-                return new BlockPropertyPair.RawPair(block, rawPropertiesOptional);
+                propertiesOptional = Optional.of(properties);
             }
+            return new BlockPropertyPair(rawBlock, propertiesOptional);
+        },
+        (blockPropertyPair) -> {
+            Block block = blockPropertyPair.block();
+            Optional<Map<Property<?>, Comparable<?>>> propertiesOptional = blockPropertyPair.properties();
+            Optional<Map<String, String>> rawPropertiesOptional = Optional.empty();
+            if (propertiesOptional.isPresent()) {
+                Map<Property<?>, Comparable<?>> properties = propertiesOptional.get();
+                Map<String, String> rawProperties = properties.entrySet().stream().collect(Collectors.toMap((entry) -> entry.getKey().getName(), (entry) -> entry.getValue().toString()));
+                rawPropertiesOptional = Optional.of(rawProperties);
+            }
+            return new BlockPropertyPair.RawPair(block, rawPropertiesOptional);
+        }
     );
 
     public static BlockPropertyPair of(Block block, Optional<Map<Property<?>, Comparable<?>>> properties) {
@@ -100,10 +100,10 @@ public record BlockPropertyPair(Block block, Optional<Map<Property<?>, Comparabl
 
     public record RawPair(Block block, Optional<Map<String, String>> properties) {
         public static final Codec<RawPair> CODEC = RecordCodecBuilder.create(
-                instance -> instance.group(
-                        BuiltInRegistries.BLOCK.byNameCodec().fieldOf("block").forGetter(RawPair::block),
-                        ExtraCodecs.strictUnboundedMap(Codec.STRING, Codec.STRING).optionalFieldOf("properties").forGetter(RawPair::properties)
-                ).apply(instance, RawPair::new)
+            instance -> instance.group(
+                BuiltInRegistries.BLOCK.byNameCodec().fieldOf("block").forGetter(RawPair::block),
+                ExtraCodecs.strictUnboundedMap(Codec.STRING, Codec.STRING).optionalFieldOf("properties").forGetter(RawPair::properties)
+            ).apply(instance, RawPair::new)
         );
     }
 }

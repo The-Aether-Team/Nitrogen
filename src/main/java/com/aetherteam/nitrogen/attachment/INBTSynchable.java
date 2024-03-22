@@ -44,9 +44,9 @@ public interface INBTSynchable {
     default void setSynched(int entityID, Direction direction, String key, Object value, @Nullable Object extra) {
         switch (direction) {
             case SERVER ->
-                    PacketRelay.sendToServer(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
+                PacketRelay.sendToServer(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
             case CLIENT ->
-                    PacketRelay.sendToAll(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
+                PacketRelay.sendToAll(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
             case NEAR -> {
                 if (extra instanceof Quintet<?, ?, ?, ?, ?> quintet) {
                     Quintet<Double, Double, Double, Double, ResourceKey<Level>> nearValues = (Quintet<Double, Double, Double, Double, ResourceKey<Level>>) quintet;

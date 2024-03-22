@@ -20,9 +20,9 @@ public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> impl
     public BlockStateRecipeSerializer(AbstractBlockStateRecipe.Factory<T> factory) {
         this.factory = factory;
         this.codec = RecordCodecBuilder.create(inst -> inst.group(
-                BlockStateIngredient.CODEC.fieldOf("ingredient").forGetter(AbstractBlockStateRecipe::getIngredient),
-                BlockPropertyPair.CODEC.fieldOf("result").forGetter(AbstractBlockStateRecipe::getResult),
-                ResourceLocation.CODEC.optionalFieldOf("mcfunction").forGetter(AbstractBlockStateRecipe::getFunctionId)
+            BlockStateIngredient.CODEC.fieldOf("ingredient").forGetter(AbstractBlockStateRecipe::getIngredient),
+            BlockPropertyPair.CODEC.fieldOf("result").forGetter(AbstractBlockStateRecipe::getResult),
+            ResourceLocation.CODEC.optionalFieldOf("mcfunction").forGetter(AbstractBlockStateRecipe::getFunctionId)
         ).apply(inst, this.factory::create));
     }
 

@@ -31,11 +31,11 @@ import java.util.Optional;
 
 public final class BlockStateRecipeUtil {
     public static Codec<ResourceKey<Biome>> RESOURCE_KEY_CODEC = Codec.STRING.comapFlatMap((to) -> !to.startsWith("#")
-            ? DataResult.success(ResourceKey.create(Registries.BIOME, new ResourceLocation(to)))
-            : DataResult.error(() -> "Value is not a resource key"), (from) -> from.location().toString());
+        ? DataResult.success(ResourceKey.create(Registries.BIOME, new ResourceLocation(to)))
+        : DataResult.error(() -> "Value is not a resource key"), (from) -> from.location().toString());
     public static Codec<TagKey<Biome>> TAG_KEY_CODEC = Codec.STRING.comapFlatMap((to) -> to.startsWith("#")
-            ? DataResult.success(TagKey.create(Registries.BIOME, new ResourceLocation(to.replace("#", ""))))
-            : DataResult.error(() -> "Value is not a tag key"), (from) -> "#" + from.location());
+        ? DataResult.success(TagKey.create(Registries.BIOME, new ResourceLocation(to.replace("#", ""))))
+        : DataResult.error(() -> "Value is not a tag key"), (from) -> "#" + from.location());
     public static Codec<Either<ResourceKey<Biome>, TagKey<Biome>>> KEY_CODEC = ExtraCodecs.xor(RESOURCE_KEY_CODEC, TAG_KEY_CODEC);
 
     /**
@@ -51,8 +51,8 @@ public final class BlockStateRecipeUtil {
                 MinecraftServer minecraftServer = serverLevel.getServer();
                 cacheableFunction.get(minecraftServer.getFunctions()).ifPresent(command -> {
                     CommandSourceStack context = minecraftServer.getFunctions().getGameLoopSender()
-                            .withPosition(Vec3.atBottomCenterOf(pos))
-                            .withLevel(serverLevel);
+                        .withPosition(Vec3.atBottomCenterOf(pos))
+                        .withLevel(serverLevel);
                     minecraftServer.getFunctions().execute(command, context);
                 });
             });

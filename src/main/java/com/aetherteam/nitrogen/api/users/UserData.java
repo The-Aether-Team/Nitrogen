@@ -62,18 +62,18 @@ public final class UserData {
          */
         public static void sendUserRequest(MinecraftServer server, ServerPlayer serverPlayer, UUID uuid) {
             HttpClient client = HttpClient.newBuilder()
-                    .version(HttpClient.Version.HTTP_1_1)
-                    .followRedirects(HttpClient.Redirect.NORMAL)
-                    .connectTimeout(Duration.ofSeconds(20))
-                    .build();
+                .version(HttpClient.Version.HTTP_1_1)
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .connectTimeout(Duration.ofSeconds(20))
+                .build();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://raw.githubusercontent.com/The-Aether-Team/.github/main/supporters/database.json"))
-                    .timeout(Duration.ofMinutes(2))
-                    .header("Content-Type", "application/json")
-                    .build();
+                .uri(URI.create("https://raw.githubusercontent.com/The-Aether-Team/.github/main/supporters/database.json"))
+                .timeout(Duration.ofMinutes(2))
+                .header("Content-Type", "application/json")
+                .build();
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenApply(HttpResponse::body)
-                    .thenAccept(response -> parseUserData(server, serverPlayer, uuid, response));
+                .thenApply(HttpResponse::body)
+                .thenAccept(response -> parseUserData(server, serverPlayer, uuid, response));
         }
 
         /**

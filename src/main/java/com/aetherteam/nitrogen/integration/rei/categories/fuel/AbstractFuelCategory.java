@@ -36,8 +36,8 @@ public abstract class AbstractFuelCategory extends AbstractRecipeCategory<FuelDi
         List<Widget> widgets = super.setupDisplay(display, bounds);
 
         widgets.add(
-                Widgets.createLabel(new Point(bounds.x + 26, bounds.getMaxY() - 15), createBurnTimeText(display.getBurnTime(), display.getUsage().getName()))
-                        .color(0xFF404040, 0xFFBBBBBB).noShadow().leftAligned()
+            Widgets.createLabel(new Point(bounds.x + 26, bounds.getMaxY() - 15), createBurnTimeText(display.getBurnTime(), display.getUsage().getName()))
+                .color(0xFF404040, 0xFFBBBBBB).noShadow().leftAligned()
         );
 
         int burnTime = display.getBurnTime();
@@ -46,26 +46,26 @@ public abstract class AbstractFuelCategory extends AbstractRecipeCategory<FuelDi
         Point startingPoint = startingOffset(bounds);
 
         widgets.add(
-                Widgets.wrapRenderer(
-                        new Rectangle(startingPoint.x + 2, startingPoint.y + 4, 14, 14),
-                        (graphics, bound, mouseX, mouseY, delta) -> {
-                            lastTick.getAndAdd(delta);
+            Widgets.wrapRenderer(
+                new Rectangle(startingPoint.x + 2, startingPoint.y + 4, 14, 14),
+                (graphics, bound, mouseX, mouseY, delta) -> {
+                    lastTick.getAndAdd(delta);
 
-                            if (lastTick.getValue() > burnTime) {
-                                lastTick.setValue(0);
-                            }
+                    if (lastTick.getValue() > burnTime) {
+                        lastTick.setValue(0);
+                    }
 
-                            int height = (int) Math.round(11 * (lastTick.getValue() / burnTime));
+                    int height = (int) Math.round(11 * (lastTick.getValue() / burnTime));
 
-                            graphics.blitSprite(this.getBackgroundTexture(), bound.x - 1, bound.y - 3, 14, 14);
+                    graphics.blitSprite(this.getBackgroundTexture(), bound.x - 1, bound.y - 3, 14, 14);
 
-                            int yPosition = bound.y + height;
+                    int yPosition = bound.y + height;
 
-                            graphics.enableScissor(bound.x, yPosition - 3, bound.x + 14, yPosition + 11);
-                            graphics.blitSprite(this.getTexture(), bound.x, bound.y - 3, 14, 14);
-                            graphics.disableScissor();
-                        }
-                )
+                    graphics.enableScissor(bound.x, yPosition - 3, bound.x + 14, yPosition + 11);
+                    graphics.blitSprite(this.getTexture(), bound.x, bound.y - 3, 14, 14);
+                    graphics.disableScissor();
+                }
+            )
         );
 
         widgets.add(Widgets.createSlot(new Point(bounds.x + 6, startingPoint.y + 18)).entries(display.getInputEntries().get(0)).markInput());

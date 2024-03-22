@@ -18,7 +18,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
-public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3 originCoordinates, AABB roomBounds, List<UUID> dungeonPlayers) {
+public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3 originCoordinates, AABB roomBounds,
+                                                          List<UUID> dungeonPlayers) {
     /**
      * @return Whether the dungeon boss is within the room bounds, as a {@link Boolean}.
      */

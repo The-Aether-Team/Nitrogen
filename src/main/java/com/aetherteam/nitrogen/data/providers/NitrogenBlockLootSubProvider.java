@@ -31,8 +31,8 @@ public abstract class NitrogenBlockLootSubProvider extends BlockLootSubProvider 
 
     public LootTable.Builder droppingNameableBlockEntityTable(Block block) {
         return LootTable.lootTable().withPool(this.applyExplosionCondition(block, LootPool.lootPool().setRolls(ConstantValue.exactly(1))
-                .add(LootItem.lootTableItem(block)
-                        .apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY))))
+            .add(LootItem.lootTableItem(block)
+                .apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY))))
         );
     }
 
