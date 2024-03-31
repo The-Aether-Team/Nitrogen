@@ -52,12 +52,12 @@ public abstract class NitrogenItemModelProvider extends ItemModelProvider {
 
     public void item(Item item, String location) {
         this.withExistingParent(this.itemName(item), mcLoc("item/generated"))
-                .texture("layer0", modLoc("item/" + location + this.itemName(item)));
+            .texture("layer0", modLoc("item/" + location + this.itemName(item)));
     }
 
     public void handheldItem(Item item, String location) {
         this.withExistingParent(this.itemName(item), this.mcLoc("item/handheld"))
-                .texture("layer0", this.modLoc("item/" + location + this.itemName(item)));
+            .texture("layer0", this.modLoc("item/" + location + this.itemName(item)));
     }
 
     public void bowItem(Item item, String location) {
@@ -65,10 +65,10 @@ public abstract class NitrogenItemModelProvider extends ItemModelProvider {
         this.withExistingParent(this.itemName(item) + "_pulling_1", this.mcLoc("item/bow")).texture("layer0", this.modLoc("item/" + location + this.itemName(item) + "_pulling_1"));
         this.withExistingParent(this.itemName(item) + "_pulling_2", this.mcLoc("item/bow")).texture("layer0", this.modLoc("item/" + location + this.itemName(item) + "_pulling_2"));
         this.withExistingParent(this.itemName(item), this.mcLoc("item/bow"))
-                .texture("layer0", this.modLoc("item/" + location + this.itemName(item)))
-                .override().predicate(new ResourceLocation("pulling"), 1).model(this.getExistingFile(this.modLoc("item/" + this.itemName(item) + "_pulling_0"))).end()
-                .override().predicate(new ResourceLocation("pulling"), 1).predicate(new ResourceLocation("pull"), 0.65F).model(this.getExistingFile(this.modLoc("item/" + this.itemName(item) + "_pulling_1"))).end()
-                .override().predicate(new ResourceLocation("pulling"), 1).predicate(new ResourceLocation("pull"), 0.9F).model(this.getExistingFile(this.modLoc("item/" + this.itemName(item) + "_pulling_2"))).end();
+            .texture("layer0", this.modLoc("item/" + location + this.itemName(item)))
+            .override().predicate(new ResourceLocation("pulling"), 1).model(this.getExistingFile(this.modLoc("item/" + this.itemName(item) + "_pulling_0"))).end()
+            .override().predicate(new ResourceLocation("pulling"), 1).predicate(new ResourceLocation("pull"), 0.65F).model(this.getExistingFile(this.modLoc("item/" + this.itemName(item) + "_pulling_1"))).end()
+            .override().predicate(new ResourceLocation("pulling"), 1).predicate(new ResourceLocation("pull"), 0.9F).model(this.getExistingFile(this.modLoc("item/" + this.itemName(item) + "_pulling_2"))).end();
     }
 
     public void helmetItem(Item item, String location) {
@@ -94,8 +94,8 @@ public abstract class NitrogenItemModelProvider extends ItemModelProvider {
             String material = trimMaterial.location().getPath();
             String name = this.itemName(item) + "_" + material + "_trim";
             this.withExistingParent(name, this.mcLoc("item/generated"))
-                    .texture("layer0", this.modLoc("item/" + location + this.itemName(item)))
-                    .texture("layer1", this.mcLoc("trims/items/" + type + "_trim_" + material));
+                .texture("layer0", this.modLoc("item/" + location + this.itemName(item)))
+                .texture("layer1", this.mcLoc("trims/items/" + type + "_trim_" + material));
             builder.override().predicate(new ResourceLocation("trim_type"), (float) index).model(this.getExistingFile(this.modLoc("item/" + name))).end();
             index += 0.1;
         }
@@ -103,8 +103,8 @@ public abstract class NitrogenItemModelProvider extends ItemModelProvider {
 
     public void dyedItem(Item item, String location) {
         this.withExistingParent(this.itemName(item), this.mcLoc("item/generated"))
-                .texture("layer0", this.modLoc("item/" + location + this.itemName(item)))
-                .texture("layer1", this.modLoc("item/" + location + this.itemName(item) + "_overlay"));
+            .texture("layer0", this.modLoc("item/" + location + this.itemName(item)))
+            .texture("layer1", this.modLoc("item/" + location + this.itemName(item) + "_overlay"));
     }
 
     public void eggItem(Item item) {
@@ -121,13 +121,13 @@ public abstract class NitrogenItemModelProvider extends ItemModelProvider {
 
     public void pane(Block block, Block glass, String location) {
         this.withExistingParent(this.blockName(block), this.mcLoc("item/generated"))
-                .texture("layer0", this.texture(this.blockName(glass), location))
-                .renderType(new ResourceLocation("translucent"));
+            .texture("layer0", this.texture(this.blockName(glass), location))
+            .renderType(new ResourceLocation("translucent"));
     }
 
     public void itemBlockFlat(Block block, String location) {
         this.withExistingParent(this.blockName(block), this.mcLoc("item/generated"))
-                .texture("layer0", this.texture(this.blockName(block), location));
+            .texture("layer0", this.texture(this.blockName(block), location));
     }
 
     public void lookalikeBlock(Block block, ResourceLocation lookalike) {
@@ -136,12 +136,12 @@ public abstract class NitrogenItemModelProvider extends ItemModelProvider {
 
     public void itemFence(Block block, Block baseBlock, String location) {
         this.withExistingParent(this.blockName(block), this.mcLoc("block/fence_inventory"))
-                .texture("texture", this.texture(this.blockName(baseBlock), location));
+            .texture("texture", this.texture(this.blockName(baseBlock), location));
     }
 
     public void itemButton(Block block, Block baseBlock, String location) {
         this.withExistingParent(this.blockName(block), this.mcLoc("block/button_inventory"))
-                .texture("texture", this.texture(this.blockName(baseBlock), location));
+            .texture("texture", this.texture(this.blockName(baseBlock), location));
     }
 
     public void itemWallBlock(Block block, Block baseBlock, String location) {
@@ -155,25 +155,25 @@ public abstract class NitrogenItemModelProvider extends ItemModelProvider {
     public void itemLogWallBlock(Block block, Block baseBlock, String location, String modid) {
         ResourceLocation baseTexture = new ResourceLocation(modid, "block/" + location + this.blockName(baseBlock));
         this.withExistingParent(this.blockName(block), this.mcLoc("block/block"))
-                .transforms()
-                .transform(ItemDisplayContext.GUI).rotation(30.0F, 135.0F, 0.0F).translation(0.0F, 0.0F, 0.0F).scale(0.625F, 0.625F, 0.625F).end()
-                .transform(ItemDisplayContext.FIXED).rotation(0.0F, 90.0F, 0.0F).translation(0.0F, 0.0F, 0.0F).scale(0.5F, 0.5F, 0.5F).end()
-                .end()
-                .texture("top", baseTexture + "_top").texture("side", baseTexture)
-                .element().from(4.0F, 0.0F, 4.0F).to(12.0F, 16.0F, 12.0F)
-                .face(Direction.DOWN).uvs(4.0F, 4.0F, 12.0F, 12.0F).texture("#top").cullface(Direction.DOWN).end()
-                .face(Direction.UP).uvs(4.0F, 4.0F, 12.0F, 12.0F).texture("#top").end()
-                .face(Direction.NORTH).uvs(4.0F, 0.0F, 12.0F, 16.0F).texture("#side").end()
-                .face(Direction.SOUTH).uvs(4.0F, 0.0F, 12.0F, 16.0F).texture("#side").end()
-                .face(Direction.WEST).uvs(4.0F, 0.0F, 12.0F, 16.0F).texture("#side").end()
-                .face(Direction.EAST).uvs(4.0F, 0.0F, 12.0F, 16.0F).texture("#side").end().end()
-                .element().from(5.0F, 0.0F, 0.0F).to(11.0F, 13.0F, 16.0F)
-                .face(Direction.DOWN).uvs(5.0F, 0.0F, 11.0F, 16.0F).texture("#top").cullface(Direction.DOWN).end()
-                .face(Direction.UP).uvs(5.0F, 0.0F, 11.0F, 16.0F).texture("#top").end()
-                .face(Direction.NORTH).uvs(5.0F, 3.0F, 11.0F, 16.0F).texture("#side").cullface(Direction.NORTH).end()
-                .face(Direction.SOUTH).uvs(5.0F, 3.0F, 11.0F, 16.0F).texture("#side").cullface(Direction.SOUTH).end()
-                .face(Direction.WEST).uvs(0.0F, 3.0F, 16.0F, 16.0F).texture("#side").end()
-                .face(Direction.EAST).uvs(0.0F, 3.0F, 16.0F, 16.0F).texture("#side").end().end();
+            .transforms()
+            .transform(ItemDisplayContext.GUI).rotation(30.0F, 135.0F, 0.0F).translation(0.0F, 0.0F, 0.0F).scale(0.625F, 0.625F, 0.625F).end()
+            .transform(ItemDisplayContext.FIXED).rotation(0.0F, 90.0F, 0.0F).translation(0.0F, 0.0F, 0.0F).scale(0.5F, 0.5F, 0.5F).end()
+            .end()
+            .texture("top", baseTexture + "_top").texture("side", baseTexture)
+            .element().from(4.0F, 0.0F, 4.0F).to(12.0F, 16.0F, 12.0F)
+            .face(Direction.DOWN).uvs(4.0F, 4.0F, 12.0F, 12.0F).texture("#top").cullface(Direction.DOWN).end()
+            .face(Direction.UP).uvs(4.0F, 4.0F, 12.0F, 12.0F).texture("#top").end()
+            .face(Direction.NORTH).uvs(4.0F, 0.0F, 12.0F, 16.0F).texture("#side").end()
+            .face(Direction.SOUTH).uvs(4.0F, 0.0F, 12.0F, 16.0F).texture("#side").end()
+            .face(Direction.WEST).uvs(4.0F, 0.0F, 12.0F, 16.0F).texture("#side").end()
+            .face(Direction.EAST).uvs(4.0F, 0.0F, 12.0F, 16.0F).texture("#side").end().end()
+            .element().from(5.0F, 0.0F, 0.0F).to(11.0F, 13.0F, 16.0F)
+            .face(Direction.DOWN).uvs(5.0F, 0.0F, 11.0F, 16.0F).texture("#top").cullface(Direction.DOWN).end()
+            .face(Direction.UP).uvs(5.0F, 0.0F, 11.0F, 16.0F).texture("#top").end()
+            .face(Direction.NORTH).uvs(5.0F, 3.0F, 11.0F, 16.0F).texture("#side").cullface(Direction.NORTH).end()
+            .face(Direction.SOUTH).uvs(5.0F, 3.0F, 11.0F, 16.0F).texture("#side").cullface(Direction.SOUTH).end()
+            .face(Direction.WEST).uvs(0.0F, 3.0F, 16.0F, 16.0F).texture("#side").end()
+            .face(Direction.EAST).uvs(0.0F, 3.0F, 16.0F, 16.0F).texture("#side").end().end();
     }
 
     public void itemWoodWallBlock(Block block, Block baseBlock, String location, String modid) {

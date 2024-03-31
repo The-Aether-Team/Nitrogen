@@ -57,14 +57,14 @@ subsystems {
 dependencies {
     implementation "net.neoforged:neoforge:${project.neoforge_version}"
 
-//    compileOnly "mezz.jei:jei-${project.mc_version}-common:${project.jei_version}"
-//    compileOnly "mezz.jei:jei-${project.mc_version}-forge:${project.jei_version}"
+    compileOnly "mezz.jei:jei-${project.mc_version}-common:${project.jei_version}"
+    compileOnly "mezz.jei:jei-${project.mc_version}-neoforge:${project.jei_version}"
 
-//    compileOnly "me.shedaniel:RoughlyEnoughItems-api-forge:$rei_version"
-//    compileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-forge:$rei_version"
-//
-//    compileOnly "me.shedaniel.cloth:cloth-config-forge:$cloth_config_version"
-//    compileOnly "dev.architectury:architectury-forge:$architectury_version"
+    compileOnly "me.shedaniel:RoughlyEnoughItems-api-neoforge:$rei_version"
+    compileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-neoforge:$rei_version"
+
+    compileOnly "me.shedaniel.cloth:cloth-config-neoforge:$cloth_config_version"
+    compileOnly "dev.architectury:architectury-neoforge:$architectury_version"
 }
 
 repositories {

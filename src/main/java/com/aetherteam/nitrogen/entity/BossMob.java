@@ -18,13 +18,16 @@ public interface BossMob<T extends Mob & BossMob<T>> {
     }
 
     Component getBossName();
+
     void setBossName(Component component);
 
     boolean isBossFight();
+
     void setBossFight(boolean isFighting);
 
     @Nullable
     BossRoomTracker<T> getDungeon();
+
     void setDungeon(@Nullable BossRoomTracker<T> dungeon);
 
     int getDeathScore();
@@ -45,15 +48,18 @@ public interface BossMob<T extends Mob & BossMob<T>> {
 
     /**
      * Displays a message when the player tries to start a boss fight but is outside of the room.
+     *
      * @param player The {@link Player}.
      */
     default void displayTooFarMessage(Player player) {
         player.sendSystemMessage(Component.translatable("gui.nitrogen_internals.boss.message.far"));
     }
 
-    default void onDungeonPlayerAdded(@Nullable Player player) { }
+    default void onDungeonPlayerAdded(@Nullable Player player) {
+    }
 
-    default void onDungeonPlayerRemoved(@Nullable Player player) { }
+    default void onDungeonPlayerRemoved(@Nullable Player player) {
+    }
 
     void reset();
 

@@ -2,7 +2,7 @@ package com.aetherteam.nitrogen.recipe.recipes;
 
 import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
 import com.aetherteam.nitrogen.recipe.BlockStateIngredient;
-import net.minecraft.commands.CommandFunction;
+import net.minecraft.commands.CacheableFunction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
@@ -24,7 +24,7 @@ public interface BlockStateRecipe extends Recipe<Container> {
 
     BlockState getResultState(BlockState originalState);
 
-    Optional<CommandFunction.CacheableFunction> getFunction();
+    Optional<CacheableFunction> getFunction();
 
     Optional<ResourceLocation> getFunctionId();
 

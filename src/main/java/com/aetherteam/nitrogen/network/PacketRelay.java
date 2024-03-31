@@ -1,29 +1,29 @@
 package com.aetherteam.nitrogen.network;
 
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
 
 public class PacketRelay {
-    public static <MSG> void sendToPlayer(SimpleChannel handler, MSG message, ServerPlayer player) {
-        handler.send(PacketDistributor.PLAYER.with(() -> player), message); // Clientbound
+    public static <MSG extends CustomPacketPayload> void sendToPlayer(MSG message, ServerPlayer player) {
+        PacketDistributor.PLAYER.with(player).send(message); // Clientbound
     }
 
-    public static <MSG> void sendToNear(SimpleChannel handler, MSG message, double x, double y, double z, double radius, ResourceKey<Level> dimension) {
-        handler.send(PacketDistributor.NEAR.with(PacketDistributor.TargetPoint.p(x, y, z, radius, dimension)), message); // Clientbound
+    public static <MSG extends CustomPacketPayload> void sendToNear(MSG message, double x, double y, double z, double radius, ResourceKey<Level> dimension) {
+        PacketDistributor.NEAR.with(PacketDistributor.TargetPoint.p(x, y, z, radius, dimension).get()).send(message); // Clientbound
     }
 
-    public static <MSG> void sendToAll(SimpleChannel handler, MSG message) {
-        handler.send(PacketDistributor.ALL.noArg(), message); // Clientbound
+    public static <MSG extends CustomPacketPayload> void sendToAll(MSG message) {
+        PacketDistributor.ALL.noArg().send(message); // Clientbound
     }
 
-    public static <MSG> void sendToServer(SimpleChannel handler, MSG message) {
-        handler.sendToServer(message); // Serverbound
+    public static <MSG extends CustomPacketPayload> void sendToServer(MSG message) {
+        PacketDistributor.SERVER.noArg().send(message); // Serverbound
     }
 
-    public static <MSG> void sendToDimension(SimpleChannel handler, MSG message, ResourceKey<Level> dimension) {
-        handler.send(PacketDistributor.DIMENSION.with(() -> dimension), message); // Clientbound
+    public static <MSG extends CustomPacketPayload> void sendToDimension(MSG message, ResourceKey<Level> dimension) {
+        PacketDistributor.DIMENSION.with(dimension).send(message); // Clientbound
     }
 }

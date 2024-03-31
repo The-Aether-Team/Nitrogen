@@ -15,6 +15,7 @@ public final class UserSavedData extends SavedData {
 
     /**
      * Saves user data to the world in a file named "users.dat".
+     *
      * @param tag The {@link CompoundTag} to save the data to.
      * @return A {@link CompoundTag} with the data.
      */
@@ -44,6 +45,7 @@ public final class UserSavedData extends SavedData {
 
     /**
      * Loads user data from the world from a {@link CompoundTag} representing the data in "users.dat".
+     *
      * @param tag The {@link CompoundTag}.
      * @return The {@link UserSavedData} created from the world data.
      */
@@ -84,6 +86,7 @@ public final class UserSavedData extends SavedData {
 
     /**
      * Loads or creates the "users.dat" file.
+     *
      * @param dataStorage The {@link DimensionDataStorage} of the world.
      * @return The {@link UserSavedData} corresponding to the data file.
      */
@@ -100,6 +103,7 @@ public final class UserSavedData extends SavedData {
 
     /**
      * Modifies the {@link User} data stored in the world data.
+     *
      * @param uuid The {@link UUID} of the player that the {@link User} belongs to.
      * @param user The {@link User}.
      */
@@ -110,6 +114,7 @@ public final class UserSavedData extends SavedData {
 
     /**
      * Removes an entry for a player's {@link User} data from the world data.
+     *
      * @param uuid The player's {@link UUID}.
      */
     void removeStoredUsers(UUID uuid) {

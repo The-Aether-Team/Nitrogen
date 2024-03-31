@@ -1,19 +1,20 @@
 package com.aetherteam.nitrogen.network.packet;
 
-import com.aetherteam.nitrogen.capability.INBTSynchable;
+import com.aetherteam.nitrogen.attachment.INBTSynchable;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import org.apache.commons.lang3.tuple.Triple;
 import oshi.util.tuples.Quartet;
 
+import java.util.function.Supplier;
+
 /**
- * An abstract packet used by entity capabilities for data syncing.
+ * An abstract packet used by entity attachments for data syncing.
  */
-public abstract class SyncEntityPacket<T extends INBTSynchable<CompoundTag>> extends SyncPacket {
+public abstract class SyncEntityPacket<T extends INBTSynchable> extends SyncPacket {
     private final int entityID;
 
     public SyncEntityPacket(Quartet<Integer, String, INBTSynchable.Type, Object> values) {
@@ -26,9 +27,9 @@ public abstract class SyncEntityPacket<T extends INBTSynchable<CompoundTag>> ext
     }
 
     @Override
-    public void encode(FriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeInt(this.entityID);
-        super.encode(buf);
+        super.write(buf);
     }
 
     public static Quartet<Integer, String, INBTSynchable.Type, Object> decodeEntityValues(FriendlyByteBuf buf) {
@@ -42,17 +43,17 @@ public abstract class SyncEntityPacket<T extends INBTSynchable<CompoundTag>> ext
         if (playerEntity != null && playerEntity.getServer() != null && this.value != null) {
             Entity entity = playerEntity.level().getEntity(this.entityID);
             if (entity != null && !entity.level().isClientSide()) {
-                this.getCapability(entity).ifPresent((synchable) -> synchable.getSynchableFunctions().get(this.key).getMiddle().accept(this.value));
+                entity.getData(this.getAttachment()).getSynchableFunctions().get(this.key).getMiddle().accept(this.value);
             }
         } else {
             if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null && this.value != null) {
                 Entity entity = Minecraft.getInstance().level.getEntity(this.entityID);
                 if (entity != null && entity.level().isClientSide()) {
-                    this.getCapability(entity).ifPresent((synchable) -> synchable.getSynchableFunctions().get(this.key).getMiddle().accept(this.value));
+                    entity.getData(this.getAttachment()).getSynchableFunctions().get(this.key).getMiddle().accept(this.value);
                 }
             }
         }
     }
 
-    public abstract LazyOptional<T> getCapability(Entity entity);
+    public abstract Supplier<AttachmentType<T>> getAttachment();
 }
