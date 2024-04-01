@@ -32,7 +32,7 @@ public record BlockPropertyPair(Block block, Optional<Map<Property<?>, Comparabl
                         if (nameToPropertyMap.containsKey(rawPropertyName)) {
                             Property<?> property = nameToPropertyMap.get(rawPropertyName);
                             if (property != null) {
-                                Optional<Comparable<?>> comparableOptional = (Optional<Comparable<?>>) property.getValue(rawPropertyName);
+                                Optional<Comparable<?>> comparableOptional = (Optional<Comparable<?>>) property.getValue(rawPropertiesEntry.getValue());
                                 comparableOptional.ifPresent(value ->properties.put(property, value));
                             }
                         }
