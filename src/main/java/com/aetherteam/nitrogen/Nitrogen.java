@@ -3,6 +3,7 @@ package com.aetherteam.nitrogen;
 import com.aetherteam.nitrogen.api.users.User;
 import com.aetherteam.nitrogen.api.users.UserData;
 import com.aetherteam.nitrogen.data.NitrogenDataGenerators;
+import com.aetherteam.nitrogen.loot.NitrogenLootModifiers;
 import com.aetherteam.nitrogen.network.NitrogenPacketHandler;
 import com.aetherteam.nitrogen.network.PacketRelay;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
@@ -17,6 +18,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 
 import java.time.LocalDateTime;
@@ -35,6 +37,14 @@ public class Nitrogen {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(NitrogenDataGenerators::onInitializeDataGenerator);
+
+        DeferredRegister<?>[] registers = {
+                NitrogenLootModifiers.GLOBAL_LOOT_MODIFIERS
+        };
+
+        for (DeferredRegister<?> register : registers) {
+            register.register(modEventBus);
+        }
     }
 
     public void commonSetup(FMLCommonSetupEvent event) {
