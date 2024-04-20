@@ -6,6 +6,9 @@ import com.aetherteam.nitrogen.data.NitrogenDataGenerators;
 import com.aetherteam.nitrogen.network.PacketRelay;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.aetherteam.nitrogen.network.packet.serverbound.TriggerUpdateInfoPacket;
+import com.aetherteam.nitrogen.world.biomemodifier.NitrogenBiomeModifierSerializers;
+import com.aetherteam.nitrogen.world.foliageplacer.NitrogenFoliagePlacerTypes;
+import com.aetherteam.nitrogen.world.trunkplacer.NitrogenTrunkPlacerTypes;
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,6 +21,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 
 import java.time.LocalDateTime;
@@ -35,6 +39,16 @@ public class Nitrogen {
     public Nitrogen(IEventBus bus, Dist dist) {
         bus.addListener(NitrogenDataGenerators::onInitializeDataGenerator);
         bus.addListener(this::registerPackets);
+
+        DeferredRegister<?>[] registers = {
+            NitrogenBiomeModifierSerializers.BIOME_MODIFIER_SERIALIZERS,
+            NitrogenFoliagePlacerTypes.FOLIAGE_PLACERS,
+            NitrogenTrunkPlacerTypes.TRUNK_PLACERS
+        };
+
+        for (DeferredRegister<?> register : registers) {
+            register.register(bus);
+        }
     }
 
     private void registerPackets(RegisterPayloadHandlerEvent event) {
