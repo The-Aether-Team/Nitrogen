@@ -1,4 +1,4 @@
-package com.aetherteam.nitrogen.loot;
+package com.aetherteam.nitrogen.loot.modifiers;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
