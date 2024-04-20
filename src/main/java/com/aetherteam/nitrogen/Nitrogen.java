@@ -3,6 +3,7 @@ package com.aetherteam.nitrogen;
 import com.aetherteam.nitrogen.api.users.User;
 import com.aetherteam.nitrogen.api.users.UserData;
 import com.aetherteam.nitrogen.data.NitrogenDataGenerators;
+import com.aetherteam.nitrogen.loot.modifiers.NitrogenLootModifiers;
 import com.aetherteam.nitrogen.network.PacketRelay;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.aetherteam.nitrogen.network.packet.serverbound.TriggerUpdateInfoPacket;
@@ -41,6 +42,7 @@ public class Nitrogen {
         bus.addListener(this::registerPackets);
 
         DeferredRegister<?>[] registers = {
+            NitrogenLootModifiers.GLOBAL_LOOT_MODIFIERS,
             NitrogenBiomeModifierSerializers.BIOME_MODIFIER_SERIALIZERS,
             NitrogenFoliagePlacerTypes.FOLIAGE_PLACERS,
             NitrogenTrunkPlacerTypes.TRUNK_PLACERS
