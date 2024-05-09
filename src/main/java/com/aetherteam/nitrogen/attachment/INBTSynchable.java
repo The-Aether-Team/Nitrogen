@@ -125,6 +125,8 @@ public interface INBTSynchable {
         FLOAT,
         DOUBLE,
         BOOLEAN,
-        UUID
+        UUID,
+        ITEM_STACK,
+        COMPOUND_TAG
     }
 }
