@@ -3,6 +3,7 @@ package com.aetherteam.nitrogen;
 import com.aetherteam.nitrogen.api.users.User;
 import com.aetherteam.nitrogen.api.users.UserData;
 import com.aetherteam.nitrogen.data.NitrogenDataGenerators;
+import com.aetherteam.nitrogen.loot.NitrogenLootModifiers;
 import com.aetherteam.nitrogen.network.NitrogenPacketHandler;
 import com.aetherteam.nitrogen.network.PacketRelay;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
@@ -17,6 +18,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 
 import java.time.LocalDateTime;
@@ -34,6 +36,14 @@ public class Nitrogen {
     public Nitrogen(IEventBus bus, Dist dist) {
         bus.addListener(this::commonSetup);
         bus.addListener(NitrogenDataGenerators::onInitializeDataGenerator);
+
+        DeferredRegister<?>[] registers = {
+                NitrogenLootModifiers.GLOBAL_LOOT_MODIFIERS
+        };
+
+        for (DeferredRegister<?> register : registers) {
+            register.register(bus);
+        }
     }
 
     public void commonSetup(FMLCommonSetupEvent event) {
