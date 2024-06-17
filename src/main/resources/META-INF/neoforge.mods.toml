@@ -28,6 +28,3 @@ issueTrackerURL = "${mod_tracker}"
 
 [[mixins]]
     config = "${mod_id}.mixins.json"
-
-[[accessTransformers]]
-    file="accesstransformer_additions.cfg"
