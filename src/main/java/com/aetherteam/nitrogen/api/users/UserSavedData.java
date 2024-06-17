@@ -1,6 +1,7 @@
 package com.aetherteam.nitrogen.api.users;
 
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
@@ -20,7 +21,7 @@ public final class UserSavedData extends SavedData {
      * @return A {@link CompoundTag} with the data.
      */
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         CompoundTag storedUsersTag = new CompoundTag();
         for (Map.Entry<UUID, User> userEntry : this.storedUsers.entrySet()) {
             CompoundTag userEntryTag = new CompoundTag();
@@ -91,7 +92,7 @@ public final class UserSavedData extends SavedData {
      * @return The {@link UserSavedData} corresponding to the data file.
      */
     public static UserSavedData compute(DimensionDataStorage dataStorage) {
-        return dataStorage.computeIfAbsent(new SavedData.Factory<>(UserSavedData::create, UserSavedData::load, null), FILE_NAME);
+        return dataStorage.computeIfAbsent(new SavedData.Factory<>(UserSavedData::new, (compoundTag, provider) -> UserSavedData.load(compoundTag)), FILE_NAME);
     }
 
     /**

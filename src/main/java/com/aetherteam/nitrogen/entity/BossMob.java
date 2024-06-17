@@ -1,5 +1,6 @@
 package com.aetherteam.nitrogen.entity;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Mob;
@@ -79,17 +80,17 @@ public interface BossMob<T extends Mob & BossMob<T>> {
     @Nullable
     BlockState convertBlock(BlockState state);
 
-    default void addBossSaveData(CompoundTag tag) {
-        tag.putString("BossName", Component.Serializer.toJson(this.getBossName()));
+    default void addBossSaveData(CompoundTag tag, HolderLookup.Provider provider) {
+        tag.putString("BossName", Component.Serializer.toJson(this.getBossName(), provider));
         tag.putBoolean("BossFight", this.isBossFight());
         if (this.getDungeon() != null) {
             tag.put("Dungeon", this.getDungeon().addAdditionalSaveData());
         }
     }
 
-    default void readBossSaveData(CompoundTag tag) {
+    default void readBossSaveData(CompoundTag tag, HolderLookup.Provider provider) {
         if (tag.contains("BossName")) {
-            Component name = Component.Serializer.fromJson(tag.getString("BossName"));
+            Component name = Component.Serializer.fromJson(tag.getString("BossName"), provider);
             if (name != null) {
                 this.setBossName(name);
             }

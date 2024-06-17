@@ -1,6 +1,6 @@
 package com.aetherteam.nitrogen.loot.modifiers;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
@@ -21,7 +21,7 @@ import net.neoforged.neoforge.common.loot.LootModifier;
 import java.util.List;
 
 public class AddDungeonLootModifier extends LootModifier {
-    public static final Codec<AddDungeonLootModifier> CODEC = RecordCodecBuilder.create(instance -> codecStart(instance)
+    public static final MapCodec<AddDungeonLootModifier> CODEC = RecordCodecBuilder.mapCodec(instance -> codecStart(instance)
         .and(WeightedEntry.Wrapper.codec(ItemStack.CODEC).listOf().fieldOf("entries").forGetter(modifier -> modifier.entries))
         .and(IntProvider.CODEC.fieldOf("rolls").forGetter(modifier -> modifier.rolls))
         .apply(instance, AddDungeonLootModifier::new));
@@ -48,7 +48,7 @@ public class AddDungeonLootModifier extends LootModifier {
                     boolean isFull = generatedLoot.size() == containerBlockEntity.getContainerSize();
                     if (!isFull) {
                         int weight = this.entries.stream().map(entry -> entry.getWeight().asInt()).reduce(0, Integer::sum);
-                        WeightedRandom.getRandomItem(randomSource, this.entries, weight).ifPresent(e -> generatedLoot.add(e.getData().copy()));
+                        WeightedRandom.getRandomItem(randomSource, this.entries, weight).ifPresent(e -> generatedLoot.add(e.data().copy()));
                     }
                 }
             }
@@ -57,7 +57,7 @@ public class AddDungeonLootModifier extends LootModifier {
     }
 
     @Override
-    public Codec<? extends IGlobalLootModifier> codec() {
+    public MapCodec<? extends IGlobalLootModifier> codec() {
         return AddDungeonLootModifier.CODEC;
     }
 }

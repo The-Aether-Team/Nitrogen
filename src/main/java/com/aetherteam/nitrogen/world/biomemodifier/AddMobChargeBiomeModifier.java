@@ -1,6 +1,7 @@
 package com.aetherteam.nitrogen.world.biomemodifier;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -20,7 +21,7 @@ import net.neoforged.neoforge.common.world.ModifiableBiomeInfo;
  * @param energyBudget   Energy budget for this entity type's spawning.
  */
 public record AddMobChargeBiomeModifier(HolderSet<Biome> biomes, EntityType<?> entityType, double charge, double energyBudget) implements BiomeModifier {
-    public static final Codec<AddMobChargeBiomeModifier> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+    public static final MapCodec<AddMobChargeBiomeModifier> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
         Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddMobChargeBiomeModifier::biomes),
         BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("entity_type").forGetter(AddMobChargeBiomeModifier::entityType),
         Codec.DOUBLE.fieldOf("charge").forGetter(AddMobChargeBiomeModifier::charge),
@@ -36,7 +37,7 @@ public record AddMobChargeBiomeModifier(HolderSet<Biome> biomes, EntityType<?> e
     }
 
     @Override
-    public Codec<? extends BiomeModifier> codec() {
+    public MapCodec<? extends BiomeModifier> codec() {
         return AddMobChargeBiomeModifier.CODEC;
     }
 }

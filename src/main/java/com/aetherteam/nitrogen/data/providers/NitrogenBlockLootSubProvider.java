@@ -1,6 +1,7 @@
 package com.aetherteam.nitrogen.data.providers;
 
 import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.Item;
@@ -17,8 +18,8 @@ import net.neoforged.neoforge.common.Tags;
 import java.util.Set;
 
 public abstract class NitrogenBlockLootSubProvider extends BlockLootSubProvider {
-    public NitrogenBlockLootSubProvider(Set<Item> items, FeatureFlagSet flags) {
-        super(items, flags);
+    public NitrogenBlockLootSubProvider(Set<Item> items, FeatureFlagSet flags, HolderLookup.Provider provider) {
+        super(items, flags, provider);
     }
 
     public void dropNone(Block block) {
@@ -36,7 +37,7 @@ public abstract class NitrogenBlockLootSubProvider extends BlockLootSubProvider 
         );
     }
 
-    public static LootTable.Builder createForgeSilkTouchOrShearsDispatchTable(Block pBlock, LootPoolEntryContainer.Builder<?> pBuilder) {
-        return createSelfDropDispatchTable(pBlock, MatchTool.toolMatches(ItemPredicate.Builder.item().of(Tags.Items.SHEARS)).or(HAS_SILK_TOUCH), pBuilder);
+    public LootTable.Builder createForgeSilkTouchOrShearsDispatchTable(Block pBlock, LootPoolEntryContainer.Builder<?> pBuilder) {
+        return createSelfDropDispatchTable(pBlock, MatchTool.toolMatches(ItemPredicate.Builder.item().of(Tags.Items.TOOLS_SHEAR)).or(this.hasSilkTouch()), pBuilder);
     }
 }

@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.world.item.ItemStack;
@@ -20,8 +21,8 @@ import java.util.List;
  * Adds an item to an entity's drop loot.
  */
 public class AddEntityDropsModifier extends LootModifier {
-    private static final Codec<LootItemFunction[]> LOOT_FUNCTIONS_CODEC = LootItemFunctions.CODEC.listOf().xmap(list -> list.toArray(LootItemFunction[]::new), List::of);
-    public static final Codec<AddEntityDropsModifier> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
+    private static final Codec<LootItemFunction[]> LOOT_FUNCTIONS_CODEC = LootItemFunctions.ROOT_CODEC.listOf().xmap(list -> list.toArray(LootItemFunction[]::new), List::of);
+    public static final MapCodec<AddEntityDropsModifier> CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(
             ItemStack.CODEC.fieldOf("item").forGetter(modifier -> modifier.itemStack),
             AddEntityDropsModifier.LOOT_FUNCTIONS_CODEC.fieldOf("functions").forGetter(modifier -> modifier.functions),
             LootModifier.LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(modifier -> modifier.conditions)
@@ -46,7 +47,7 @@ public class AddEntityDropsModifier extends LootModifier {
     }
 
     @Override
-    public Codec<? extends IGlobalLootModifier> codec() {
+    public MapCodec<? extends IGlobalLootModifier> codec() {
         return AddEntityDropsModifier.CODEC;
     }
 

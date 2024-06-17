@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.commands.CacheableFunction;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
@@ -16,7 +17,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -24,6 +24,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,12 +32,12 @@ import java.util.Optional;
 
 public final class BlockStateRecipeUtil {
     public static Codec<ResourceKey<Biome>> RESOURCE_KEY_CODEC = Codec.STRING.comapFlatMap((to) -> !to.startsWith("#")
-        ? DataResult.success(ResourceKey.create(Registries.BIOME, new ResourceLocation(to)))
+        ? DataResult.success(ResourceKey.create(Registries.BIOME, ResourceLocation.withDefaultNamespace(to)))
         : DataResult.error(() -> "Value is not a resource key"), (from) -> from.location().toString());
     public static Codec<TagKey<Biome>> TAG_KEY_CODEC = Codec.STRING.comapFlatMap((to) -> to.startsWith("#")
-        ? DataResult.success(TagKey.create(Registries.BIOME, new ResourceLocation(to.replace("#", ""))))
+        ? DataResult.success(TagKey.create(Registries.BIOME, ResourceLocation.withDefaultNamespace(to.replace("#", ""))))
         : DataResult.error(() -> "Value is not a tag key"), (from) -> "#" + from.location());
-    public static Codec<Either<ResourceKey<Biome>, TagKey<Biome>>> KEY_CODEC = ExtraCodecs.xor(RESOURCE_KEY_CODEC, TAG_KEY_CODEC);
+    public static Codec<Either<ResourceKey<Biome>, TagKey<Biome>>> KEY_CODEC = Codec.xor(RESOURCE_KEY_CODEC, TAG_KEY_CODEC);
 
     /**
      * Executes an {@link CacheableFunction}.
@@ -110,7 +111,7 @@ public final class BlockStateRecipeUtil {
             return BlockPropertyPair.of(Blocks.AIR, Optional.empty());
         } else {
             String blockString = buffer.readUtf();
-            ResourceLocation blockLocation = new ResourceLocation(blockString);
+            ResourceLocation blockLocation = ResourceLocation.withDefaultNamespace(blockString);
             Block block = BuiltInRegistries.BLOCK.get(blockLocation);
 
             Optional<Map<Property<?>, Comparable<?>>> propertiesOptional = buffer.readOptional((friendlyByteBuf -> {

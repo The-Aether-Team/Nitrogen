@@ -1,6 +1,5 @@
 package com.aetherteam.nitrogen.data.resources.builders;
 
-import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.data.worldgen.features.FeatureUtils;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.world.level.levelgen.feature.Feature;

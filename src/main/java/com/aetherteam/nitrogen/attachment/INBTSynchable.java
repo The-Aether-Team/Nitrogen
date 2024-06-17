@@ -1,11 +1,12 @@
 package com.aetherteam.nitrogen.attachment;
 
-import com.aetherteam.nitrogen.network.BasePacket;
-import com.aetherteam.nitrogen.network.PacketRelay;
+import com.aetherteam.nitrogen.network.packet.SyncPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.tuple.Triple;
 import oshi.util.tuples.Quintet;
 
@@ -36,7 +37,7 @@ public interface INBTSynchable {
      * @param extra     An extra value if necessary. The type of class that needs to be given depends on the direction.<br><br>
      *                  {@link Direction#SERVER} - None.<br><br>
      *                  {@link Direction#CLIENT} - None.<br><br>
-     *                  {@link Direction#NEAR} - {@link Quintet}<{@link Double}, {@link Double}, {@link Double}, {@link Double}, {@link ResourceKey}<{@link Level}>>. This represents the 5 values needed for {@link PacketRelay#sendToNear(CustomPacketPayload, double, double, double, double, ResourceKey)}.<br><br>
+     *                  {@link Direction#NEAR} - {@link Quintet}<{@link Double}, {@link Double}, {@link Double}, {@link Double}, {@link ServerLevel}>. This represents the 5 values needed for {@link PacketExecution#sendToNear(CustomPacketPayload, double, double, double, double, ResourceKey)}.<br><br>
      *                  {@link Direction#PLAYER} - {@link ServerPlayer}.<br><br>
      *                  {@link Direction#DIMENSION} - {@link ResourceKey}<{@link Level}>>. This represents the dimension to send the packet to.
      */
@@ -44,24 +45,23 @@ public interface INBTSynchable {
     default void setSynched(int entityID, Direction direction, String key, Object value, @Nullable Object extra) {
         switch (direction) {
             case SERVER ->
-                PacketRelay.sendToServer(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
+                PacketDistributor.sendToServer(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
             case CLIENT ->
-                PacketRelay.sendToAll(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
+                PacketDistributor.sendToAllPlayers(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
             case NEAR -> {
                 if (extra instanceof Quintet<?, ?, ?, ?, ?> quintet) {
-                    Quintet<Double, Double, Double, Double, ResourceKey<Level>> nearValues = (Quintet<Double, Double, Double, Double, ResourceKey<Level>>) quintet;
-                    PacketRelay.sendToNear(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value), nearValues.getA(), nearValues.getB(), nearValues.getC(), nearValues.getD(), nearValues.getE());
+                    Quintet<Double, Double, Double, Double, ServerLevel> nearValues = (Quintet<Double, Double, Double, Double, ServerLevel>) quintet;
+                    PacketDistributor.sendToPlayersNear(nearValues.getE(), null, nearValues.getA(), nearValues.getB(), nearValues.getC(), nearValues.getD(), this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
                 }
             }
             case PLAYER -> {
                 if (extra instanceof ServerPlayer serverPlayer) {
-                    PacketRelay.sendToPlayer(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value), serverPlayer);
+                    PacketDistributor.sendToPlayer(serverPlayer, this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
                 }
             }
             case DIMENSION -> {
-                if (extra instanceof ResourceKey<?> resourceKey) {
-                    ResourceKey<Level> dimensionValue = (ResourceKey<Level>) resourceKey;
-                    PacketRelay.sendToDimension(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value), dimensionValue);
+                if (extra instanceof ServerLevel serverLevel) {
+                    PacketDistributor.sendToPlayersInDimension(serverLevel, this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
                 }
             }
         }
@@ -84,7 +84,7 @@ public interface INBTSynchable {
      * @param extra     An extra value if necessary. The type of class that needs to be given depends on the direction.<br><br>
      *                  {@link Direction#SERVER} - None.<br><br>
      *                  {@link Direction#CLIENT} - None.<br><br>
-     *                  {@link Direction#NEAR} - {@link Quintet}<{@link Double}, {@link Double}, {@link Double}, {@link Double}, {@link ResourceKey}<{@link Level}>>. This represents the 5 values needed for {@link PacketRelay#sendToNear(CustomPacketPayload, double, double, double, double, ResourceKey)}.<br><br>
+     *                  {@link Direction#NEAR} - {@link Quintet}<{@link Double}, {@link Double}, {@link Double}, {@link Double}, {@link ResourceKey}<{@link Level}>>. This represents the 5 values needed for {@link PacketExecution#sendToNear(CustomPacketPayload, double, double, double, double, ResourceKey)}.<br><br>
      *                  {@link Direction#PLAYER} - {@link ServerPlayer}.<br><br>
      *                  {@link Direction#DIMENSION} - {@link ResourceKey}<{@link Level}>>. This represents the dimension to send the packet to.
      */
@@ -108,9 +108,9 @@ public interface INBTSynchable {
      * @param key   The {@link String} key for the field to sync.
      * @param type  The {@link Type} for the field's data type.
      * @param value The {@link Object} value to sync to the field.
-     * @return The {@link BasePacket} for syncing.
+     * @return The {@link SyncPacket} for syncing.
      */
-    BasePacket getSyncPacket(int entityID, String key, INBTSynchable.Type type, Object value);
+    SyncPacket getSyncPacket(int entityID, String key, INBTSynchable.Type type, Object value);
 
     enum Direction {
         SERVER,

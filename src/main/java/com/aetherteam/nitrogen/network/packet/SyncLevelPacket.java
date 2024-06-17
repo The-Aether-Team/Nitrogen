@@ -21,13 +21,12 @@ public abstract class SyncLevelPacket<T extends INBTSynchable> extends SyncPacke
         super(key, type, value);
     }
 
-    @Override
-    public void execute(Player playerEntity) {
-        if (playerEntity != null && playerEntity.getServer() != null && this.value != null) {
-            AttachmentUtil.syncLevelCapability(this, playerEntity, this.key, this.value, false);
+    public static <T extends INBTSynchable> void execute(SyncLevelPacket<T> payload, Player playerEntity) {
+        if (playerEntity != null && playerEntity.getServer() != null && payload.value != null) {
+            AttachmentUtil.syncLevelCapability(payload, playerEntity, payload.key, payload.value, false);
         } else {
-            if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null && this.value != null) {
-                AttachmentUtil.syncLevelCapability(this, playerEntity, this.key, this.value, true);
+            if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null && payload.value != null) {
+                AttachmentUtil.syncLevelCapability(payload, playerEntity, payload.key, payload.value, true);
             }
         }
     }

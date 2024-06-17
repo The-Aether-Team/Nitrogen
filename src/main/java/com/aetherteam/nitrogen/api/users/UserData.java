@@ -1,7 +1,6 @@
 package com.aetherteam.nitrogen.api.users;
 
 import com.aetherteam.nitrogen.Nitrogen;
-import com.aetherteam.nitrogen.network.PacketRelay;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonArray;
@@ -10,6 +9,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -163,7 +163,7 @@ public final class UserData {
                         User user = new User(currentTier, highestPastTier, ZonedDateTime.now(ZoneId.of("UTC")).plusDays(1).format(User.DATE_FORMAT), highestGroup);
                         modifySavedData(server, uuid, user);
                         STORED_USERS.put(uuid, user);
-                        PacketRelay.sendToPlayer(new UpdateUserInfoPacket(user), serverPlayer);
+                        PacketDistributor.sendToPlayer(serverPlayer, new UpdateUserInfoPacket(user));
                     }
                 }
             }

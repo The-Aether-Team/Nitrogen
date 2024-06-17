@@ -1,26 +1,30 @@
 plugins {
+    id 'java-library'
     id 'eclipse'
+    id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.108'
-    id 'io.github.0ffz.github-packages' version '[1,2)'
+    id 'net.neoforged.gradle.userdev' version '7.0.142'
     id 'com.matthewprenger.cursegradle' version '[1.4,1.5)'
     id 'com.modrinth.minotaur' version '[2,3)'
 }
 
-version = "${mc_version}-${mod_version}-neoforge"
-group = 'com.aetherteam.nitrogen'
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.BIN
+}
+
+version = "${minecraft_version}-${mod_version}-neoforge"
+group = mod_group
 
 base {
     archivesName = mod_id
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 runs {
     configureEach {
-        workingDirectory project.file('run')
-        systemProperty "${mod_id}.iside", 'true'
-        systemProperty  'forge.logging.console.level', 'info'
+        systemProperty 'forge.logging.markers', 'REGISTRIES'
+        systemProperty  'forge.logging.console.level', 'debug'
 
         modSource project.sourceSets.main
     }
@@ -47,24 +51,17 @@ sourceSets.main.resources {
     srcDir 'src/generated/resources'
 }
 
-subsystems {
-    parchment {
-        minecraftVersion = "1.20.3" //todo
-        mappingsVersion = project.mappings
-    }
-}
-
 dependencies {
-    implementation "net.neoforged:neoforge:${project.neoforge_version}"
+    implementation "net.neoforged:neoforge:${project.neo_version}"
 
-    compileOnly "mezz.jei:jei-${project.mc_version}-common:${project.jei_version}"
-    compileOnly "mezz.jei:jei-${project.mc_version}-neoforge:${project.jei_version}"
-
-    compileOnly "me.shedaniel:RoughlyEnoughItems-api-neoforge:$rei_version"
-    compileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-neoforge:$rei_version"
-
-    compileOnly "me.shedaniel.cloth:cloth-config-neoforge:$cloth_config_version"
-    compileOnly "dev.architectury:architectury-neoforge:$architectury_version"
+//    compileOnly "mezz.jei:jei-${project.mc_version}-common:${project.jei_version}"
+//    compileOnly "mezz.jei:jei-${project.mc_version}-neoforge:${project.jei_version}"
+//
+//    compileOnly "me.shedaniel:RoughlyEnoughItems-api-neoforge:$rei_version"
+//    compileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-neoforge:$rei_version"
+//
+//    compileOnly "me.shedaniel.cloth:cloth-config-neoforge:$cloth_config_version"
+//    compileOnly "dev.architectury:architectury-neoforge:$architectury_version"
 }
 
 repositories {
@@ -73,42 +70,37 @@ repositories {
     maven { url = "https://maven.architectury.dev/" }
 }
 
-//processResources {
-//    exclude '.cache/'
-//}
-//
-//machete {
-//    jij.enabled = false
-//    json.enabled = true
-//    png.enabled = false
-//    sourceFileStriping.enabled = false
-//    lvtStriping.enabled = false
-//}
-//
-//tasks.jar.finalizedBy('optimizeOutputsOfJar')
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+        mod_id                 : mod_id,
+        mod_name               : mod_name,
+        mod_version            : mod_version,
+        mod_license            : mod_license,
+        mod_url                : mod_url,
+        mod_tracker            : mod_tracker,
+        mod_credits            : mod_credits,
+        mod_description        : mod_description,
+        minecraft_version      : minecraft_version,
+        minecraft_version_range: minecraft_version_range,
+        neo_version            : neo_version,
+        neo_version_range      : neo_version_range,
+        loader_version_range   : loader_version_range
+    ]
+    inputs.properties replaceProperties
 
-tasks.named('jar', Jar).configure {
-    manifest {
-        attributes([
-                "Specification-Title"     : project.mod_name,
-                "Specification-Vendor"    : "The Aether Team",
-                "Specification-Version"   : "1", // We are version 1 of ourselves
-                "Implementation-Title"    : project.mod_name,
-                "Implementation-Version"  : project.jar.archiveVersion,
-                "Implementation-Vendor"   : "The Aether Team",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand replaceProperties
     }
-}
-
-compileJava {
-    options.incremental = false
 }
 
 tasks.register('sourceJar', Jar) {
     dependsOn 'classes'
     from sourceSets.main.allSource
     archiveClassifier = 'sources'
+}
+
+compileJava {
+    options.incremental = false
 }
 
 publishing {
@@ -128,5 +120,12 @@ publishing {
                 password = System.getenv("GITHUB_TOKEN")
             }
         }
+    }
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
     }
 }

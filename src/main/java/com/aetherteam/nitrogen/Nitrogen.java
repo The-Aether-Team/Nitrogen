@@ -4,7 +4,6 @@ import com.aetherteam.nitrogen.api.users.User;
 import com.aetherteam.nitrogen.api.users.UserData;
 import com.aetherteam.nitrogen.data.NitrogenDataGenerators;
 import com.aetherteam.nitrogen.loot.modifiers.NitrogenLootModifiers;
-import com.aetherteam.nitrogen.network.PacketRelay;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.aetherteam.nitrogen.network.packet.serverbound.TriggerUpdateInfoPacket;
 import com.aetherteam.nitrogen.world.biomemodifier.NitrogenBiomeModifierSerializers;
@@ -17,11 +16,14 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 
@@ -32,12 +34,12 @@ import java.util.Map;
 import java.util.UUID;
 
 @Mod(Nitrogen.MODID)
-@Mod.EventBusSubscriber(modid = Nitrogen.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Nitrogen.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class Nitrogen {
     public static final String MODID = "nitrogen_internals";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public Nitrogen(IEventBus bus, Dist dist) {
+    public Nitrogen(ModContainer mod, IEventBus bus, Dist dist) {
         bus.addListener(NitrogenDataGenerators::onInitializeDataGenerator);
         bus.addListener(this::registerPackets);
 
@@ -53,10 +55,11 @@ public class Nitrogen {
         }
     }
 
-    private void registerPackets(RegisterPayloadHandlerEvent event) {
-        IPayloadRegistrar registrar = event.registrar(MODID).versioned("1.0.0").optional();
-        registrar.play(UpdateUserInfoPacket.ID, UpdateUserInfoPacket::decode, payload -> payload.client(UpdateUserInfoPacket::handle));
-        registrar.play(TriggerUpdateInfoPacket.ID, TriggerUpdateInfoPacket::decode, payload -> payload.server(TriggerUpdateInfoPacket::handle));
+    private void registerPackets(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar registrar = event.registrar(MODID).versioned("1.0.0").optional();
+
+        registrar.playToClient(UpdateUserInfoPacket.TYPE, UpdateUserInfoPacket.STREAM_CODEC, UpdateUserInfoPacket::execute);
+        registrar.playToServer(TriggerUpdateInfoPacket.TYPE, TriggerUpdateInfoPacket.STREAM_CODEC, TriggerUpdateInfoPacket::execute);
     }
 
     /**
@@ -83,7 +86,7 @@ public class Nitrogen {
                 if (user != null && user.getRenewalDate() != null && isAfterRenewalTime(user)) { // Check renewal time.
                     UserData.Server.sendUserRequest(serverPlayer.getServer(), serverPlayer, uuid);
                 } else { // Sync to client.
-                    PacketRelay.sendToPlayer(new UpdateUserInfoPacket(user), serverPlayer);
+                    PacketDistributor.sendToPlayer(serverPlayer, new UpdateUserInfoPacket(user));
                 }
             } else { // Query database if no User is found with the server.
                 UserData.Server.sendUserRequest(serverPlayer.getServer(), serverPlayer, uuid);

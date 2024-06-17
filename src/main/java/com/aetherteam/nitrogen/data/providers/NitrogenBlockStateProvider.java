@@ -20,12 +20,7 @@ public abstract class NitrogenBlockStateProvider extends BlockStateProvider {
     }
 
     public String name(Block block) {
-        ResourceLocation location = BuiltInRegistries.BLOCK.getKey(block);
-        if (location != null) {
-            return location.getPath();
-        } else {
-            throw new IllegalStateException("Unknown block: " + block.toString());
-        }
+        return BuiltInRegistries.BLOCK.getKey(block).getPath();
     }
 
     public ResourceLocation texture(String name) {
@@ -41,7 +36,7 @@ public abstract class NitrogenBlockStateProvider extends BlockStateProvider {
     }
 
     public ResourceLocation extend(ResourceLocation location, String suffix) {
-        return new ResourceLocation(location.getNamespace(), location.getPath() + suffix);
+        return ResourceLocation.fromNamespaceAndPath(location.getNamespace(), location.getPath() + suffix);
     }
 
     public void block(Block block, String location) {
@@ -52,11 +47,11 @@ public abstract class NitrogenBlockStateProvider extends BlockStateProvider {
         ModelFile portal_ew = this.models().withExistingParent(this.name(block) + "_ew", this.mcLoc("block/nether_portal_ew"))
             .texture("particle", this.modLoc("block/miscellaneous/" + this.name(block)))
             .texture("portal", this.modLoc("block/miscellaneous/" + this.name(block)))
-            .renderType(new ResourceLocation("translucent"));
+            .renderType(ResourceLocation.withDefaultNamespace("translucent"));
         ModelFile portal_ns = this.models().withExistingParent(this.name(block) + "_ns", this.mcLoc("block/nether_portal_ns"))
             .texture("particle", this.modLoc("block/miscellaneous/" + this.name(block)))
             .texture("portal", this.modLoc("block/miscellaneous/" + this.name(block)))
-            .renderType(new ResourceLocation("translucent"));
+            .renderType(ResourceLocation.withDefaultNamespace("translucent"));
         this.getVariantBuilder(block).forAllStates(state -> {
             Direction.Axis axis = state.getValue(NetherPortalBlock.AXIS);
             return ConfiguredModel.builder()
@@ -82,8 +77,8 @@ public abstract class NitrogenBlockStateProvider extends BlockStateProvider {
     }
 
     public void torchBlock(Block block, Block wall) {
-        ModelFile torch = this.models().torch(this.name(block), this.texture(this.name(block), "utility/")).renderType(new ResourceLocation("cutout"));
-        ModelFile wallTorch = this.models().torchWall(this.name(wall), this.texture(this.name(block), "utility/")).renderType(new ResourceLocation("cutout"));
+        ModelFile torch = this.models().torch(this.name(block), this.texture(this.name(block), "utility/")).renderType(ResourceLocation.withDefaultNamespace("cutout"));
+        ModelFile wallTorch = this.models().torchWall(this.name(wall), this.texture(this.name(block), "utility/")).renderType(ResourceLocation.withDefaultNamespace("cutout"));
         this.simpleBlock(block, torch);
         getVariantBuilder(wall).forAllStates(state ->
             ConfiguredModel.builder()
@@ -98,7 +93,7 @@ public abstract class NitrogenBlockStateProvider extends BlockStateProvider {
     }
 
     public void crossBlock(Block block, String location) {
-        this.crossBlock(block, models().cross(this.name(block), this.texture(this.name(block), location)).renderType(new ResourceLocation("cutout")));
+        this.crossBlock(block, models().cross(this.name(block), this.texture(this.name(block), location)).renderType(ResourceLocation.withDefaultNamespace("cutout")));
     }
 
     public void crossBlock(Block block, ModelFile model) {
@@ -106,12 +101,12 @@ public abstract class NitrogenBlockStateProvider extends BlockStateProvider {
     }
 
     public void pottedPlant(Block block, Block flower, String location) {
-        ModelFile pot = this.models().withExistingParent(this.name(block), this.mcLoc("block/flower_pot_cross")).texture("plant", this.modLoc("block/" + location + this.name(flower))).renderType(new ResourceLocation("cutout"));
+        ModelFile pot = this.models().withExistingParent(this.name(block), this.mcLoc("block/flower_pot_cross")).texture("plant", this.modLoc("block/" + location + this.name(flower))).renderType(ResourceLocation.withDefaultNamespace("cutout"));
         this.getVariantBuilder(block).partialState().addModels(new ConfiguredModel(pot));
     }
 
     public void saplingBlock(Block block, String location) {
-        ModelFile sapling = models().cross(this.name(block), this.texture(this.name(block), location)).renderType(new ResourceLocation("cutout"));
+        ModelFile sapling = models().cross(this.name(block), this.texture(this.name(block), location)).renderType(ResourceLocation.withDefaultNamespace("cutout"));
         this.getVariantBuilder(block).forAllStatesExcept(state -> ConfiguredModel.builder().modelFile(sapling).build(), SaplingBlock.STAGE);
     }
 
@@ -197,7 +192,7 @@ public abstract class NitrogenBlockStateProvider extends BlockStateProvider {
     }
 
     public void logWallBlock(WallBlock block, Block baseBlock, String location, String modid, boolean postUsesTop, ModelFile postBig, ModelFile postShort, ModelFile postTall, ModelFile side, ModelFile sideAlt, ModelFile sideTall, ModelFile sideTallAlt, ModelFile sideShort, ModelFile sideAltShort, ModelFile sideTallShort, ModelFile sideTallAltShort) {
-        this.logWallBlockInternal(block, this.name(block), new ResourceLocation(modid, "block/" + location + this.name(baseBlock)), postUsesTop, postBig, postShort, postTall, side, sideAlt, sideTall, sideTallAlt, sideShort, sideAltShort, sideTallShort, sideTallAltShort);
+        this.logWallBlockInternal(block, this.name(block), ResourceLocation.fromNamespaceAndPath(modid, "block/" + location + this.name(baseBlock)), postUsesTop, postBig, postShort, postTall, side, sideAlt, sideTall, sideTallAlt, sideShort, sideAltShort, sideTallShort, sideTallAltShort);
     }
 
     private void logWallBlockInternal(WallBlock block, String baseName, ResourceLocation texture, boolean postUsesTop, ModelFile postBig, ModelFile postShort, ModelFile postTall, ModelFile side, ModelFile sideAlt, ModelFile sideTall, ModelFile sideTallAlt, ModelFile sideShort, ModelFile sideAltShort, ModelFile sideTallShort, ModelFile sideTallAltShort) {
@@ -271,8 +266,8 @@ public abstract class NitrogenBlockStateProvider extends BlockStateProvider {
 
     public void translucentSlab(Block block, Block baseBlock, String location) {
         ResourceLocation texture = this.texture(this.name(baseBlock), location);
-        this.translucentSlabBlock(block, models().slab(this.name(block), texture, texture, texture).renderType(new ResourceLocation("translucent")),
-            this.models().slabTop(this.name(block) + "_top", texture, texture, texture).renderType(new ResourceLocation("translucent")),
+        this.translucentSlabBlock(block, models().slab(this.name(block), texture, texture, texture).renderType(ResourceLocation.withDefaultNamespace("translucent")),
+            this.models().slabTop(this.name(block) + "_top", texture, texture, texture).renderType(ResourceLocation.withDefaultNamespace("translucent")),
             this.models().getExistingFile(this.texture(this.name(baseBlock))));
     }
 
@@ -297,7 +292,7 @@ public abstract class NitrogenBlockStateProvider extends BlockStateProvider {
     }
 
     public ModelFile cubeAllTranslucent(Block block, String location) {
-        return this.models().cubeAll(this.name(block), this.texture(this.name(block), location)).renderType(new ResourceLocation("translucent"));
+        return this.models().cubeAll(this.name(block), this.texture(this.name(block), location)).renderType(ResourceLocation.withDefaultNamespace("translucent"));
     }
 
     public ModelFile cubeBottomTop(String block, ResourceLocation side, ResourceLocation bottom, ResourceLocation top) {
@@ -305,7 +300,7 @@ public abstract class NitrogenBlockStateProvider extends BlockStateProvider {
     }
 
     public void craftingTable(Block block, Block baseBlock, String location, String modid) {
-        ResourceLocation baseTexture = new ResourceLocation(modid, "block/" + location + this.name(baseBlock));
+        ResourceLocation baseTexture = ResourceLocation.fromNamespaceAndPath(modid, "block/" + location + this.name(baseBlock));
         ModelFile workbench = this.models().cube(this.name(block),
                 baseTexture,
                 this.extend(this.texture(this.name(block), "utility/"), "_top"),
@@ -355,7 +350,7 @@ public abstract class NitrogenBlockStateProvider extends BlockStateProvider {
 
     public void ladder(LadderBlock block) {
         ResourceLocation location = this.texture(this.name(block), "construction/");
-        ModelFile ladder = models().withExistingParent(this.name(block), this.mcLoc("block/block")).renderType(new ResourceLocation("cutout")).ao(false)
+        ModelFile ladder = models().withExistingParent(this.name(block), this.mcLoc("block/block")).renderType(ResourceLocation.withDefaultNamespace("cutout")).ao(false)
             .texture("particle", location).texture("texture", location)
             .element().from(0.0F, 0.0F, 15.2F).to(16.0F, 16.0F, 15.2F).shade(false)
             .face(Direction.NORTH).uvs(0.0F, 0.0F, 16.0F, 16.0F).texture("#texture").end()

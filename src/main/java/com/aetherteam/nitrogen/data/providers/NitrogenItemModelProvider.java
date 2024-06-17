@@ -66,9 +66,9 @@ public abstract class NitrogenItemModelProvider extends ItemModelProvider {
         this.withExistingParent(this.itemName(item) + "_pulling_2", this.mcLoc("item/bow")).texture("layer0", this.modLoc("item/" + location + this.itemName(item) + "_pulling_2"));
         this.withExistingParent(this.itemName(item), this.mcLoc("item/bow"))
             .texture("layer0", this.modLoc("item/" + location + this.itemName(item)))
-            .override().predicate(new ResourceLocation("pulling"), 1).model(this.getExistingFile(this.modLoc("item/" + this.itemName(item) + "_pulling_0"))).end()
-            .override().predicate(new ResourceLocation("pulling"), 1).predicate(new ResourceLocation("pull"), 0.65F).model(this.getExistingFile(this.modLoc("item/" + this.itemName(item) + "_pulling_1"))).end()
-            .override().predicate(new ResourceLocation("pulling"), 1).predicate(new ResourceLocation("pull"), 0.9F).model(this.getExistingFile(this.modLoc("item/" + this.itemName(item) + "_pulling_2"))).end();
+            .override().predicate(ResourceLocation.withDefaultNamespace("pulling"), 1).model(this.getExistingFile(this.modLoc("item/" + this.itemName(item) + "_pulling_0"))).end()
+            .override().predicate(ResourceLocation.withDefaultNamespace("pulling"), 1).predicate(ResourceLocation.withDefaultNamespace("pull"), 0.65F).model(this.getExistingFile(this.modLoc("item/" + this.itemName(item) + "_pulling_1"))).end()
+            .override().predicate(ResourceLocation.withDefaultNamespace("pulling"), 1).predicate(ResourceLocation.withDefaultNamespace("pull"), 0.9F).model(this.getExistingFile(this.modLoc("item/" + this.itemName(item) + "_pulling_2"))).end();
     }
 
     public void helmetItem(Item item, String location) {
@@ -96,7 +96,7 @@ public abstract class NitrogenItemModelProvider extends ItemModelProvider {
             this.withExistingParent(name, this.mcLoc("item/generated"))
                 .texture("layer0", this.modLoc("item/" + location + this.itemName(item)))
                 .texture("layer1", this.mcLoc("trims/items/" + type + "_trim_" + material));
-            builder.override().predicate(new ResourceLocation("trim_type"), (float) index).model(this.getExistingFile(this.modLoc("item/" + name))).end();
+            builder.override().predicate(ResourceLocation.withDefaultNamespace("trim_type"), (float) index).model(this.getExistingFile(this.modLoc("item/" + name))).end();
             index += 0.1;
         }
     }
@@ -122,7 +122,7 @@ public abstract class NitrogenItemModelProvider extends ItemModelProvider {
     public void pane(Block block, Block glass, String location) {
         this.withExistingParent(this.blockName(block), this.mcLoc("item/generated"))
             .texture("layer0", this.texture(this.blockName(glass), location))
-            .renderType(new ResourceLocation("translucent"));
+            .renderType(ResourceLocation.withDefaultNamespace("translucent"));
     }
 
     public void itemBlockFlat(Block block, String location) {
@@ -149,11 +149,11 @@ public abstract class NitrogenItemModelProvider extends ItemModelProvider {
     }
 
     public void translucentItemWallBlock(Block block, Block baseBlock, String location) {
-        this.singleTexture(this.blockName(block), new ResourceLocation(Nitrogen.MODID, BLOCK_FOLDER + "/template_translucent_wall_inventory"), "wall", this.texture(this.blockName(baseBlock), location));
+        this.singleTexture(this.blockName(block), ResourceLocation.fromNamespaceAndPath(Nitrogen.MODID, BLOCK_FOLDER + "/template_translucent_wall_inventory"), "wall", this.texture(this.blockName(baseBlock), location));
     }
 
     public void itemLogWallBlock(Block block, Block baseBlock, String location, String modid) {
-        ResourceLocation baseTexture = new ResourceLocation(modid, "block/" + location + this.blockName(baseBlock));
+        ResourceLocation baseTexture = ResourceLocation.fromNamespaceAndPath(modid, "block/" + location + this.blockName(baseBlock));
         this.withExistingParent(this.blockName(block), this.mcLoc("block/block"))
             .transforms()
             .transform(ItemDisplayContext.GUI).rotation(30.0F, 135.0F, 0.0F).translation(0.0F, 0.0F, 0.0F).scale(0.625F, 0.625F, 0.625F).end()
@@ -177,6 +177,6 @@ public abstract class NitrogenItemModelProvider extends ItemModelProvider {
     }
 
     public void itemWoodWallBlock(Block block, Block baseBlock, String location, String modid) {
-        this.wallInventory(this.blockName(block), new ResourceLocation(modid, "block/" + location + this.blockName(baseBlock)));
+        this.wallInventory(this.blockName(block), ResourceLocation.fromNamespaceAndPath(modid, "block/" + location + this.blockName(baseBlock)));
     }
 }

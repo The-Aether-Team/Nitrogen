@@ -1,9 +1,9 @@
 package com.aetherteam.nitrogen.network.packet;
 
 import com.aetherteam.nitrogen.attachment.INBTSynchable;
-import com.aetherteam.nitrogen.network.BasePacket;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * An abstract packet that is extended by other packets that are meant to be used for capability syncing through {@link INBTSynchable}.
  */
-public abstract class SyncPacket implements BasePacket {
+public abstract class SyncPacket implements CustomPacketPayload {
     protected final String key;
     protected final INBTSynchable.Type type;
     protected final Object value;
@@ -27,8 +27,7 @@ public abstract class SyncPacket implements BasePacket {
         this.value = value;
     }
 
-    @Override
-    public void write(FriendlyByteBuf buf) {
+    public void write(RegistryFriendlyByteBuf buf) {
         buf.writeUtf(this.key);
         buf.writeInt(this.type.ordinal());
         if (this.value != null) {
@@ -39,7 +38,7 @@ public abstract class SyncPacket implements BasePacket {
                 case DOUBLE -> buf.writeDouble((double) this.value);
                 case BOOLEAN -> buf.writeBoolean((boolean) this.value);
                 case UUID -> buf.writeUUID((UUID) this.value);
-                case ITEM_STACK -> buf.writeItem((ItemStack) this.value);
+                case ITEM_STACK -> ItemStack.STREAM_CODEC.encode(buf, (ItemStack) this.value);
                 case COMPOUND_TAG -> buf.writeNbt((CompoundTag) this.value);
             }
         } else {
@@ -47,7 +46,7 @@ public abstract class SyncPacket implements BasePacket {
         }
     }
 
-    public static Triple<String, INBTSynchable.Type, Object> decodeValues(FriendlyByteBuf buf) {
+    public static Triple<String, INBTSynchable.Type, Object> decodeValues(RegistryFriendlyByteBuf buf) {
         String key = buf.readUtf();
         int typeId = buf.readInt();
         INBTSynchable.Type type = INBTSynchable.Type.values()[typeId];
@@ -60,7 +59,7 @@ public abstract class SyncPacket implements BasePacket {
                 case DOUBLE -> value = buf.readDouble();
                 case BOOLEAN -> value = buf.readBoolean();
                 case UUID -> value = buf.readUUID();
-                case ITEM_STACK -> value = buf.readItem();
+                case ITEM_STACK -> value = ItemStack.STREAM_CODEC.decode(buf);
                 case COMPOUND_TAG -> value = buf.readNbt();
             }
         }
