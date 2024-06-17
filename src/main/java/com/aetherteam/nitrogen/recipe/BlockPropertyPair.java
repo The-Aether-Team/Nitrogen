@@ -1,6 +1,7 @@
 package com.aetherteam.nitrogen.recipe;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.ExtraCodecs;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
  * Used to store a block alongside a block's properties.
  */
 public record BlockPropertyPair(Block block, Optional<Map<Property<?>, Comparable<?>>> properties) {
-    public static final Codec<BlockPropertyPair> CODEC = RawPair.CODEC.xmap(
+    public static final MapCodec<BlockPropertyPair> CODEC = RawPair.CODEC.xmap(
         (rawPair) -> {
             Block rawBlock = rawPair.block();
             Optional<Map<String, String>> rawPropertiesOptional = rawPair.properties();
@@ -99,7 +100,7 @@ public record BlockPropertyPair(Block block, Optional<Map<Property<?>, Comparabl
     }
 
     public record RawPair(Block block, Optional<Map<String, String>> properties) {
-        public static final Codec<RawPair> CODEC = RecordCodecBuilder.create(
+        public static final MapCodec<RawPair> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                 BuiltInRegistries.BLOCK.byNameCodec().fieldOf("block").forGetter(RawPair::block),
                 ExtraCodecs.strictUnboundedMap(Codec.STRING, Codec.STRING).optionalFieldOf("properties").forGetter(RawPair::properties)

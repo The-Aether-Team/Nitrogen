@@ -149,7 +149,8 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     }
 
     public record BlockStateValue(Block block, Optional<Map<Property<?>, Comparable<?>>> properties) implements BlockStateIngredient.Value {
-        public static final MapCodec<BlockStateValue> CODEC = BlockPropertyPair.CODEC.flatComapMap(BlockStateValue::new, BlockStateValue::cast);
+        public static final MapCodec<BlockStateValue> MAP_CODEC = BlockPropertyPair.CODEC.xmap(BlockStateValue::new, BlockStateValue::cast);
+        public static final Codec<BlockStateValue> CODEC = MAP_CODEC.codec();
 
         public BlockStateValue(Block block) {
             this(block, Optional.empty());
@@ -164,18 +165,19 @@ public class BlockStateIngredient implements Predicate<BlockState> {
             return Collections.singleton(BlockPropertyPair.of(this.block, this.properties));
         }
 
-        private static DataResult<? extends BlockPropertyPair> cast(Value value) {
+        private static BlockPropertyPair cast(Value value) {
             BlockStateValue cast = (BlockStateValue) value;
-            return DataResult.success(new BlockPropertyPair(cast.block(), cast.properties()));
+            return new BlockPropertyPair(cast.block(), cast.properties());
         }
     }
 
     public record TagValue(TagKey<Block> tag) implements BlockStateIngredient.Value {
-        public static final MapCodec<TagValue> CODEC = RecordCodecBuilder.mapCodec(
+        public static final MapCodec<TagValue> MAP_CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                 TagKey.codec(Registries.BLOCK).fieldOf("tag").forGetter(value -> value.tag)
             ).apply(instance, BlockStateIngredient.TagValue::new)
         );
+        public static final Codec<TagValue> CODEC = MAP_CODEC.codec();
 
         @Override
         public Collection<BlockPropertyPair> getPairs() {
@@ -189,7 +191,7 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     }
 
     public interface Value {
-        Codec<BlockStateIngredient.Value> CODEC = NeoForgeExtraCodecs.xor(BlockStateIngredient.BlockStateValue.CODEC, BlockStateIngredient.TagValue.CODEC)
+        MapCodec<BlockStateIngredient.Value> MAP_CODEC = NeoForgeExtraCodecs.xor(BlockStateIngredient.BlockStateValue.MAP_CODEC, BlockStateIngredient.TagValue.MAP_CODEC)
             .xmap(either -> either.map(blockState -> blockState, tag -> tag), value -> {
                 if (value instanceof BlockStateIngredient.TagValue tagValue) {
                     return Either.right(tagValue);
@@ -199,6 +201,7 @@ public class BlockStateIngredient implements Predicate<BlockState> {
                     throw new UnsupportedOperationException("This is neither a blockstate value nor a tag value.");
                 }
             });
+        Codec<BlockStateIngredient.Value> CODEC = MAP_CODEC.codec();
 
         Collection<BlockPropertyPair> getPairs();
     }
