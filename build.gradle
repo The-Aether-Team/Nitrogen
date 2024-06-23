@@ -79,6 +79,7 @@ tasks.withType(ProcessResources).configureEach {
         mod_url                : mod_url,
         mod_tracker            : mod_tracker,
         mod_credits            : mod_credits,
+        mod_authors            : mod_authors,
         mod_description        : mod_description,
         minecraft_version      : minecraft_version,
         minecraft_version_range: minecraft_version_range,

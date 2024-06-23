@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.commands.CacheableFunction;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
@@ -24,7 +23,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
 import java.util.HashMap;
 import java.util.Map;

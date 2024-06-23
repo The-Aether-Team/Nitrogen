@@ -1,7 +1,7 @@
 package com.aetherteam.nitrogen.world.trunkplacer;
 
 import com.google.common.collect.Lists;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
@@ -19,7 +19,7 @@ import java.util.function.BiConsumer;
  * Creates full block log branches in an upwards curving "hooked" pattern.
  */
 public class HookedTrunkPlacer extends BaseHookedTrunkPlacer {
-    public static final Codec<HookedTrunkPlacer> CODEC = RecordCodecBuilder.create((codec) -> trunkPlacerParts(codec).apply(codec, HookedTrunkPlacer::new));
+    public static final MapCodec<HookedTrunkPlacer> CODEC = RecordCodecBuilder.mapCodec((codec) -> trunkPlacerParts(codec).apply(codec, HookedTrunkPlacer::new));
 
     public HookedTrunkPlacer(int height, int heightRandA, int heightRandB) {
         super(height, heightRandA, heightRandB);

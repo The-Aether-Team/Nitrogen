@@ -1,6 +1,6 @@
 package com.aetherteam.nitrogen.world.foliageplacer;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -14,7 +14,7 @@ import net.minecraft.world.level.levelgen.feature.foliageplacers.FoliagePlacerTy
  * Places leaves in a spiky "pine tree" pattern.
  */
 public class AetherPineFoliagePlacer extends FoliagePlacer {
-    public static final Codec<AetherPineFoliagePlacer> CODEC = RecordCodecBuilder.create((codec) -> foliagePlacerParts(codec)
+    public static final MapCodec<AetherPineFoliagePlacer> CODEC = RecordCodecBuilder.mapCodec((codec) -> foliagePlacerParts(codec)
             .and(IntProvider.codec(0, 24).fieldOf("trunk_height").forGetter((placer) -> placer.trunkHeight))
             .apply(codec, AetherPineFoliagePlacer::new));
     private final IntProvider trunkHeight;

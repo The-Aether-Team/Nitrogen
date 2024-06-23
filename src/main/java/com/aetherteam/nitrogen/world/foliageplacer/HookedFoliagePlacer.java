@@ -1,6 +1,6 @@
 package com.aetherteam.nitrogen.world.foliageplacer;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -14,7 +14,7 @@ import net.minecraft.world.level.levelgen.feature.foliageplacers.FoliagePlacerTy
  * Creates foliage around a {@link com.aetherteam.nitrogen.world.trunkplacer.HookedTrunkPlacer}.
  */
 public class HookedFoliagePlacer extends FoliagePlacer {
-    public static final Codec<HookedFoliagePlacer> CODEC = RecordCodecBuilder.create((codec) -> foliagePlacerParts(codec)
+    public static final MapCodec<HookedFoliagePlacer> CODEC = RecordCodecBuilder.mapCodec((codec) -> foliagePlacerParts(codec)
             .and(IntProvider.codec(0, 24).fieldOf("trunk_height").forGetter((placer) -> placer.trunkHeight))
             .apply(codec, HookedFoliagePlacer::new));
     private final IntProvider trunkHeight;
