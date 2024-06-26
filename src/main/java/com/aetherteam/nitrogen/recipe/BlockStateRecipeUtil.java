@@ -30,10 +30,10 @@ import java.util.Optional;
 
 public final class BlockStateRecipeUtil {
     public static Codec<ResourceKey<Biome>> RESOURCE_KEY_CODEC = Codec.STRING.comapFlatMap((to) -> !to.startsWith("#")
-        ? DataResult.success(ResourceKey.create(Registries.BIOME, ResourceLocation.withDefaultNamespace(to)))
+        ? DataResult.success(ResourceKey.create(Registries.BIOME, ResourceLocation.parse(to)))
         : DataResult.error(() -> "Value is not a resource key"), (from) -> from.location().toString());
     public static Codec<TagKey<Biome>> TAG_KEY_CODEC = Codec.STRING.comapFlatMap((to) -> to.startsWith("#")
-        ? DataResult.success(TagKey.create(Registries.BIOME, ResourceLocation.withDefaultNamespace(to.replace("#", ""))))
+        ? DataResult.success(TagKey.create(Registries.BIOME, ResourceLocation.parse(to.replace("#", ""))))
         : DataResult.error(() -> "Value is not a tag key"), (from) -> "#" + from.location());
     public static Codec<Either<ResourceKey<Biome>, TagKey<Biome>>> KEY_CODEC = Codec.xor(RESOURCE_KEY_CODEC, TAG_KEY_CODEC);
 
@@ -109,7 +109,7 @@ public final class BlockStateRecipeUtil {
             return BlockPropertyPair.of(Blocks.AIR, Optional.empty());
         } else {
             String blockString = buffer.readUtf();
-            ResourceLocation blockLocation = ResourceLocation.withDefaultNamespace(blockString);
+            ResourceLocation blockLocation = ResourceLocation.parse(blockString);
             Block block = BuiltInRegistries.BLOCK.get(blockLocation);
 
             Optional<Map<Property<?>, Comparable<?>>> propertiesOptional = buffer.readOptional((friendlyByteBuf -> {
