@@ -2,6 +2,8 @@ package com.aetherteam.nitrogen;
 
 import com.aetherteam.nitrogen.api.users.User;
 import com.aetherteam.nitrogen.api.users.UserData;
+import com.aetherteam.nitrogen.data.NitrogenDataGenerators;
+import com.aetherteam.nitrogen.loot.NitrogenLootModifiers;
 import com.aetherteam.nitrogen.network.NitrogenPacketHandler;
 import com.aetherteam.nitrogen.network.PacketRelay;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
@@ -27,8 +29,21 @@ public class Nitrogen implements ModInitializer {
     public static final String MODID = "nitrogen_internals";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    @Override
-    public void onInitialize() {
+    public Nitrogen() {
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(NitrogenDataGenerators::onInitializeDataGenerator);
+
+        DeferredRegister<?>[] registers = {
+                NitrogenLootModifiers.GLOBAL_LOOT_MODIFIERS
+        };
+
+        for (DeferredRegister<?> register : registers) {
+            register.register(modEventBus);
+        }
+    }
+
+    public void commonSetup(FMLCommonSetupEvent event) {
         NitrogenPacketHandler.register();
         ServerLifecycleEvents.SERVER_STARTED.register(Nitrogen::serverAboutToStart);
         ServerLoginConnectionEvents.QUERY_START.register(Nitrogen::playerLoggedIn);

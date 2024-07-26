@@ -126,6 +126,8 @@ public interface INBTSynchable<T extends Tag> extends INBTSerializable<T> {
         FLOAT,
         DOUBLE,
         BOOLEAN,
-        UUID
+        UUID,
+        ITEM_STACK,
+        COMPOUND_TAG
     }
 }
