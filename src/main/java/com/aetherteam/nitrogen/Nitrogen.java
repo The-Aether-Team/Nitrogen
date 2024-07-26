@@ -2,12 +2,12 @@ package com.aetherteam.nitrogen;
 
 import com.aetherteam.nitrogen.api.users.User;
 import com.aetherteam.nitrogen.api.users.UserData;
-import com.aetherteam.nitrogen.data.NitrogenDataGenerators;
 import com.aetherteam.nitrogen.loot.NitrogenLootModifiers;
 import com.aetherteam.nitrogen.network.NitrogenPacketHandler;
 import com.aetherteam.nitrogen.network.PacketRelay;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.mojang.logging.LogUtils;
+import io.github.fabricators_of_create.porting_lib.util.LazyRegistrar;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -29,22 +29,16 @@ public class Nitrogen implements ModInitializer {
     public static final String MODID = "nitrogen_internals";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public Nitrogen() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modEventBus.addListener(this::commonSetup);
-        modEventBus.addListener(NitrogenDataGenerators::onInitializeDataGenerator);
-
-        DeferredRegister<?>[] registers = {
+    @Override
+    public void onInitialize() {
+        LazyRegistrar<?>[] registers = {
                 NitrogenLootModifiers.GLOBAL_LOOT_MODIFIERS
         };
 
-        for (DeferredRegister<?> register : registers) {
-            register.register(modEventBus);
+        for (LazyRegistrar<?> register : registers) {
+            register.register();
         }
-    }
 
-    public void commonSetup(FMLCommonSetupEvent event) {
-        NitrogenPacketHandler.register();
         ServerLifecycleEvents.SERVER_STARTED.register(Nitrogen::serverAboutToStart);
         ServerLoginConnectionEvents.QUERY_START.register(Nitrogen::playerLoggedIn);
     }
