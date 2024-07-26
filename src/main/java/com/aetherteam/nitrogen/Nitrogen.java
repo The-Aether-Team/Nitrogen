@@ -39,6 +39,7 @@ public class Nitrogen implements ModInitializer {
             register.register();
         }
 
+        NitrogenPacketHandler.register();
         ServerLifecycleEvents.SERVER_STARTED.register(Nitrogen::serverAboutToStart);
         ServerLoginConnectionEvents.QUERY_START.register(Nitrogen::playerLoggedIn);
     }
