@@ -1,5 +1,6 @@
 package com.aetherteam.nitrogen.data.providers;
 
+import com.aetherteam.nitrogen.Nitrogen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
@@ -24,7 +25,7 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
     }
 
     public void addPerItemAbilityTooltip(Item item, int index, String name) {
-        this.add(item.getDescriptionId() + "." + this.id + ".ability.tooltip." + index, name);
+        this.add(item.getDescriptionId() + "." + Nitrogen.MODID + ".ability.tooltip." + index, name);
     }
 
     public void addDiscDesc(Supplier<? extends Item> key, String name) {
