@@ -23,6 +23,10 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
         this.id = id;
     }
 
+    public void addPerItemAbilityTooltip(Item item, int index, String name) {
+        this.add(item.getDescriptionId() + "." + this.id + ".ability.tooltip." + index, name);
+    }
+
     public void addDiscDesc(Supplier<? extends Item> key, String name) {
         this.add(key.get().getDescriptionId() + ".desc", name);
     }
