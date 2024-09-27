@@ -2,7 +2,9 @@ package com.aetherteam.nitrogen.event.listeners;
 
 import com.aetherteam.nitrogen.Nitrogen;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -14,7 +16,7 @@ import java.util.Map;
 
 @EventBusSubscriber(modid = Nitrogen.MODID)
 public class TooltipListeners {
-    public static Map<ItemStack, TooltipPredicate> PREDICATES = new HashMap<>();
+    public static Map<Holder<Item>, TooltipPredicate> PREDICATES = new HashMap<>();
 
     @SubscribeEvent
     public static void onTooltipCreationLowPriority(ItemTooltipEvent event) {
@@ -26,17 +28,18 @@ public class TooltipListeners {
     public static void addAbilityTooltips(ItemStack stack, List<Component> components) {
         for (int i = 1; i <= 5; i++) {
             String string = stack.getDescriptionId() + "." + Nitrogen.MODID + ".ability.tooltip." + i;
-            if (PREDICATES.containsKey(stack)) {
-                string = string + "." + PREDICATES.get(stack).override(stack, components);
-            }
             if (I18n.exists(string)) {
-                components.add(i, Component.translatable(string));
+                Component component = Component.translatable(string);
+                if (PREDICATES.containsKey(stack.getItemHolder())) {
+                    component = PREDICATES.get(stack.getItemHolder()).override(stack, components, component);
+                }
+                components.add(i, component);
             }
         }
     }
 
     @FunctionalInterface
     public interface TooltipPredicate {
-        String override(ItemStack itemStack, List<Component> components);
+        Component override(ItemStack itemStack, List<Component> components, Component component);
     }
 }
