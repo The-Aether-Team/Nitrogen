@@ -34,7 +34,7 @@ public class TooltipListeners {
             }
         }
     }
-    
+
     @FunctionalInterface
     public interface TooltipPredicate {
         String override(ItemStack itemStack, List<Component> components);
