@@ -5,12 +5,12 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = Nitrogen.MODID)
+@EventBusSubscriber(modid = Nitrogen.MODID)
 public class TooltipListeners {
     @SubscribeEvent
     public static void onTooltipCreationLowPriority(ItemTooltipEvent event) {
