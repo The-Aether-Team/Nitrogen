@@ -18,6 +18,7 @@ public class TooltipListeners {
         List<Component> itemTooltips = event.getToolTip();
         addAbilityTooltips(itemStack, itemTooltips);
     }
+    
     public static void addAbilityTooltips(ItemStack stack, List<Component> components) {
         for (int i = 1; i <= 5; i++) {
             String string = stack.getDescriptionId() + "." + Nitrogen.MODID + ".ability.tooltip." + i;
