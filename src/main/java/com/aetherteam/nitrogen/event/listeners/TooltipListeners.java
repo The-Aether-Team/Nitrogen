@@ -2,10 +2,10 @@ package com.aetherteam.nitrogen.event.listeners;
 
 import com.aetherteam.nitrogen.Nitrogen;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = Nitrogen.MODID)
 public class TooltipListeners {
-    public static Map<Holder<Item>, TooltipPredicate> PREDICATES = new HashMap<>();
+    public static Map<ResourceLocation, TooltipPredicate> PREDICATES = new HashMap<>();
 
     @SubscribeEvent
     public static void onTooltipCreationLowPriority(ItemTooltipEvent event) {
@@ -32,8 +32,9 @@ public class TooltipListeners {
             String string = stack.getDescriptionId() + "." + Nitrogen.MODID + ".ability.tooltip." + i;
             if (I18n.exists(string)) {
                 Component component = Component.translatable(string);
-                if (PREDICATES.containsKey(stack.getItemHolder())) {
-                    component = PREDICATES.get(stack.getItemHolder()).override(player, stack, components, component);
+                ResourceLocation location = player.level().registryAccess().registryOrThrow(Registries.ITEM).getKey(stack.getItem());
+                if (PREDICATES.containsKey(location)) {
+                    component = PREDICATES.get(location).override(player, stack, components, component);
                 }
                 components.add(i, component);
             }
