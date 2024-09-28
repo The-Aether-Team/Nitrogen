@@ -2,7 +2,7 @@ package com.aetherteam.nitrogen.event.listeners;
 
 import com.aetherteam.nitrogen.Nitrogen;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -32,7 +32,7 @@ public class TooltipListeners {
             String string = stack.getDescriptionId() + "." + Nitrogen.MODID + ".ability.tooltip." + i;
             if (I18n.exists(string)) {
                 Component component = Component.translatable(string);
-                ResourceLocation location = player.level().registryAccess().registryOrThrow(Registries.ITEM).getKey(stack.getItem());
+                ResourceLocation location = BuiltInRegistries.ITEM.getKey(stack.getItem());
                 if (PREDICATES.containsKey(location)) {
                     component = PREDICATES.get(location).override(player, stack, components, component);
                 }
