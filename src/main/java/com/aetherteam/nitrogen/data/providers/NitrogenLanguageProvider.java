@@ -1,5 +1,6 @@
 package com.aetherteam.nitrogen.data.providers;
 
+import com.aetherteam.nitrogen.Nitrogen;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -18,6 +19,14 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
     public NitrogenLanguageProvider(DataGenerator output, String id) {
         super(output, id, "en_us");
         this.id = id;
+    }
+
+    public void addPerItemAbilityTooltip(Item item, int index, String name) {
+        this.add(item.getDescriptionId() + "." + Nitrogen.MODID + ".ability.tooltip." + index, name);
+    }
+
+    public void addPerItemAbilityTooltip(Item item, int index, String condition, String name) {
+        this.add(item.getDescriptionId() + "." + Nitrogen.MODID + ".ability.tooltip." + index + "." + condition, name);
     }
 
     public void addDiscDesc(Supplier<? extends Item> key, String name) {
