@@ -2,10 +2,9 @@ package com.aetherteam.nitrogen.event.listeners;
 
 import com.aetherteam.nitrogen.Nitrogen;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -14,10 +13,11 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = Nitrogen.MODID)
 public class TooltipListeners {
-    public static Map<ResourceLocation, TooltipPredicate> PREDICATES = new HashMap<>();
+    public static Map<ItemHolder, TooltipPredicate> PREDICATES = new HashMap<>();
 
     @SubscribeEvent
     public static void onTooltipCreationLowPriority(ItemTooltipEvent event) {
@@ -32,12 +32,22 @@ public class TooltipListeners {
             String string = stack.getDescriptionId() + "." + Nitrogen.MODID + ".ability.tooltip." + i;
             if (I18n.exists(string)) {
                 Component component = Component.translatable(string);
-                ResourceLocation location = BuiltInRegistries.ITEM.getKey(stack.getItem());
-                if (PREDICATES.containsKey(location)) {
-                    component = PREDICATES.get(location).override(player, stack, components, component);
+                ItemHolder holder = new ItemHolder(stack::getItem);
+                if (PREDICATES.containsKey(holder)) {
+                    component = PREDICATES.get(holder).override(player, stack, components, component);
                 }
                 components.add(i, component);
             }
+        }
+    }
+
+    public record ItemHolder(Supplier<Item> supplier) {
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof Supplier<?> other) {
+                return this.supplier().get() == other.get() || this.supplier().get().equals(other.get())
+            }
+            return false;
         }
     }
 
