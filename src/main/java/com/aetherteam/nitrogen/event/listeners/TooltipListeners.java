@@ -45,7 +45,7 @@ public class TooltipListeners {
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof Supplier<?> other) {
-                return this.supplier().get() == other.get() || this.supplier().get().equals(other.get())
+                return this.supplier().get() == other.get() || this.supplier().get().equals(other.get());
             }
             return false;
         }
