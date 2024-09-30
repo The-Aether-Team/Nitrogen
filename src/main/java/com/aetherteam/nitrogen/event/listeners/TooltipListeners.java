@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = Nitrogen.MODID)
 public class TooltipListeners {
-    public static Map<ItemHolder, TooltipPredicate> PREDICATES = new HashMap<>();
+    public static Map<Supplier<Item>, TooltipPredicate> PREDICATES = new HashMap<>();
 
     @SubscribeEvent
     public static void onTooltipCreationLowPriority(ItemTooltipEvent event) {
@@ -28,31 +28,22 @@ public class TooltipListeners {
     }
 
     public static void addAbilityTooltips(Player player, ItemStack stack, List<Component> components) {
+        TooltipPredicate predicate = null;
+        for (Map.Entry<Supplier<Item>, TooltipPredicate> entry : PREDICATES.entrySet()) {
+            if (entry.getKey().get() == stack.getItem()) {
+                predicate = entry.getValue();
+                break;
+            }
+        }
         for (int i = 1; i <= 5; i++) {
             String string = stack.getDescriptionId() + "." + Nitrogen.MODID + ".ability.tooltip." + i;
             if (I18n.exists(string)) {
                 Component component = Component.translatable(string);
-                ItemHolder holder = new ItemHolder(stack::getItem);
-                if (PREDICATES.containsKey(holder)) {
-                    component = PREDICATES.get(holder).override(player, stack, components, component);
+                if (predicate != null) {
+                    component = predicate.override(player, stack, components, component);
                 }
                 components.add(i, component);
             }
-        }
-    }
-
-    public record ItemHolder(Supplier<Item> supplier) {
-        @Override
-        public boolean equals(Object obj) {
-            if (obj instanceof Supplier<?> other) {
-                return this.supplier().get() == other.get() || this.supplier().get().equals(other.get());
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return this.supplier().get().hashCode();
         }
     }
 
