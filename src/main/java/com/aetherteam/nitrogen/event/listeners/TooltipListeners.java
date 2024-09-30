@@ -49,6 +49,11 @@ public class TooltipListeners {
             }
             return false;
         }
+
+        @Override
+        public int hashCode() {
+            return this.supplier().get().hashCode();
+        }
     }
 
     @FunctionalInterface
