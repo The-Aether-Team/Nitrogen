@@ -1,16 +1,20 @@
 package com.aetherteam.nitrogen.attachment;
 
+import com.aetherteam.nitrogen.Nitrogen;
 import com.aetherteam.nitrogen.network.packet.SyncPacket;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Triple;
 import oshi.util.tuples.Quintet;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -45,23 +49,25 @@ public interface INBTSynchable {
     default void setSynched(int entityID, Direction direction, String key, Object value, @Nullable Object extra) {
         switch (direction) {
             case SERVER ->
-                PacketDistributor.sendToServer(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
+                ClientPlayNetworking.send(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
             case CLIENT ->
-                PacketDistributor.sendToAllPlayers(this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
+                PlayerLookup.all(Nitrogen.SERVER_INSTANCE).forEach(serverPlayer -> ServerPlayNetworking.send(serverPlayer, this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value)));
             case NEAR -> {
                 if (extra instanceof Quintet<?, ?, ?, ?, ?> quintet) {
                     Quintet<Double, Double, Double, Double, ServerLevel> nearValues = (Quintet<Double, Double, Double, Double, ServerLevel>) quintet;
-                    PacketDistributor.sendToPlayersNear(nearValues.getE(), null, nearValues.getA(), nearValues.getB(), nearValues.getC(), nearValues.getD(), this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
+
+                    PlayerLookup.around(nearValues.getE(), new Vec3(nearValues.getA(), nearValues.getB(), nearValues.getC()), nearValues.getD())
+                        .forEach(serverPlayer -> ServerPlayNetworking.send(serverPlayer, this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value)));
                 }
             }
             case PLAYER -> {
                 if (extra instanceof ServerPlayer serverPlayer) {
-                    PacketDistributor.sendToPlayer(serverPlayer, this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
+                    ServerPlayNetworking.send(serverPlayer, this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
                 }
             }
             case DIMENSION -> {
                 if (extra instanceof ServerLevel serverLevel) {
-                    PacketDistributor.sendToPlayersInDimension(serverLevel, this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value));
+                    PlayerLookup.world(serverLevel).forEach(serverPlayer -> ServerPlayNetworking.send(serverPlayer, this.getSyncPacket(entityID, key, this.getSynchableFunctions().get(key).getLeft(), value)));
                 }
             }
         }

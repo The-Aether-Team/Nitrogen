@@ -7,9 +7,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -163,7 +163,7 @@ public final class UserData {
                         User user = new User(currentTier, highestPastTier, ZonedDateTime.now(ZoneId.of("UTC")).plusDays(1).format(User.DATE_FORMAT), highestGroup);
                         modifySavedData(server, uuid, user);
                         STORED_USERS.put(uuid, user);
-                        PacketDistributor.sendToPlayer(serverPlayer, new UpdateUserInfoPacket(user));
+                        ServerPlayNetworking.send(serverPlayer, new UpdateUserInfoPacket(user));
                     }
                 }
             }

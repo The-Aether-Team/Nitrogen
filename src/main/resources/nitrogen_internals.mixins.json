@@ -4,7 +4,9 @@
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_17",
   "refmap": "nitrogen_internals.refmap.json",
-  "mixins": [],
+  "mixins": [
+    "LiquidBlockAccessor"
+  ],
   "injectors": {
     "defaultRequire": 1
   },

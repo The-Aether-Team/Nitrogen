@@ -1,27 +1,104 @@
 package com.aetherteam.nitrogen.data.providers;
 
 import com.aetherteam.nitrogen.Nitrogen;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.neoforged.neoforge.common.data.LanguageProvider;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
-public abstract class NitrogenLanguageProvider extends LanguageProvider {
+public abstract class NitrogenLanguageProvider extends FabricLanguageProvider {
     protected final String id;
 
-    public NitrogenLanguageProvider(PackOutput output, String id) {
-        super(output, id, "en_us");
-        this.id = id;
+    public NitrogenLanguageProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registryLookup) {
+        super(output, registryLookup);
+
+        this.id = output.getModId();
+    }
+
+    @Nullable
+    protected TranslationBuilder builderInstance = null;
+
+    @Override
+    public void generateTranslations(HolderLookup.Provider registryLookup, TranslationBuilder translationBuilder) {
+        this.builderInstance = translationBuilder;
+    }
+
+    protected abstract void addTranslations();
+
+    //--
+
+    public void addBlock(Supplier<? extends Block> key, String name) {
+        builderInstance.add(key.get(), name);
+    }
+
+    public void add(Block key, String name) {
+        builderInstance.add(key, name);
+    }
+
+    public void addItem(Supplier<? extends Item> key, String name) {
+        builderInstance.add(key.get(), name);
+    }
+
+    public void add(Item key, String name) {
+        builderInstance.add(key, name);
+    }
+
+    public void addItemStack(Supplier<ItemStack> key, String name) {
+        builderInstance.add(key.get().getItem(), name);
+    }
+
+    public void add(ItemStack key, String name) {
+        builderInstance.add(key.getDescriptionId(), name);
+    }
+
+    public void addEffect(Supplier<? extends MobEffect> key, String name) {
+        builderInstance.add(key.get(), name);
+    }
+
+    public void add(MobEffect key, String name) {
+        builderInstance.add(key, name);
+    }
+
+    public void addEntityType(Supplier<? extends EntityType<?>> key, String name) {
+        builderInstance.add(key.get(), name);
+    }
+
+    public void add(EntityType<?> key, String name) {
+        builderInstance.add(key, name);
+    }
+
+    public void addTag(Supplier<? extends TagKey<?>> key, String name) {
+        builderInstance.add(key.get(), name);
+    }
+
+    public void add(TagKey<?> tagKey, String name) {
+        builderInstance.add(tagKey, name);
+    }
+
+    //--
+
+    public void add(String key, String value) {
+        if (this.builderInstance == null) throw new IllegalStateException("TranslationBuilder was null!");
+
+        this.builderInstance.add(key, value);
     }
 
     public void addPerItemAbilityTooltip(Item item, int index, String name) {

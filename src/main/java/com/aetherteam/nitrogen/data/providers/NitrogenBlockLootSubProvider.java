@@ -1,5 +1,6 @@
 package com.aetherteam.nitrogen.data.providers;
 
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
@@ -13,7 +14,6 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.neoforged.neoforge.common.Tags;
 
 import java.util.Set;
 
@@ -38,6 +38,6 @@ public abstract class NitrogenBlockLootSubProvider extends BlockLootSubProvider 
     }
 
     public LootTable.Builder createForgeSilkTouchOrShearsDispatchTable(Block pBlock, LootPoolEntryContainer.Builder<?> pBuilder) {
-        return createSelfDropDispatchTable(pBlock, MatchTool.toolMatches(ItemPredicate.Builder.item().of(Tags.Items.TOOLS_SHEAR)).or(this.hasSilkTouch()), pBuilder);
+        return createSelfDropDispatchTable(pBlock, MatchTool.toolMatches(ItemPredicate.Builder.item().of(ConventionalItemTags.SHEAR_TOOLS)).or(this.hasSilkTouch()), pBuilder);
     }
 }

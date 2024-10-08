@@ -38,7 +38,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.client.model.data.ModelData;
+
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -78,8 +78,7 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
             ModelBlockRenderer modelBlockRenderer = blockRenderDispatcher.getModelRenderer();
             MultiBufferSource.BufferSource bufferSource = minecraft.renderBuffers().bufferSource();
             BakedModel model = blockRenderDispatcher.getBlockModel(blockState);
-            RenderType renderType = model.getRenderTypes(blockState, minecraft.level.getRandom(), ModelData.EMPTY).asList().get(0);
-            modelBlockRenderer.tesselateBlock(new FakeBlockLevel(blockState), model, blockState, BlockPos.ZERO, poseStack, bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), false, minecraft.level.getRandom(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, renderType);
+            modelBlockRenderer.tesselateBlock(new FakeBlockLevel(blockState), model, blockState, BlockPos.ZERO, poseStack, bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), false, minecraft.level.getRandom(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
             bufferSource.endBatch();
 
             Lighting.setupFor3DItems();
@@ -101,7 +100,7 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
 
             if (block != null) {
                 // Display block name.
-                MutableComponent mutablecomponent = Component.empty().append(block.getName()).withStyle(ingredient.getRarity().getStyleModifier());
+                MutableComponent mutablecomponent = Component.empty().append(block.getName()).withStyle(ingredient.getRarity().color());
                 list.add(mutablecomponent);
                 if (tooltipFlag.isAdvanced()) {
                     ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(block);

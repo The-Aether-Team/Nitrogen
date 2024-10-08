@@ -2,9 +2,9 @@ package com.aetherteam.nitrogen.network.packet;
 
 import com.aetherteam.nitrogen.attachment.AttachmentUtil;
 import com.aetherteam.nitrogen.attachment.INBTSynchable;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.attachment.AttachmentType;
 import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.function.Supplier;

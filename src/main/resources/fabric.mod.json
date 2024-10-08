@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": [
+    "${mod_authors}"
+  ],
+  "contributors": [
+    "${mod_credits}"
+  ],
+  "contact": {
+    "sources": "${mod_url}",
+    "issues": "${mod_tracker}"
+  },
+  "license": "${mod_license}",
+  "icon": "${mod_name}.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.aetherteam.nitrogen.Nitrogen"
+    ],
+    "client": [
+      "com.aetherteam.nitrogen.client.NitrogenClient"
+    ],
+    "fabric-datagen": [
+      "com.aetherteam.nitrogen.data.NitrogenDataGenerators"
+    ]
+  },
+  "mixins": [
+    "${mod_id}.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": "${fabric_loader_version_range}",
+    "minecraft": "${minecraft_version_range}",
+    "java": ">=21",
+    "fabric-api": "${fabric_version_range}"
+  }
+}
