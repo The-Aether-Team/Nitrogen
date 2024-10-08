@@ -11,6 +11,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -36,6 +39,7 @@ public final class BlockStateRecipeUtil {
         ? DataResult.success(TagKey.create(Registries.BIOME, ResourceLocation.parse(to.replace("#", ""))))
         : DataResult.error(() -> "Value is not a tag key"), (from) -> "#" + from.location());
     public static Codec<Either<ResourceKey<Biome>, TagKey<Biome>>> KEY_CODEC = Codec.xor(RESOURCE_KEY_CODEC, TAG_KEY_CODEC);
+    public static StreamCodec<RegistryFriendlyByteBuf, Either<ResourceKey<Biome>, TagKey<Biome>>> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(KEY_CODEC);
 
     /**
      * Executes an {@link CacheableFunction}.
