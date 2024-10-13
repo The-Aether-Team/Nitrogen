@@ -3,6 +3,7 @@ package com.aetherteam.nitrogen.recipe.builder;
 import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
 import com.aetherteam.nitrogen.recipe.BlockStateIngredient;
 import com.aetherteam.nitrogen.recipe.recipes.AbstractBlockStateRecipe;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -13,7 +14,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.Property;
 
 import javax.annotation.Nullable;
-import java.util.Map;
 import java.util.Optional;
 
 public class BlockStateRecipeBuilder implements RecipeBuilder {
@@ -32,7 +32,7 @@ public class BlockStateRecipeBuilder implements RecipeBuilder {
         return recipe(ingredient, BlockPropertyPair.of(resultBlock, Optional.empty()), factory);
     }
 
-    public static <T extends AbstractBlockStateRecipe> BlockStateRecipeBuilder recipe(BlockStateIngredient ingredient, Block resultBlock, Optional<Map<Property<?>, Comparable<?>>> resultProperties, AbstractBlockStateRecipe.Factory<T> factory) {
+    public static <T extends AbstractBlockStateRecipe> BlockStateRecipeBuilder recipe(BlockStateIngredient ingredient, Block resultBlock, Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> resultProperties, AbstractBlockStateRecipe.Factory<T> factory) {
         return recipe(ingredient, BlockPropertyPair.of(resultBlock, resultProperties), factory);
     }
 

@@ -1,6 +1,7 @@
 package com.aetherteam.nitrogen.data.providers;
 
 import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
@@ -12,7 +13,6 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.Property;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -387,7 +387,7 @@ public abstract class NitrogenRecipeProvider extends RecipeProvider {
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ingredient), category, item, count).unlockedBy(getHasName(ingredient), has(ingredient)).save(output, this.name(getConversionRecipeName(item, ingredient) + "_stonecutting"));
     }
 
-    protected BlockPropertyPair pair(Block resultBlock, Optional<Map<Property<?>, Comparable<?>>> resultProperties) {
+    protected BlockPropertyPair pair(Block resultBlock, Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> resultProperties) {
         return BlockPropertyPair.of(resultBlock, resultProperties);
     }
 }

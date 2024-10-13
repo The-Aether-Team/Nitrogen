@@ -8,6 +8,7 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
@@ -97,7 +98,7 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
 
             BlockPropertyPair pair = this.getMatchingPair(ingredient);
             Block block = pair.block();
-            Optional<Map<Property<?>, Comparable<?>>> properties = pair.properties();
+            Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> properties = pair.properties();
 
             if (block != null) {
                 // Display block name.
@@ -151,11 +152,11 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements IIngredi
      */
     @SuppressWarnings("deprecation")
     private BlockPropertyPair getMatchingPair(ItemStack ingredient) {
-        Map<Block, Map<Property<?>, Comparable<?>>> pairsMap = Stream.of(this.pairs).collect(Collectors.toMap(BlockPropertyPair::block, blockPropertyPair -> blockPropertyPair.properties().orElse(Map.of())));
+        Map<Block, Reference2ObjectArrayMap<Property<?>, Comparable<?>>> pairsMap = Stream.of(this.pairs).collect(Collectors.toMap(BlockPropertyPair::block, blockPropertyPair -> blockPropertyPair.properties().orElse(new Reference2ObjectArrayMap<>())));
         Block block = null;
-        Map<Property<?>, Comparable<?>> propertiesMap = null;
+        Reference2ObjectArrayMap<Property<?>, Comparable<?>> propertiesMap = null;
         if (Minecraft.getInstance().level != null) {
-            for (Map.Entry<Block, Map<Property<?>, Comparable<?>>> entry : pairsMap.entrySet()) {
+            for (Map.Entry<Block, Reference2ObjectArrayMap<Property<?>, Comparable<?>>> entry : pairsMap.entrySet()) {
                 ItemStack stack = entry.getKey().getCloneItemStack(Minecraft.getInstance().level, BlockPos.ZERO, entry.getKey().defaultBlockState());
                 stack = stack.isEmpty() ? new ItemStack(Blocks.STONE) : stack;
                 if (stack.getItem() == ingredient.getItem()) {
