@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -146,7 +147,7 @@ public class BlockStateIngredient implements Predicate<BlockState> {
             );
     }
 
-    public record BlockStateValue(Block block, Optional<Map<Property<?>, Comparable<?>>> properties) implements BlockStateIngredient.Value {
+    public record BlockStateValue(Block block, Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> properties) implements BlockStateIngredient.Value {
         public static final MapCodec<BlockStateValue> MAP_CODEC = BlockPropertyPair.CODEC.xmap(BlockStateValue::new, BlockStateValue::cast);
         public static final Codec<BlockStateValue> CODEC = MAP_CODEC.codec();
 
