@@ -57,8 +57,7 @@ dependencies {
     compileOnly "mezz.jei:jei-${project.minecraft_version}-common:${project.jei_version}"
     compileOnly "mezz.jei:jei-${project.minecraft_version}-neoforge:${project.jei_version}"
 
-    compileOnly "me.shedaniel:RoughlyEnoughItems-api-neoforge:${project.rei_version}"
-    compileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-neoforge:${project.rei_version}"
+    compileOnly "me.shedaniel:RoughlyEnoughItems-neoforge:${project.rei_version}"
 
     compileOnly "me.shedaniel.cloth:cloth-config-neoforge:${project.cloth_config_version}"
     compileOnly "dev.architectury:architectury-neoforge:${project.architectury_version}"
