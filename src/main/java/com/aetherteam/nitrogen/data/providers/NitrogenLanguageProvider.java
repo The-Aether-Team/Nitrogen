@@ -111,6 +111,10 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
         this.add("accessories.slot." + this.id + "." + key, name);
     }
 
+    public void addConfig(String prefix, String name) {
+        this.add(this.id + ".config." + prefix, name);
+    }
+
     public void addServerConfig(String prefix, String name) {
         this.add("config." + this.id + ".server." + prefix, name);
     }
