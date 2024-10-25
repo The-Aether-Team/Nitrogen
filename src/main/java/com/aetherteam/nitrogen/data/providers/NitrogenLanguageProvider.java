@@ -129,14 +129,17 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
 
     public void addServerConfig(String prefix, String key, String name) {
         this.add("config." + this.id + ".server." + prefix + "." + key, name);
+        this.add("config." + this.id + ".server." + prefix + "." + key + ".tooltip", name);
     }
 
     public void addCommonConfig(String prefix, String key, String name) {
         this.add("config." + this.id + ".common." + prefix + "." + key, name);
+        this.add("config." + this.id + ".common." + prefix + "." + key + ".tooltip", name);
     }
 
     public void addClientConfig(String prefix, String key, String name) {
         this.add("config." + this.id + ".client." + prefix + "." + key, name);
+        this.add("config." + this.id + ".client." + prefix + "." + key + ".tooltip", name);
     }
 
     public void addPackTitle(String packName, String description) {
