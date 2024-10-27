@@ -135,12 +135,18 @@ compileJava {
     options.incremental = false
 }
 
+java {
+    withSourcesJar()
+
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
             artifactId project.archivesBaseName
-            artifact project.jar
-            artifact project.sourceJar
+            from components.java
         }
     }
     repositories {
