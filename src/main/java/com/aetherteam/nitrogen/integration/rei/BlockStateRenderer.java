@@ -8,6 +8,7 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import me.shedaniel.math.Rectangle;
 import me.shedaniel.rei.api.client.entry.renderer.EntryRenderer;
 import me.shedaniel.rei.api.client.gui.widgets.Tooltip;
@@ -95,7 +96,7 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements EntryRen
 
             BlockPropertyPair pair = this.getMatchingPair(ingredient.getValue());
             Block block = pair.block();
-            Optional<Map<Property<?>, Comparable<?>>> properties = pair.properties();
+            Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> properties = pair.properties();
 
             if (block != null) {
                 // Display block name.
@@ -130,11 +131,11 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements EntryRen
      * Warning for "deprecation" is suppressed because the non-sensitive version of {@link net.minecraft.world.level.block.Block#getCloneItemStack(net.minecraft.world.level.LevelReader, BlockPos, BlockState)} is needed in this context.
      */
     private BlockPropertyPair getMatchingPair(ItemStack ingredient) {
-        Map<Block, Optional<Map<Property<?>, Comparable<?>>>> pairsMap = Stream.of(this.pairs).collect(Collectors.toMap(BlockPropertyPair::block, BlockPropertyPair::properties));
+        Map<Block, Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>>> pairsMap = Stream.of(this.pairs).collect(Collectors.toMap(BlockPropertyPair::block, BlockPropertyPair::properties));
         Block block = null;
-        Optional<Map<Property<?>, Comparable<?>>> propertiesMap = Optional.empty();
+        Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> propertiesMap = Optional.empty();
         if (Minecraft.getInstance().level != null) {
-            for (Map.Entry<Block, Optional<Map<Property<?>, Comparable<?>>>> entry : pairsMap.entrySet()) {
+            for (Map.Entry<Block, Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>>> entry : pairsMap.entrySet()) {
                 ItemStack stack = entry.getKey().getCloneItemStack(Minecraft.getInstance().level, BlockPos.ZERO, entry.getKey().defaultBlockState());
                 stack = stack.isEmpty() ? new ItemStack(Blocks.STONE) : stack;
                 if (stack.getItem() == ingredient.getItem()) {

@@ -184,24 +184,39 @@ public abstract class NitrogenLanguageProvider extends FabricLanguageProvider {
         this.add("key." + this.id + "." + key, name);
     }
 
-    public void addCuriosIdentifier(String key, String name) {
-        this.add("curios.identifier." + key, name);
+    public void addAccessoriesIdentifier(String key, String name) {
+        this.add("accessories.slot." + this.id + "." + key, name);
     }
 
-    public void addCuriosModifier(String key, String name) {
-        this.add("curios.modifiers." + key, name);
+    public void addConfig(String prefix, String name) {
+        this.add(this.id + ".configuration." + prefix, name);
+    }
+
+    public void addServerConfig(String prefix, String name) {
+        this.add("config." + this.id + ".server." + prefix, name);
+    }
+
+    public void addCommonConfig(String prefix, String name) {
+        this.add("config." + this.id + ".common." + prefix, name);
+    }
+
+    public void addClientConfig(String prefix, String name) {
+        this.add("config." + this.id + ".client." + prefix, name);
     }
 
     public void addServerConfig(String prefix, String key, String name) {
         this.add("config." + this.id + ".server." + prefix + "." + key, name);
+        this.add("config." + this.id + ".server." + prefix + "." + key + ".tooltip", name);
     }
 
     public void addCommonConfig(String prefix, String key, String name) {
         this.add("config." + this.id + ".common." + prefix + "." + key, name);
+        this.add("config." + this.id + ".common." + prefix + "." + key + ".tooltip", name);
     }
 
     public void addClientConfig(String prefix, String key, String name) {
         this.add("config." + this.id + ".client." + prefix + "." + key, name);
+        this.add("config." + this.id + ".client." + prefix + "." + key + ".tooltip", name);
     }
 
     public void addPackTitle(String packName, String description) {

@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.commands.CacheableFunction;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
@@ -27,7 +28,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -116,8 +116,8 @@ public final class BlockStateRecipeUtil {
             ResourceLocation blockLocation = ResourceLocation.parse(blockString);
             Block block = BuiltInRegistries.BLOCK.get(blockLocation);
 
-            Optional<Map<Property<?>, Comparable<?>>> propertiesOptional = buffer.readOptional((friendlyByteBuf -> {
-                Map<Property<?>, Comparable<?>> properties = new HashMap<>();
+            Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> propertiesOptional = buffer.readOptional((friendlyByteBuf -> {
+                Reference2ObjectArrayMap<Property<?>, Comparable<?>> properties = new Reference2ObjectArrayMap<>();
                 CompoundTag tag = friendlyByteBuf.readNbt();
                 if (tag != null) {
                     for (String propertyName : tag.getAllKeys()) {
