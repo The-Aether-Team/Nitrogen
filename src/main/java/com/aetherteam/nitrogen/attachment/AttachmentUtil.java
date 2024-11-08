@@ -19,6 +19,6 @@ public class AttachmentUtil {
      */
     public static void syncLevelCapability(SyncLevelPacket<?> syncLevelPacket, Player playerEntity, String key, Object value, boolean isClientSide) {
         Level level = isClientSide ? Minecraft.getInstance().level : playerEntity.level();
-        ((AttachmentTarget)level).getAttached(syncLevelPacket.getAttachment().get()).getSynchableFunctions().get(key).getMiddle().accept(value);
+        ((AttachmentTarget)level).getAttachedOrCreate(syncLevelPacket.getAttachment().get()).getSynchableFunctions().get(key).getMiddle().accept(value);
     }
 }

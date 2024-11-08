@@ -42,13 +42,13 @@ public abstract class SyncEntityPacket<T extends INBTSynchable> extends SyncPack
         if (playerEntity != null && playerEntity.getServer() != null && payload.value != null) {
             Entity entity = playerEntity.level().getEntity(payload.entityID);
             if (entity != null && !entity.level().isClientSide()) {
-                entity.getAttached(payload.getAttachment().get()).getSynchableFunctions().get(payload.key).getMiddle().accept(payload.value);
+                entity.getAttachedOrCreate(payload.getAttachment().get()).getSynchableFunctions().get(payload.key).getMiddle().accept(payload.value);
             }
         } else {
             if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null && payload.value != null) {
                 Entity entity = Minecraft.getInstance().level.getEntity(payload.entityID);
                 if (entity != null && entity.level().isClientSide()) {
-                    entity.getAttached(payload.getAttachment().get()).getSynchableFunctions().get(payload.key).getMiddle().accept(payload.value);
+                    entity.getAttachedOrCreate(payload.getAttachment().get()).getSynchableFunctions().get(payload.key).getMiddle().accept(payload.value);
                 }
             }
         }
