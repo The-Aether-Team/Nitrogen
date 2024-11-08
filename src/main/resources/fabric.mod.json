@@ -15,7 +15,7 @@
     "issues": "${mod_tracker}"
   },
   "license": "${mod_license}",
-  "icon": "${mod_name}.png",
+  "icon": "${mod_id}.png",
   "environment": "*",
   "entrypoints": {
     "main": [
