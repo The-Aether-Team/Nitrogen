@@ -30,7 +30,7 @@ public class TooltipListeners {
 
     public static void addAbilityTooltips(Player player, ItemStack stack, List<Component> components, Item.TooltipContext context) {
         for (int i = 1; i <= 5; i++) {
-            String string = stack.getDescriptionId() + "." + Nitrogen.MODID + ".ability.tooltip." + i;
+            String string = stack.getItem().getDescriptionId() + "." + Nitrogen.MODID + ".ability.tooltip." + i;
             if (I18n.exists(string)) {
                 Component component = Component.translatable(string);
                 if (PREDICATES.containsKey(stack.getItemHolder())) {

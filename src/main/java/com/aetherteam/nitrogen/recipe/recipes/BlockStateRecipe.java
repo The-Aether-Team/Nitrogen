@@ -8,6 +8,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -39,22 +40,12 @@ public interface BlockStateRecipe extends Recipe<BlockStateRecipeInput> {
     }
 
     @Override
-    default boolean canCraftInDimensions(int pWidth, int pHeight) {
-        return false;
-    }
-
-    @Override
-    default ItemStack getResultItem(HolderLookup.Provider provider) {
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    default NonNullList<ItemStack> getRemainingItems(BlockStateRecipeInput container) {
-        return NonNullList.create();
-    }
-
-    @Override
     default boolean isSpecial() {
         return true;
+    }
+
+    @Override
+    default PlacementInfo placementInfo() {
+        return null;
     }
 }

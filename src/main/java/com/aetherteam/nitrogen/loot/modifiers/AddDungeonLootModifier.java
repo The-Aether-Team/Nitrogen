@@ -38,7 +38,7 @@ public class AddDungeonLootModifier extends LootModifier {
     @Override
     protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
         RandomSource randomSource = context.getRandom();
-        Vec3 vec3 = context.getParamOrNull(LootContextParams.ORIGIN);
+        Vec3 vec3 = context.getOptionalParameter(LootContextParams.ORIGIN);
         if (vec3 != null) {
             BlockPos pos = BlockPos.containing(vec3);
             BlockEntity blockEntity = context.getLevel().getBlockEntity(pos);

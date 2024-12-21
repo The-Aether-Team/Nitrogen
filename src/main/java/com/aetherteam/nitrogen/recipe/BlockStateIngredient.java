@@ -6,6 +6,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -22,6 +23,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * [CODE COPY] - {@link net.minecraft.world.item.crafting.Ingredient}.<br><br>
@@ -182,8 +184,8 @@ public class BlockStateIngredient implements Predicate<BlockState> {
         public Collection<BlockPropertyPair> getPairs() {
             List<BlockPropertyPair> list = new ArrayList<>();
 
-            Optional<HolderSet.Named<Block>> tags = BuiltInRegistries.BLOCK.getTag(this.tag);
-            tags.ifPresent(holders -> holders.stream().forEach((block) -> list.add(BlockPropertyPair.of(block.value(), Optional.empty()))));
+            Iterable<Holder<Block>> tags = BuiltInRegistries.BLOCK.getTagOrEmpty(this.tag);
+            StreamSupport.stream(tags.spliterator(), false).forEach((block) -> list.add(BlockPropertyPair.of(block.value(), Optional.empty())));
 
             return list;
         }

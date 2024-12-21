@@ -4,8 +4,11 @@ import com.aetherteam.nitrogen.integration.rei.REIUtils;
 import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
 import com.aetherteam.nitrogen.recipe.recipes.AbstractBlockStateRecipe;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
+import me.shedaniel.rei.api.common.display.Display;
+import me.shedaniel.rei.api.common.display.DisplaySerializer;
 import me.shedaniel.rei.api.common.display.basic.BasicDisplay;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -40,5 +43,10 @@ public class BlockStateRecipeDisplay<R extends AbstractBlockStateRecipe> extends
     @Override
     public CategoryIdentifier<?> getCategoryIdentifier() {
         return this.categoryIdentifier;
+    }
+
+    @Override
+    public @Nullable DisplaySerializer<? extends Display> getSerializer() { //todo
+        return null;
     }
 }

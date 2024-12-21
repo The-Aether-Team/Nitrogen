@@ -114,7 +114,7 @@ public final class BlockStateRecipeUtil {
         } else {
             String blockString = buffer.readUtf();
             ResourceLocation blockLocation = ResourceLocation.parse(blockString);
-            Block block = BuiltInRegistries.BLOCK.get(blockLocation);
+            Block block = BuiltInRegistries.BLOCK.getValue(blockLocation);
 
             Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> propertiesOptional = buffer.readOptional((friendlyByteBuf -> {
                 Reference2ObjectArrayMap<Property<?>, Comparable<?>> properties = new Reference2ObjectArrayMap<>();

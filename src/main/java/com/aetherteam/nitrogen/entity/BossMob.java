@@ -3,6 +3,7 @@ package com.aetherteam.nitrogen.entity;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
@@ -50,9 +51,9 @@ public interface BossMob<T extends Mob & BossMob<T>> {
     /**
      * Displays a message when the player tries to start a boss fight but is outside of the room.
      *
-     * @param player The {@link Player}.
+     * @param player The {@link ServerPlayer}.
      */
-    default void displayTooFarMessage(Player player) {
+    default void displayTooFarMessage(ServerPlayer player) {
         player.sendSystemMessage(Component.translatable("gui.nitrogen_internals.boss.message.far"));
     }
 

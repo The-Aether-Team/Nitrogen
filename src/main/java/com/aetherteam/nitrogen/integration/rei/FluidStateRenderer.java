@@ -47,7 +47,6 @@ public class FluidStateRenderer implements EntryRenderer<FluidStack> {
 
         renderType.setupRenderState();
         worldStack.pushMatrix().mul(poseStack.last().pose());
-        RenderSystem.applyModelViewMatrix();
 
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder builder = tesselator.begin(renderType.mode(), renderType.format());
@@ -55,7 +54,6 @@ public class FluidStateRenderer implements EntryRenderer<FluidStack> {
 
         renderType.clearRenderState();
         worldStack.popMatrix();
-        RenderSystem.applyModelViewMatrix();
 
         poseStack.popPose();
     }

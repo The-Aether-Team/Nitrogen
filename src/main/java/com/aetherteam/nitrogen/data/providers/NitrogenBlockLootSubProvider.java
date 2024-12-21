@@ -1,6 +1,7 @@
 package com.aetherteam.nitrogen.data.providers;
 
 import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -37,7 +38,7 @@ public abstract class NitrogenBlockLootSubProvider extends BlockLootSubProvider 
         );
     }
 
-    public LootTable.Builder createForgeSilkTouchOrShearsDispatchTable(Block pBlock, LootPoolEntryContainer.Builder<?> pBuilder) {
-        return createSelfDropDispatchTable(pBlock, MatchTool.toolMatches(ItemPredicate.Builder.item().of(Tags.Items.TOOLS_SHEAR)).or(this.hasSilkTouch()), pBuilder);
+    public LootTable.Builder createForgeSilkTouchOrShearsDispatchTable(HolderGetter<Item> holderGetter, Block block, LootPoolEntryContainer.Builder<?> builder) {
+        return createSelfDropDispatchTable(block, MatchTool.toolMatches(ItemPredicate.Builder.item().of(holderGetter, Tags.Items.TOOLS_SHEAR)).or(this.hasSilkTouch()), builder);
     }
 }

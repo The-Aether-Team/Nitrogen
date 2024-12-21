@@ -76,7 +76,7 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements EntryRen
             ModelBlockRenderer modelBlockRenderer = blockRenderDispatcher.getModelRenderer();
             MultiBufferSource.BufferSource bufferSource = minecraft.renderBuffers().bufferSource();
             BakedModel model = blockRenderDispatcher.getBlockModel(blockState);
-            modelBlockRenderer.tesselateBlock(FakeLevel.of(blockState), model, blockState, BlockPos.ZERO, poseStack, bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), false, minecraft.level.getRandom(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+            modelBlockRenderer.tesselateBlock(FakeLevel.of(blockState), model, blockState, BlockPos.ZERO, poseStack, bufferSource.getBuffer(Sheets.translucentItemSheet()), false, minecraft.level.getRandom(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
             bufferSource.endBatch();
 
             Lighting.setupFor3DItems();

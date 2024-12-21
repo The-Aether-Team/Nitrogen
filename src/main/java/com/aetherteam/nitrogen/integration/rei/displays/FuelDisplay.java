@@ -1,10 +1,13 @@
 package com.aetherteam.nitrogen.integration.rei.displays;
 
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
+import me.shedaniel.rei.api.common.display.Display;
+import me.shedaniel.rei.api.common.display.DisplaySerializer;
 import me.shedaniel.rei.api.common.display.basic.BasicDisplay;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -32,5 +35,10 @@ public class FuelDisplay extends BasicDisplay {
     @Override
     public CategoryIdentifier<FuelDisplay> getCategoryIdentifier() {
         return this.id;
+    }
+
+    @Override
+    public @Nullable DisplaySerializer<? extends Display> getSerializer() { //todo
+        return null;
     }
 }

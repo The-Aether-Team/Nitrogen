@@ -15,13 +15,13 @@ import java.util.Map;
 import java.util.Optional;
 
 public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
-    protected final RecipeType<?> type;
+    protected final RecipeType<? extends AbstractBlockStateRecipe> type;
     protected final BlockStateIngredient ingredient;
     protected final BlockPropertyPair result;
     protected final Optional<CacheableFunction> function;
     private final Optional<ResourceLocation> functionId;
 
-    public AbstractBlockStateRecipe(RecipeType<?> type, BlockStateIngredient ingredient, BlockPropertyPair result, Optional<ResourceLocation> functionId) {
+    public AbstractBlockStateRecipe(RecipeType<? extends AbstractBlockStateRecipe> type, BlockStateIngredient ingredient, BlockPropertyPair result, Optional<ResourceLocation> functionId) {
         this.type = type;
         this.ingredient = ingredient;
         this.result = result;
@@ -70,7 +70,7 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public RecipeType<? extends AbstractBlockStateRecipe> getType() {
         return this.type;
     }
 
