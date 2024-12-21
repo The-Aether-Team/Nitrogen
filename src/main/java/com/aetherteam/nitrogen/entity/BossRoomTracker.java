@@ -103,7 +103,7 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
             for (UUID uuid : this.dungeonPlayers()) {
                 Player player = this.boss().level().getPlayerByUUID(uuid);
                 if (player != null) {
-                    player.awardKillScore(this.boss(), this.boss().getDeathScore(), damageSource);
+                    player.awardKillScore(this.boss(), damageSource);
                 }
             }
         }

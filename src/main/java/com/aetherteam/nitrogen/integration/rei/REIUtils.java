@@ -38,14 +38,14 @@ public class REIUtils {
      */
     private static ItemStack setupIngredient(BlockPropertyPair recipeResult) {
         ItemStack stack = ItemStack.EMPTY;
-        if (Minecraft.getInstance().level != null) {
+        if (Minecraft.getInstance().level != null && Minecraft.getInstance().player != null) {
             BlockState resultState = recipeResult.block().defaultBlockState();
             if (recipeResult.properties().isPresent()) {
                 for (Map.Entry<Property<?>, Comparable<?>> propertyEntry : recipeResult.properties().get().entrySet()) {
                     resultState = BlockStateRecipeUtil.setHelper(propertyEntry, resultState);
                 }
             }
-            stack = recipeResult.block().getCloneItemStack(Minecraft.getInstance().level, BlockPos.ZERO, resultState);
+            stack = recipeResult.block().getCloneItemStack(Minecraft.getInstance().level, BlockPos.ZERO, resultState, true, Minecraft.getInstance().player);
         }
         return stack.isEmpty() ? new ItemStack(Blocks.STONE) : stack;
     }

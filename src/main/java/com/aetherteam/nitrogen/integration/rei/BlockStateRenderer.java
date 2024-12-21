@@ -134,9 +134,9 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements EntryRen
         Map<Block, Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>>> pairsMap = Stream.of(this.pairs).collect(Collectors.toMap(BlockPropertyPair::block, BlockPropertyPair::properties));
         Block block = null;
         Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> propertiesMap = Optional.empty();
-        if (Minecraft.getInstance().level != null) {
+        if (Minecraft.getInstance().level != null && Minecraft.getInstance().player != null) {
             for (Map.Entry<Block, Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>>> entry : pairsMap.entrySet()) {
-                ItemStack stack = entry.getKey().getCloneItemStack(Minecraft.getInstance().level, BlockPos.ZERO, entry.getKey().defaultBlockState());
+                ItemStack stack = entry.getKey().getCloneItemStack(Minecraft.getInstance().level, BlockPos.ZERO, entry.getKey().defaultBlockState(), true, Minecraft.getInstance().player);
                 stack = stack.isEmpty() ? new ItemStack(Blocks.STONE) : stack;
                 if (stack.getItem() == ingredient.getItem()) {
                     block = entry.getKey();

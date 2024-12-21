@@ -14,12 +14,12 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import java.util.Optional;
 
 public class NitrogenDataGenerators {
-    public static void onInitializeDataGenerator(GatherDataEvent event) {
+    public static void onInitializeDataGenerator(GatherDataEvent.Client event) {
         DataGenerator generator = event.getGenerator();
         PackOutput packOutput = generator.getPackOutput();
 
         // Client Data
-        generator.addProvider(event.includeClient(), new NitrogenLanguageData(packOutput));
+        generator.addProvider(true, new NitrogenLanguageData(packOutput));
 
         // pack.mcmeta
         generator.addProvider(true, new PackMetadataGenerator(packOutput).add(PackMetadataSection.TYPE, new PackMetadataSection(
