@@ -5,11 +5,11 @@ import com.aetherteam.nitrogen.recipe.BlockStateIngredient;
 import com.aetherteam.nitrogen.recipe.input.BlockStateRecipeInput;
 import net.minecraft.commands.CacheableFunction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -46,6 +46,11 @@ public interface BlockStateRecipe extends Recipe<BlockStateRecipeInput> {
 
     @Override
     default PlacementInfo placementInfo() {
+        return null;
+    }
+
+    @Override
+    default RecipeBookCategory recipeBookCategory() {
         return null;
     }
 }
