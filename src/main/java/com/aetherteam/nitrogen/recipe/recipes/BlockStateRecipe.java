@@ -46,7 +46,7 @@ public interface BlockStateRecipe extends Recipe<BlockStateRecipeInput> {
 
     @Override
     default PlacementInfo placementInfo() {
-        return null;
+        return PlacementInfo.NOT_PLACEABLE;
     }
 
     @Override
