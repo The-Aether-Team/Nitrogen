@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
@@ -19,7 +20,7 @@ import java.util.Map;
 public class TooltipListeners {
     public static Map<Holder<Item>, TooltipPredicate> PREDICATES = new HashMap<>();
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOW)
     public static void onTooltipCreationLowPriority(ItemTooltipEvent event) {
         Player player = event.getEntity();
         ItemStack itemStack = event.getItemStack();
