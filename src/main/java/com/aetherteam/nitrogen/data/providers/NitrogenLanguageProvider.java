@@ -2,6 +2,7 @@ package com.aetherteam.nitrogen.data.providers;
 
 import io.github.fabricators_of_create.porting_lib.data.LanguageProvider;
 import net.minecraft.core.registries.BuiltInRegistries;
+import com.aetherteam.nitrogen.Nitrogen;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -21,6 +22,14 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
     public NitrogenLanguageProvider(PackOutput output, String id) {
         super(output, id, "en_us");
         this.id = id;
+    }
+
+    public void addPerItemAbilityTooltip(Item item, int index, String name) {
+        this.add(item.getDescriptionId() + "." + Nitrogen.MODID + ".ability.tooltip." + index, name);
+    }
+
+    public void addPerItemAbilityTooltip(Item item, int index, String condition, String name) {
+        this.add(item.getDescriptionId() + "." + Nitrogen.MODID + ".ability.tooltip." + index + "." + condition, name);
     }
 
     public void addDiscDesc(Supplier<? extends Item> key, String name) {

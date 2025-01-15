@@ -19,6 +19,9 @@
     "main": [
       "com.aetherteam.nitrogen.Nitrogen"
     ],
+    "client": [
+      "com.aetherteam.nitrogen.client.NitrogenClient"
+    ],
     "fabric-datagen": [
       "com.aetherteam.nitrogen.data.NitrogenDataGenerators"
     ]
