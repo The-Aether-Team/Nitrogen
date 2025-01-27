@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.math.Axis;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
@@ -67,14 +68,19 @@ public record FluidStateRenderer<T>(IPlatformFluidHelperInternal<T> fluidHelper)
     }
 
     @Override
-    public List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag) {
+    public void getTooltip(ITooltipBuilder tooltip, T ingredient, TooltipFlag tooltipFlag) {
         try {
-            return this.fluidHelper.getTooltip(ingredient, tooltipFlag);
+             this.fluidHelper.getTooltip(tooltip, ingredient, tooltipFlag);
         } catch (RuntimeException | LinkageError e) {
             Component displayName = this.fluidHelper.getDisplayName(ingredient);
             Nitrogen.LOGGER.error("Failed to get tooltip for fluid: " + displayName, e);
-            return new ArrayList<>();
         }
+    }
+
+    @Override
+    @Deprecated(since = "15.8.4", forRemoval = true)
+    public List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag) { // Can't remove this yet because it's still abstract in IIngredientRenderer.
+        return new ArrayList<>();
     }
 
     /**
