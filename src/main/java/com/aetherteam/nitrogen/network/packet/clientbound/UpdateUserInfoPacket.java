@@ -22,7 +22,7 @@ public record UpdateUserInfoPacket(User user) implements BasePacket {
     }
 
     @Override
-    public void execute(Player player) {
+    public void executeClient() {
         if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null) {
             UserData.Client.setClientUser(this.user());
         }

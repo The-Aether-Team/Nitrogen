@@ -12,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 public interface ServerPacket extends C2SPacket {
     @Override
     default void handle(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl listener, PacketSender responseSender, SimpleChannel channel) {
-        server.execute(() -> ServerPacket.this.execute(player));
+        server.execute(() -> ServerPacket.this.executeServer(player));
     }
 
-    void execute(@Nullable Player player);
+    void executeServer(@Nullable Player player);
 }

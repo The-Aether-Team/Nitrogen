@@ -7,6 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.tuple.Triple;
+import org.jetbrains.annotations.Nullable;
 import oshi.util.tuples.Quartet;
 
 import java.util.Optional;
@@ -39,18 +40,21 @@ public abstract class SyncEntityPacket<T extends INBTSynchable<CompoundTag>> ext
     }
 
     @Override
-    public void execute(Player playerEntity) {
+    public void executeServer(@Nullable Player playerEntity) {
         if (playerEntity != null && playerEntity.getServer() != null && this.value != null) {
             Entity entity = playerEntity.level().getEntity(this.entityID);
             if (entity != null && !entity.level().isClientSide()) {
                 this.getCapability(entity).ifPresent((synchable) -> synchable.getSynchableFunctions().get(this.key).getMiddle().accept(this.value));
             }
-        } else {
-            if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null && this.value != null) {
-                Entity entity = Minecraft.getInstance().level.getEntity(this.entityID);
-                if (entity != null && entity.level().isClientSide()) {
-                    this.getCapability(entity).ifPresent((synchable) -> synchable.getSynchableFunctions().get(this.key).getMiddle().accept(this.value));
-                }
+        }
+    }
+
+    @Override
+    public void executeClient() {
+        if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null && this.value != null) {
+            Entity entity = Minecraft.getInstance().level.getEntity(this.entityID);
+            if (entity != null && entity.level().isClientSide()) {
+                this.getCapability(entity).ifPresent((synchable) -> synchable.getSynchableFunctions().get(this.key).getMiddle().accept(this.value));
             }
         }
     }
