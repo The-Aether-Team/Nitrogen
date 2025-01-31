@@ -26,14 +26,14 @@ public abstract class SyncLevelPacket<T extends INBTSynchable<CompoundTag>> exte
     @Override
     public void executeServer(@Nullable Player playerEntity) {
         if (playerEntity != null && playerEntity.getServer() != null && this.value != null) {
-            CapabilityUtil.syncLevelCapability(this, playerEntity, this.key, this.value, false);
+            CapabilityUtil.syncLevelCapabilityToServer(this, playerEntity, this.key, this.value);
         }
     }
 
     @Override
     public void executeClient() {
         if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null && this.value != null) {
-            CapabilityUtil.syncLevelCapability(this, Minecraft.getInstance().player, this.key, this.value, true);
+            CapabilityUtil.syncLevelCapabilityToClient(this, this.key, this.value);
         }
     }
 
