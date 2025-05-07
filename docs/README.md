@@ -11,30 +11,7 @@ Nitrogen is a library mod used by The Aether Team to abstract code that is usabl
 
 ## :package: Download the latest releases
 ### Packages
-To install this mod through GitHub Packages in Gradle for development, you will need the [Gradle Github Packages Plugin](https://github.com/0ffz/gpr-for-gradle). To use it, make sure you have access to the Gradle plugins maven and the plugin as a buildscript dependency:
-
-<details>
-<summary> Buildscript Code</summary>
-
-`settings.gradle`
-```
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-    }
-}
-```
-
-`build.gradle`
-```
-plugins {
-    id 'io.github.0ffz.github-packages' version '[1,2)'
-}
-```
-
-</details>
-
-Then you need to specify the package you want to use in your repository:
+To install this mod through GitHub Packages in Gradle for development, you can use a redirect for the specific project you desire:
 
 <details>
 <summary> Repositories Code</summary>
@@ -42,7 +19,7 @@ Then you need to specify the package you want to use in your repository:
 ```
 repositories {
   ...
-  maven githubPackage.invoke("The-Aether-Team/Nitrogen")
+  maven { url = "https://packages.aether-mod.net/Nitrogen" }
 }
 ```
 
