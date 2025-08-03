@@ -4,18 +4,19 @@ import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.data.PackOutput;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.*;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.Property;
 
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 public abstract class NitrogenRecipeProvider extends RecipeProvider {
@@ -26,9 +27,8 @@ public abstract class NitrogenRecipeProvider extends RecipeProvider {
         this.id = id;
     }
 
-    protected String name(String name) {
-        return name;
-//        return ResourceLocation.fromNamespaceAndPath(this.id, name); //todo whys it no longer take the id?
+    protected ResourceKey<Recipe<?>> name(String name) {
+        return ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath(this.id, name));
     }
 
     protected void oreBlockStorageRecipesRecipesWithCustomUnpacking(HolderGetter<Item> holderGetter, RecipeOutput output, RecipeCategory itemCategory, ItemLike item, RecipeCategory blockCategory, ItemLike block, String itemRecipeName, String itemGroup) {
