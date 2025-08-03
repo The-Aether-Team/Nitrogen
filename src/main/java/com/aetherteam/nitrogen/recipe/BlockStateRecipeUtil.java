@@ -120,7 +120,7 @@ public final class BlockStateRecipeUtil {
                 Reference2ObjectArrayMap<Property<?>, Comparable<?>> properties = new Reference2ObjectArrayMap<>();
                 CompoundTag tag = friendlyByteBuf.readNbt();
                 if (tag != null) {
-                    for (String propertyName : tag.getAllKeys()) {
+                    for (String propertyName : tag.keySet()) {
                         Property<?> property = block.getStateDefinition().getProperty(propertyName);
                         if (property != null) {
                             Optional<Comparable<?>> comparable = (Optional<Comparable<?>>) property.getValue(propertyName);

@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 public interface BossMob<T extends Mob & BossMob<T>> {
     TargetingConditions NON_COMBAT = TargetingConditions.forNonCombat();
@@ -90,15 +91,16 @@ public interface BossMob<T extends Mob & BossMob<T>> {
     }
 
     default void readBossSaveData(CompoundTag tag, HolderLookup.Provider provider) {
-        if (tag.contains("BossName")) {
-            Component name = Component.Serializer.fromJson(tag.getString("BossName"), provider);
+        Optional<String> bossNameOptional = tag.getString("BossName");
+        Optional<Boolean> bossFightOptional = tag.getBoolean("BossFight");
+
+        if (bossNameOptional.isPresent()) {
+            Component name = Component.Serializer.fromJson(bossNameOptional.get(), provider);
             if (name != null) {
                 this.setBossName(name);
             }
         }
-        if (tag.contains("BossFight")) {
-            this.setBossFight(tag.getBoolean("BossFight"));
-        }
+        bossFightOptional.ifPresent(this::setBossFight);
         if (tag.contains("Dungeon") && tag.get("Dungeon") instanceof CompoundTag dungeonTag) {
             this.setDungeon(BossRoomTracker.readAdditionalSaveData(dungeonTag, self()));
         }

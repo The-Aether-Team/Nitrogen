@@ -15,6 +15,7 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -143,30 +144,33 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
 
         tag.putInt("DungeonPlayersSize", this.dungeonPlayers().size());
         for (int i = 0; i < this.dungeonPlayers().size(); i++) {
-            tag.putUUID("Player" + i, this.dungeonPlayers().get(i));
+            tag.putString("Player" + i, this.dungeonPlayers().get(i).toString());
         }
         return tag;
     }
 
     public static <T extends Mob & BossMob<T>> BossRoomTracker<T> readAdditionalSaveData(CompoundTag tag, T boss) {
-        double originX = tag.getDouble("OriginX");
-        double originY = tag.getDouble("OriginY");
-        double originZ = tag.getDouble("OriginZ");
+        double originX = tag.getDoubleOr("OriginX", 0.0);
+        double originY = tag.getDoubleOr("OriginY", 0.0);
+        double originZ = tag.getDoubleOr("OriginZ", 0.0);
         Vec3 originCoordinates = new Vec3(originX, originY, originZ);
 
-        double minX = tag.getDouble("RoomBoundsMinX");
-        double minY = tag.getDouble("RoomBoundsMinY");
-        double minZ = tag.getDouble("RoomBoundsMinZ");
-        double maxX = tag.getDouble("RoomBoundsMaxX");
-        double maxY = tag.getDouble("RoomBoundsMaxY");
-        double maxZ = tag.getDouble("RoomBoundsMaxZ");
+        double minX = tag.getDoubleOr("RoomBoundsMinX", 0.0);
+        double minY = tag.getDoubleOr("RoomBoundsMinY", 0.0);
+        double minZ = tag.getDoubleOr("RoomBoundsMinZ", 0.0);
+        double maxX = tag.getDoubleOr("RoomBoundsMaxX", 0.0);
+        double maxY = tag.getDoubleOr("RoomBoundsMaxY", 0.0);
+        double maxZ = tag.getDoubleOr("RoomBoundsMaxZ", 0.0);
         AABB roomBounds = new AABB(minX, minY, minZ, maxX, maxY, maxZ);
 
         List<UUID> dungeonPlayers = new ArrayList<>();
-        int size = tag.getInt("DungeonPlayersSize");
+        int size = tag.getIntOr("DungeonPlayersSize", 0);
         for (int i = 0; i < size; i++) {
-            UUID uuid = tag.getUUID("Player" + i);
-            dungeonPlayers.add(uuid);
+            Optional<String> playerOptional = tag.getString("Player" + i);
+            if (playerOptional.isPresent()) {
+                UUID uuid = UUID.fromString(playerOptional.get());
+                dungeonPlayers.add(uuid);
+            }
         }
 
         return new BossRoomTracker<>(boss, originCoordinates, roomBounds, dungeonPlayers);

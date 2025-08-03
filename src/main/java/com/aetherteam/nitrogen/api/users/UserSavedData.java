@@ -8,6 +8,7 @@ import net.minecraft.world.level.storage.DimensionDataStorage;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public final class UserSavedData extends SavedData {
@@ -52,29 +53,41 @@ public final class UserSavedData extends SavedData {
      */
     public static UserSavedData load(CompoundTag tag) {
         UserSavedData data = UserSavedData.create();
-        for (String key : tag.getAllKeys()) {
+        for (String key : tag.keySet()) {
             if (key.equals("StoredUsers")) {
-                CompoundTag storedUsersTag = tag.getCompound(key);
-                for (String storedUsersKey : storedUsersTag.getAllKeys()) {
-                    CompoundTag userEntryTag = storedUsersTag.getCompound(storedUsersKey);
-                    UUID uuid = UUID.fromString(storedUsersKey);
-                    User.Tier highestPastTier = null;
-                    User.Tier currentTier = null;
-                    String renewalDate = null;
-                    User.Group highestGroup = null;
-                    if (userEntryTag.contains("HighestPastTier")) {
-                        highestPastTier = User.Tier.valueOf(userEntryTag.getString("HighestPastTier"));
+                Optional<CompoundTag> storedUsersOptional = tag.getCompound(key);
+                if (storedUsersOptional.isPresent()) {
+                    CompoundTag storedUsersTag = storedUsersOptional.get();
+                    for (String storedUsersKey : storedUsersTag.keySet()) {
+                        Optional<CompoundTag> userEntryOptional = storedUsersTag.getCompound(storedUsersKey);
+                        if (userEntryOptional.isPresent()) {
+                            CompoundTag userEntryTag = userEntryOptional.get();
+                            UUID uuid = UUID.fromString(storedUsersKey);
+                            User.Tier highestPastTier = null;
+                            User.Tier currentTier = null;
+                            String renewalDate = null;
+                            User.Group highestGroup = null;
+
+                            Optional<String> highestPastTierOptional = userEntryTag.getString("HighestPastTier");
+                            Optional<String> currentTierOptional = userEntryTag.getString("CurrentTier");
+                            Optional<String> renewalDateOptional = userEntryTag.getString("RenewalDate");
+                            Optional<String> highestGroupOptional = userEntryTag.getString("HighestGroup");
+
+                            if (highestPastTierOptional.isPresent()) {
+                                highestPastTier = User.Tier.valueOf(highestPastTierOptional.get());
+                            }
+                            if (currentTierOptional.isPresent()) {
+                                currentTier = User.Tier.valueOf(currentTierOptional.get());
+                            }
+                            if (renewalDateOptional.isPresent()) {
+                                renewalDate = renewalDateOptional.get();
+                            }
+                            if (highestGroupOptional.isPresent()) {
+                                highestGroup = User.Group.valueOf(highestGroupOptional.get());
+                            }
+                            data.storedUsers.put(uuid, new User(highestPastTier, currentTier, renewalDate, highestGroup));
+                        }
                     }
-                    if (userEntryTag.contains("CurrentTier")) {
-                        currentTier = User.Tier.valueOf(userEntryTag.getString("CurrentTier"));
-                    }
-                    if (userEntryTag.contains("RenewalDate")) {
-                        renewalDate = userEntryTag.getString("RenewalDate");
-                    }
-                    if (userEntryTag.contains("HighestGroup")) {
-                        highestGroup = User.Group.valueOf(userEntryTag.getString("HighestGroup"));
-                    }
-                    data.storedUsers.put(uuid, new User(highestPastTier, currentTier, renewalDate, highestGroup));
                 }
             }
         }

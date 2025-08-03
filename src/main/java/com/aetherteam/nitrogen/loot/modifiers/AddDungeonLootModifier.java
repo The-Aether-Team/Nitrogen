@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.random.WeightedEntry;
+import net.minecraft.util.random.Weighted;
 import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.item.ItemStack;
@@ -22,14 +22,14 @@ import java.util.List;
 
 public class AddDungeonLootModifier extends LootModifier {
     public static final MapCodec<AddDungeonLootModifier> CODEC = RecordCodecBuilder.mapCodec(instance -> codecStart(instance)
-        .and(WeightedEntry.Wrapper.codec(ItemStack.CODEC).listOf().fieldOf("entries").forGetter(modifier -> modifier.entries))
+        .and(Weighted.codec(ItemStack.CODEC).listOf().fieldOf("entries").forGetter(modifier -> modifier.entries))
         .and(IntProvider.CODEC.fieldOf("rolls").forGetter(modifier -> modifier.rolls))
         .apply(instance, AddDungeonLootModifier::new));
 
-    public final List<WeightedEntry.Wrapper<ItemStack>> entries;
+    public final List<Weighted<ItemStack>> entries;
     public final IntProvider rolls;
 
-    public AddDungeonLootModifier(LootItemCondition[] conditionsIn, List<WeightedEntry.Wrapper<ItemStack>> entries, IntProvider rolls) {
+    public AddDungeonLootModifier(LootItemCondition[] conditionsIn, List<Weighted<ItemStack>> entries, IntProvider rolls) {
         super(conditionsIn);
         this.entries = entries;
         this.rolls = rolls;
@@ -47,8 +47,7 @@ public class AddDungeonLootModifier extends LootModifier {
                 for (int i = 0; i < rollCount; i++) {
                     boolean isFull = generatedLoot.size() == containerBlockEntity.getContainerSize();
                     if (!isFull) {
-                        int weight = this.entries.stream().map(entry -> entry.getWeight().asInt()).reduce(0, Integer::sum);
-                        WeightedRandom.getRandomItem(randomSource, this.entries, weight).ifPresent(e -> generatedLoot.add(e.data().copy()));
+                        WeightedRandom.getRandomItem(randomSource, this.entries, Weighted::weight).ifPresent(e -> generatedLoot.add(e.value().copy()));
                     }
                 }
             }

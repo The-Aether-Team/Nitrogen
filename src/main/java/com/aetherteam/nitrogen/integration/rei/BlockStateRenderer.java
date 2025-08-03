@@ -22,8 +22,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -75,8 +75,8 @@ public record BlockStateRenderer(BlockPropertyPair... pairs) implements EntryRen
 
             ModelBlockRenderer modelBlockRenderer = blockRenderDispatcher.getModelRenderer();
             MultiBufferSource.BufferSource bufferSource = minecraft.renderBuffers().bufferSource();
-            BakedModel model = blockRenderDispatcher.getBlockModel(blockState);
-            modelBlockRenderer.tesselateBlock(FakeLevel.of(blockState), model, blockState, BlockPos.ZERO, poseStack, bufferSource.getBuffer(Sheets.translucentItemSheet()), false, minecraft.level.getRandom(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+            BlockStateModel model = blockRenderDispatcher.getBlockModel(blockState);
+            modelBlockRenderer.tesselateBlock(FakeLevel.of(blockState), model.collectParts(minecraft.level, BlockPos.ZERO, blockState, minecraft.level.getRandom()), blockState, BlockPos.ZERO, poseStack, type -> bufferSource.getBuffer(Sheets.translucentItemSheet()), false, LightTexture.FULL_BRIGHT); //todo are these parameters correct
             bufferSource.endBatch();
 
             Lighting.setupFor3DItems();
