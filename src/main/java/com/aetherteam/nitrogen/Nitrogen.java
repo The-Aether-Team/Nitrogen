@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Mod(Nitrogen.MODID)
-@EventBusSubscriber(modid = Nitrogen.MODID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Nitrogen.MODID)
 public class Nitrogen {
     public static final String MODID = "nitrogen_internals";
     public static final Logger LOGGER = LogUtils.getLogger();

@@ -24,7 +24,7 @@ public class NitrogenDataGenerators {
         // pack.mcmeta
         generator.addProvider(true, new PackMetadataGenerator(packOutput).add(PackMetadataSection.TYPE, new PackMetadataSection(
             Component.translatable("pack.nitrogen_internals.mod.description"),
-            DetectedVersion.BUILT_IN.getPackVersion(PackType.SERVER_DATA),
+            DetectedVersion.BUILT_IN.packVersion(PackType.SERVER_DATA),
             Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
     }
 }

@@ -3,6 +3,7 @@ package com.aetherteam.nitrogen.entity;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -83,7 +84,7 @@ public interface BossMob<T extends Mob & BossMob<T>> {
     BlockState convertBlock(BlockState state);
 
     default void addBossSaveData(CompoundTag tag, HolderLookup.Provider provider) {
-        tag.putString("BossName", Component.Serializer.toJson(this.getBossName(), provider));
+        tag.storeNullable("BossName", ComponentSerialization.CODEC, this.getBossName());
         tag.putBoolean("BossFight", this.isBossFight());
         if (this.getDungeon() != null) {
             tag.put("Dungeon", this.getDungeon().addAdditionalSaveData());
@@ -95,10 +96,8 @@ public interface BossMob<T extends Mob & BossMob<T>> {
         Optional<Boolean> bossFightOptional = tag.getBoolean("BossFight");
 
         if (bossNameOptional.isPresent()) {
-            Component name = Component.Serializer.fromJson(bossNameOptional.get(), provider);
-            if (name != null) {
-                this.setBossName(name);
-            }
+            Optional<Component> name = tag.read("BossName", ComponentSerialization.CODEC);
+            name.ifPresent(this::setBossName);
         }
         bossFightOptional.ifPresent(this::setBossFight);
         if (tag.contains("Dungeon") && tag.get("Dungeon") instanceof CompoundTag dungeonTag) {
