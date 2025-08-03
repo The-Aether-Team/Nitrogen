@@ -20,7 +20,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-public final class UserData {
+public final class UserData { //TODO VERIFY
     public static class Client {
         private static User CLIENT_USER;
 
@@ -213,6 +213,6 @@ public final class UserData {
      * @return The {@link UserSavedData} for the "users.dat" file of the world.
      */
     private static UserSavedData getSavedData(MinecraftServer server) {
-        return UserSavedData.compute(server.overworld().getDataStorage());
+        return server.overworld().getDataStorage().computeIfAbsent(UserSavedData.TYPE);
     }
 }

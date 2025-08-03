@@ -16,18 +16,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public record UpdateUserInfoPacket(User user) implements CustomPacketPayload {
     public static final Type<UpdateUserInfoPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Nitrogen.MODID, "update_user_info"));
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, UpdateUserInfoPacket> STREAM_CODEC = CustomPacketPayload.codec(
-        UpdateUserInfoPacket::write,
-        UpdateUserInfoPacket::decode);
-
-    public void write(RegistryFriendlyByteBuf buffer) {
-        User.write(buffer, this.user());
-    }
-
-    public static UpdateUserInfoPacket decode(RegistryFriendlyByteBuf buffer) {
-        User user = User.read(buffer);
-        return new UpdateUserInfoPacket(user);
-    }
+    public static final StreamCodec<RegistryFriendlyByteBuf, UpdateUserInfoPacket> STREAM_CODEC = StreamCodec.composite(User.STREAM_CODEC, UpdateUserInfoPacket::user, UpdateUserInfoPacket::new);
 
     @Override
     public Type<UpdateUserInfoPacket> type() {
