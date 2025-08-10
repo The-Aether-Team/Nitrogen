@@ -1,66 +1,19 @@
 package com.aetherteam.nitrogen.api.users;
 
-import com.aetherteam.nitrogen.loot.modifiers.AddDungeonLootModifier;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.util.random.Weighted;
-import net.minecraft.util.valueproviders.IntProvider;
-import net.minecraft.world.entity.animal.Rabbit;
-import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 import java.time.format.DateTimeFormatter;
-import java.util.function.IntFunction;
 
 public final class User { //TODO VERIFY
-//    /**
-//     * Reads a {@link User} from a {@link FriendlyByteBuf} network buffer.
-//     *
-//     * @param buffer The {@link FriendlyByteBuf} buffer.
-//     * @return A {@link User}.
-//     */
-//    public static User read(FriendlyByteBuf buffer) {
-//        boolean canRead = buffer.readBoolean();
-//        if (canRead) {
-//            String highestPastTierName = buffer.readUtf();
-//            Tier highestPastTier = highestPastTierName.equals("null") ? null : Tier.valueOf(highestPastTierName);
-//            String currentTierName = buffer.readUtf();
-//            Tier currentTier = currentTierName.equals("null") ? null : Tier.valueOf(currentTierName);
-//            String renewalDate = buffer.readUtf();
-//            renewalDate = renewalDate.equals("null") ? null : renewalDate;
-//            String highestGroupName = buffer.readUtf();
-//            Group highestGroup = highestGroupName.equals("null") ? null : Group.valueOf(highestGroupName);
-//            return new User(highestPastTier, currentTier, renewalDate, highestGroup);
-//        } else {
-//            return null;
-//        }
-//    }
-//
-//    /**
-//     * Writes a {@link User} to a {@link FriendlyByteBuf} network buffer.
-//     *
-//     * @param buffer The {@link FriendlyByteBuf} buffer.
-//     * @param user   A {@link User}.
-//     */
-//    public static void write(FriendlyByteBuf buffer, User user) {
-//        if (user == null) {
-//            buffer.writeBoolean(false);
-//        } else {
-//            buffer.writeBoolean(true);
-//            buffer.writeUtf(user.getHighestPastTier() == null ? "null" : user.getHighestPastTier().name());
-//            buffer.writeUtf(user.getCurrentTier() == null ? "null" : user.getCurrentTier().name());
-//            buffer.writeUtf(user.getRenewalDate() == null ? "null" : user.getRenewalDate());
-//            buffer.writeUtf(user.getHighestGroup() == null ? "null" : user.getHighestGroup().name());
-//        }
-//    }
+
 
     public static final Codec<User> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Tier.CODEC.optionalFieldOf("highest_past_tier", null).forGetter(User::getHighestPastTier),
@@ -68,12 +21,10 @@ public final class User { //TODO VERIFY
         Codec.STRING.fieldOf("renewal_data").forGetter(User::getRenewalDate),
         Group.CODEC.optionalFieldOf("highest_group", null).forGetter(User::getHighestGroup)
     ).apply(instance, User::new));
-    public static final StreamCodec<FriendlyByteBuf, User> STREAM_CODEC = StreamCodec.composite(
-        Tier.STREAM_CODEC, User::getHighestPastTier,
-        Tier.STREAM_CODEC, User::getCurrentTier,
-        ByteBufCodecs.STRING_UTF8, User::getRenewalDate,
-        Group.STREAM_CODEC, User::getHighestGroup,
-        User::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, User> STREAM_CODEC = StreamCodec.ofMember(
+        User::write,
+        User::read);
+
 
     public static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     @Nullable
@@ -89,6 +40,47 @@ public final class User { //TODO VERIFY
         this.currentTier = currentTier;
         this.renewalDate = renewalDate;
         this.highestGroup = highestGroup;
+    }
+
+    /**
+     * Reads a {@link User} from a {@link FriendlyByteBuf} network buffer.
+     *
+     * @param buffer The {@link FriendlyByteBuf} buffer.
+     * @return A {@link User}.
+     */
+    public static User read(FriendlyByteBuf buffer) {
+        boolean canRead = buffer.readBoolean();
+        if (canRead) {
+            String highestPastTierName = buffer.readUtf();
+            Tier highestPastTier = highestPastTierName.equals("null") ? null : Tier.valueOf(highestPastTierName);
+            String currentTierName = buffer.readUtf();
+            Tier currentTier = currentTierName.equals("null") ? null : Tier.valueOf(currentTierName);
+            String renewalDate = buffer.readUtf();
+            renewalDate = renewalDate.equals("null") ? null : renewalDate;
+            String highestGroupName = buffer.readUtf();
+            Group highestGroup = highestGroupName.equals("null") ? null : Group.valueOf(highestGroupName);
+            return new User(highestPastTier, currentTier, renewalDate, highestGroup);
+        } else {
+            return null;
+        }
+    }
+//
+
+    /**
+     * Writes a {@link User} to a {@link FriendlyByteBuf} network buffer.
+     *
+     * @param buffer The {@link FriendlyByteBuf} buffer.
+     */
+    public void write(FriendlyByteBuf buffer) {
+        if (this == null) {
+            buffer.writeBoolean(false);
+        } else {
+            buffer.writeBoolean(true);
+            buffer.writeUtf(this.getHighestPastTier() == null ? "null" : this.getHighestPastTier().name());
+            buffer.writeUtf(this.getCurrentTier() == null ? "null" : this.getCurrentTier().name());
+            buffer.writeUtf(this.getRenewalDate() == null ? "null" : this.getRenewalDate());
+            buffer.writeUtf(this.getHighestGroup() == null ? "null" : this.getHighestGroup().name());
+        }
     }
 
     /**
