@@ -11,15 +11,16 @@ import net.minecraft.util.StringRepresentable;
 
 import javax.annotation.Nullable;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 public final class User { //TODO VERIFY
 
 
     public static final Codec<User> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-        Tier.CODEC.optionalFieldOf("highest_past_tier", null).forGetter(User::getHighestPastTier),
-        Tier.CODEC.optionalFieldOf("current_tier", null).forGetter(User::getCurrentTier),
+        Tier.CODEC.optionalFieldOf("highest_past_tier").forGetter(User::getHighestPastTier),
+        Tier.CODEC.optionalFieldOf("current_tier").forGetter(User::getCurrentTier),
         Codec.STRING.fieldOf("renewal_data").forGetter(User::getRenewalDate),
-        Group.CODEC.optionalFieldOf("highest_group", null).forGetter(User::getHighestGroup)
+        Group.CODEC.optionalFieldOf("highest_group").forGetter(User::getHighestGroup)
     ).apply(instance, User::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, User> STREAM_CODEC = StreamCodec.ofMember(
         User::write,
@@ -28,14 +29,14 @@ public final class User { //TODO VERIFY
 
     public static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     @Nullable
-    private Tier highestPastTier;
+    private Optional<Tier> highestPastTier;
     @Nullable
-    private Tier currentTier;
+    private Optional<Tier> currentTier;
     private String renewalDate;
     @Nullable
-    private Group highestGroup;
+    private Optional<Group> highestGroup;
 
-    User(@Nullable Tier highestPastTier, @Nullable Tier currentTier, String renewalDate, @Nullable Group highestGroup) {
+    User(Optional<Tier> highestPastTier, Optional<Tier> currentTier, String renewalDate, Optional<Group> highestGroup) {
         this.highestPastTier = highestPastTier;
         this.currentTier = currentTier;
         this.renewalDate = renewalDate;
@@ -52,13 +53,12 @@ public final class User { //TODO VERIFY
         boolean canRead = buffer.readBoolean();
         if (canRead) {
             String highestPastTierName = buffer.readUtf();
-            Tier highestPastTier = highestPastTierName.equals("null") ? null : Tier.valueOf(highestPastTierName);
+            Optional<Tier> highestPastTier = highestPastTierName.equals("null") ? Optional.empty() : Optional.of(Tier.valueOf(highestPastTierName));
             String currentTierName = buffer.readUtf();
-            Tier currentTier = currentTierName.equals("null") ? null : Tier.valueOf(currentTierName);
+            Optional<Tier> currentTier = currentTierName.equals("null") ? Optional.empty() : Optional.of(Tier.valueOf(currentTierName));
             String renewalDate = buffer.readUtf();
-            renewalDate = renewalDate.equals("null") ? null : renewalDate;
             String highestGroupName = buffer.readUtf();
-            Group highestGroup = highestGroupName.equals("null") ? null : Group.valueOf(highestGroupName);
+            Optional<Group> highestGroup = highestGroupName.equals("null") ? Optional.empty() : Optional.of(Group.valueOf(highestGroupName));
             return new User(highestPastTier, currentTier, renewalDate, highestGroup);
         } else {
             return null;
@@ -76,10 +76,10 @@ public final class User { //TODO VERIFY
             buffer.writeBoolean(false);
         } else {
             buffer.writeBoolean(true);
-            buffer.writeUtf(this.getHighestPastTier() == null ? "null" : this.getHighestPastTier().name());
-            buffer.writeUtf(this.getCurrentTier() == null ? "null" : this.getCurrentTier().name());
-            buffer.writeUtf(this.getRenewalDate() == null ? "null" : this.getRenewalDate());
-            buffer.writeUtf(this.getHighestGroup() == null ? "null" : this.getHighestGroup().name());
+            buffer.writeUtf(!this.getHighestPastTier().isPresent() ? "null" : this.getHighestPastTier().get().name());
+            buffer.writeUtf(!this.getCurrentTier().isPresent() ? "null" : this.getCurrentTier().get().name());
+            buffer.writeUtf(this.getRenewalDate());
+            buffer.writeUtf(!this.getHighestGroup().isPresent() ? "null" : this.getHighestGroup().get().name());
         }
     }
 
@@ -87,7 +87,7 @@ public final class User { //TODO VERIFY
      * @return The highest Patreon {@link Tier} that this user has had in the past.
      */
     @Nullable
-    public Tier getHighestPastTier() {
+    public Optional<Tier> getHighestPastTier() {
         return this.highestPastTier;
     }
 
@@ -96,7 +96,7 @@ public final class User { //TODO VERIFY
      *
      * @param highestPastTier The Patreon {@link Tier}.
      */
-    private void updateHighestPastTier(@Nullable Tier highestPastTier) {
+    private void updateHighestPastTier(Optional<Tier> highestPastTier) {
         this.highestPastTier = highestPastTier;
     }
 
@@ -104,15 +104,15 @@ public final class User { //TODO VERIFY
      * @return The {@link Integer} for the highest Patreon {@link Tier} level that this user has had in the past.
      */
     public int getHighestPastTierLevel() {
-        Tier tier = this.getHighestPastTier();
-        return tier != null ? tier.getLevel() : 0;
+        Optional<Tier> tier = this.getHighestPastTier();
+        return tier.isPresent() ? tier.get().getLevel() : 0;
     }
 
     /**
      * @return The current Patreon {@link Tier} for this user.
      */
     @Nullable
-    public Tier getCurrentTier() {
+    public Optional<Tier> getCurrentTier() {
         return this.currentTier;
     }
 
@@ -121,7 +121,7 @@ public final class User { //TODO VERIFY
      *
      * @param currentTier The Patreon {@link Tier}.
      */
-    private void updateCurrentTier(@Nullable Tier currentTier) {
+    private void updateCurrentTier(Optional<Tier> currentTier) {
         this.currentTier = currentTier;
     }
 
@@ -129,8 +129,8 @@ public final class User { //TODO VERIFY
      * @return The {@link Integer} for the current Patreon {@link Tier} level of this user.
      */
     public int getCurrentTierLevel() {
-        Tier tier = this.getCurrentTier();
-        return tier != null ? tier.getLevel() : 0;
+        Optional<Tier> tier = this.getCurrentTier();
+        return tier.isPresent() ? tier.get().getLevel() : 0;
     }
 
     /**
@@ -153,7 +153,7 @@ public final class User { //TODO VERIFY
      * @return The highest ranked {@link Group} that this user is in.
      */
     @Nullable
-    public Group getHighestGroup() {
+    public Optional<Group> getHighestGroup() {
         return this.highestGroup;
     }
 
@@ -162,7 +162,7 @@ public final class User { //TODO VERIFY
      *
      * @param highestGroup The {@link Group}.
      */
-    private void updateHighestGroup(@Nullable Group highestGroup) {
+    private void updateHighestGroup(Optional<Group> highestGroup) {
         this.highestGroup = highestGroup;
     }
 

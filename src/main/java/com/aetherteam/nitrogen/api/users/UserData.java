@@ -160,7 +160,7 @@ public final class UserData { //TODO VERIFY
 
                     // Create a User for the player, store the data to the server, and send it to the client.
                     if (currentTier != null || highestPastTier != null || highestGroup != null) {
-                        User user = new User(currentTier, highestPastTier, ZonedDateTime.now(ZoneId.of("UTC")).plusDays(1).format(User.DATE_FORMAT), highestGroup);
+                        User user = new User(Optional.of(currentTier), Optional.of(highestPastTier), ZonedDateTime.now(ZoneId.of("UTC")).plusDays(1).format(User.DATE_FORMAT), Optional.of(highestGroup));
                         modifySavedData(server, uuid, user);
                         STORED_USERS.put(uuid, user);
                         PacketDistributor.sendToPlayer(serverPlayer, new UpdateUserInfoPacket(user));
