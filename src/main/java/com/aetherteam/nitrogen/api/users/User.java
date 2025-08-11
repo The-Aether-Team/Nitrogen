@@ -1,90 +1,44 @@
 package com.aetherteam.nitrogen.api.users;
 
-import com.aetherteam.nitrogen.loot.modifiers.AddDungeonLootModifier;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.util.random.Weighted;
-import net.minecraft.util.valueproviders.IntProvider;
-import net.minecraft.world.entity.animal.Rabbit;
-import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 import java.time.format.DateTimeFormatter;
-import java.util.function.IntFunction;
+import java.util.Optional;
 
 public final class User { //TODO VERIFY
-//    /**
-//     * Reads a {@link User} from a {@link FriendlyByteBuf} network buffer.
-//     *
-//     * @param buffer The {@link FriendlyByteBuf} buffer.
-//     * @return A {@link User}.
-//     */
-//    public static User read(FriendlyByteBuf buffer) {
-//        boolean canRead = buffer.readBoolean();
-//        if (canRead) {
-//            String highestPastTierName = buffer.readUtf();
-//            Tier highestPastTier = highestPastTierName.equals("null") ? null : Tier.valueOf(highestPastTierName);
-//            String currentTierName = buffer.readUtf();
-//            Tier currentTier = currentTierName.equals("null") ? null : Tier.valueOf(currentTierName);
-//            String renewalDate = buffer.readUtf();
-//            renewalDate = renewalDate.equals("null") ? null : renewalDate;
-//            String highestGroupName = buffer.readUtf();
-//            Group highestGroup = highestGroupName.equals("null") ? null : Group.valueOf(highestGroupName);
-//            return new User(highestPastTier, currentTier, renewalDate, highestGroup);
-//        } else {
-//            return null;
-//        }
-//    }
-//
-//    /**
-//     * Writes a {@link User} to a {@link FriendlyByteBuf} network buffer.
-//     *
-//     * @param buffer The {@link FriendlyByteBuf} buffer.
-//     * @param user   A {@link User}.
-//     */
-//    public static void write(FriendlyByteBuf buffer, User user) {
-//        if (user == null) {
-//            buffer.writeBoolean(false);
-//        } else {
-//            buffer.writeBoolean(true);
-//            buffer.writeUtf(user.getHighestPastTier() == null ? "null" : user.getHighestPastTier().name());
-//            buffer.writeUtf(user.getCurrentTier() == null ? "null" : user.getCurrentTier().name());
-//            buffer.writeUtf(user.getRenewalDate() == null ? "null" : user.getRenewalDate());
-//            buffer.writeUtf(user.getHighestGroup() == null ? "null" : user.getHighestGroup().name());
-//        }
-//    }
+
 
     public static final Codec<User> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-        Tier.CODEC.optionalFieldOf("highest_past_tier", null).forGetter(User::getHighestPastTier),
-        Tier.CODEC.optionalFieldOf("current_tier", null).forGetter(User::getCurrentTier),
+        Tier.CODEC.optionalFieldOf("highest_past_tier").forGetter(User::getHighestPastTier),
+        Tier.CODEC.optionalFieldOf("current_tier").forGetter(User::getCurrentTier),
         Codec.STRING.fieldOf("renewal_data").forGetter(User::getRenewalDate),
-        Group.CODEC.optionalFieldOf("highest_group", null).forGetter(User::getHighestGroup)
+        Group.CODEC.optionalFieldOf("highest_group").forGetter(User::getHighestGroup)
     ).apply(instance, User::new));
     public static final StreamCodec<FriendlyByteBuf, User> STREAM_CODEC = StreamCodec.composite(
-        Tier.STREAM_CODEC, User::getHighestPastTier,
-        Tier.STREAM_CODEC, User::getCurrentTier,
+        Tier.STREAM_CODEC.apply(ByteBufCodecs::optional), User::getHighestPastTier,
+        Tier.STREAM_CODEC.apply(ByteBufCodecs::optional), User::getCurrentTier,
         ByteBufCodecs.STRING_UTF8, User::getRenewalDate,
-        Group.STREAM_CODEC, User::getHighestGroup,
+        Group.STREAM_CODEC.apply(ByteBufCodecs::optional), User::getHighestGroup,
         User::new);
+
 
     public static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     @Nullable
-    private Tier highestPastTier;
+    private Optional<Tier> highestPastTier;
     @Nullable
-    private Tier currentTier;
+    private Optional<Tier> currentTier;
     private String renewalDate;
     @Nullable
-    private Group highestGroup;
+    private Optional<Group> highestGroup;
 
-    User(@Nullable Tier highestPastTier, @Nullable Tier currentTier, String renewalDate, @Nullable Group highestGroup) {
+    User(Optional<Tier> highestPastTier, Optional<Tier> currentTier, String renewalDate, Optional<Group> highestGroup) {
         this.highestPastTier = highestPastTier;
         this.currentTier = currentTier;
         this.renewalDate = renewalDate;
@@ -95,7 +49,7 @@ public final class User { //TODO VERIFY
      * @return The highest Patreon {@link Tier} that this user has had in the past.
      */
     @Nullable
-    public Tier getHighestPastTier() {
+    public Optional<Tier> getHighestPastTier() {
         return this.highestPastTier;
     }
 
@@ -104,7 +58,7 @@ public final class User { //TODO VERIFY
      *
      * @param highestPastTier The Patreon {@link Tier}.
      */
-    private void updateHighestPastTier(@Nullable Tier highestPastTier) {
+    private void updateHighestPastTier(Optional<Tier> highestPastTier) {
         this.highestPastTier = highestPastTier;
     }
 
@@ -112,15 +66,15 @@ public final class User { //TODO VERIFY
      * @return The {@link Integer} for the highest Patreon {@link Tier} level that this user has had in the past.
      */
     public int getHighestPastTierLevel() {
-        Tier tier = this.getHighestPastTier();
-        return tier != null ? tier.getLevel() : 0;
+        Optional<Tier> tier = this.getHighestPastTier();
+        return tier.isPresent() ? tier.get().getLevel() : 0;
     }
 
     /**
      * @return The current Patreon {@link Tier} for this user.
      */
     @Nullable
-    public Tier getCurrentTier() {
+    public Optional<Tier> getCurrentTier() {
         return this.currentTier;
     }
 
@@ -129,7 +83,7 @@ public final class User { //TODO VERIFY
      *
      * @param currentTier The Patreon {@link Tier}.
      */
-    private void updateCurrentTier(@Nullable Tier currentTier) {
+    private void updateCurrentTier(Optional<Tier> currentTier) {
         this.currentTier = currentTier;
     }
 
@@ -137,8 +91,8 @@ public final class User { //TODO VERIFY
      * @return The {@link Integer} for the current Patreon {@link Tier} level of this user.
      */
     public int getCurrentTierLevel() {
-        Tier tier = this.getCurrentTier();
-        return tier != null ? tier.getLevel() : 0;
+        Optional<Tier> tier = this.getCurrentTier();
+        return tier.isPresent() ? tier.get().getLevel() : 0;
     }
 
     /**
@@ -161,7 +115,7 @@ public final class User { //TODO VERIFY
      * @return The highest ranked {@link Group} that this user is in.
      */
     @Nullable
-    public Group getHighestGroup() {
+    public Optional<Group> getHighestGroup() {
         return this.highestGroup;
     }
 
@@ -170,7 +124,7 @@ public final class User { //TODO VERIFY
      *
      * @param highestGroup The {@link Group}.
      */
-    private void updateHighestGroup(@Nullable Group highestGroup) {
+    private void updateHighestGroup(Optional<Group> highestGroup) {
         this.highestGroup = highestGroup;
     }
 
