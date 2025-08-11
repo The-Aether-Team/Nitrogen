@@ -46,46 +46,6 @@ public final class User { //TODO VERIFY
     }
 
     /**
-     * Reads a {@link User} from a {@link FriendlyByteBuf} network buffer.
-     *
-     * @param buffer The {@link FriendlyByteBuf} buffer.
-     * @return A {@link User}.
-     */
-    public static User read(FriendlyByteBuf buffer) {
-        boolean canRead = buffer.readBoolean();
-        if (canRead) {
-            String highestPastTierName = buffer.readUtf();
-            Optional<Tier> highestPastTier = highestPastTierName.equals("null") ? Optional.empty() : Optional.of(Tier.valueOf(highestPastTierName));
-            String currentTierName = buffer.readUtf();
-            Optional<Tier> currentTier = currentTierName.equals("null") ? Optional.empty() : Optional.of(Tier.valueOf(currentTierName));
-            String renewalDate = buffer.readUtf();
-            String highestGroupName = buffer.readUtf();
-            Optional<Group> highestGroup = highestGroupName.equals("null") ? Optional.empty() : Optional.of(Group.valueOf(highestGroupName));
-            return new User(highestPastTier, currentTier, renewalDate, highestGroup);
-        } else {
-            return null;
-        }
-    }
-//
-
-    /**
-     * Writes a {@link User} to a {@link FriendlyByteBuf} network buffer.
-     *
-     * @param buffer The {@link FriendlyByteBuf} buffer.
-     */
-    public void write(FriendlyByteBuf buffer) {
-        if (this == null) {
-            buffer.writeBoolean(false);
-        } else {
-            buffer.writeBoolean(true);
-            buffer.writeUtf(!this.getHighestPastTier().isPresent() ? "null" : this.getHighestPastTier().get().name());
-            buffer.writeUtf(!this.getCurrentTier().isPresent() ? "null" : this.getCurrentTier().get().name());
-            buffer.writeUtf(this.getRenewalDate());
-            buffer.writeUtf(!this.getHighestGroup().isPresent() ? "null" : this.getHighestGroup().get().name());
-        }
-    }
-
-    /**
      * @return The highest Patreon {@link Tier} that this user has had in the past.
      */
     @Nullable
