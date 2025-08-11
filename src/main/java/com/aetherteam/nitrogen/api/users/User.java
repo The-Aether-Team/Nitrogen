@@ -3,7 +3,6 @@ package com.aetherteam.nitrogen.api.users;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -22,9 +21,12 @@ public final class User { //TODO VERIFY
         Codec.STRING.fieldOf("renewal_data").forGetter(User::getRenewalDate),
         Group.CODEC.optionalFieldOf("highest_group").forGetter(User::getHighestGroup)
     ).apply(instance, User::new));
-    public static final StreamCodec<RegistryFriendlyByteBuf, User> STREAM_CODEC = StreamCodec.ofMember(
-        User::write,
-        User::read);
+    public static final StreamCodec<FriendlyByteBuf, User> STREAM_CODEC = StreamCodec.composite(
+        Tier.STREAM_CODEC.apply(ByteBufCodecs::optional), User::getHighestPastTier,
+        Tier.STREAM_CODEC.apply(ByteBufCodecs::optional), User::getCurrentTier,
+        ByteBufCodecs.STRING_UTF8, User::getRenewalDate,
+        Group.STREAM_CODEC.apply(ByteBufCodecs::optional), User::getHighestGroup,
+        User::new);
 
 
     public static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
