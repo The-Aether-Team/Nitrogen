@@ -154,7 +154,7 @@ public abstract class NitrogenItemModelProvider extends ItemModelProvider {
 
     public void itemLogWallBlock(Block block, Block baseBlock, Block topBlock, String location, String modid) {
         ResourceLocation baseTexture = ResourceLocation.fromNamespaceAndPath(modid, "block/" + location + this.blockName(baseBlock));
-        ResourceLocation topTexture = ResourceLocation.fromNamespaceAndPath(modid, "block/" + location + this.blockName(topBlock));
+        ResourceLocation topTexture = ResourceLocation.fromNamespaceAndPath(modid, "block/" + location + this.blockName(topBlock) + "_top");
         this.itemLogWallBlock(block, baseTexture, topTexture);
     }
 

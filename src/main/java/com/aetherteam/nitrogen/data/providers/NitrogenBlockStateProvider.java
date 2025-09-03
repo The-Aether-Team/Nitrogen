@@ -196,7 +196,7 @@ public abstract class NitrogenBlockStateProvider extends BlockStateProvider {
     }
 
     public void logWallBlockTop(WallBlock block, Block baseBlock, Block topBlock, String location, String modid, boolean postUsesTop, ModelFile postBig, ModelFile postShort, ModelFile postTall, ModelFile side, ModelFile sideAlt, ModelFile sideTall, ModelFile sideTallAlt, ModelFile sideShort, ModelFile sideAltShort, ModelFile sideTallShort, ModelFile sideTallAltShort) {
-        this.logWallBlockInternal(block, this.name(block), ResourceLocation.fromNamespaceAndPath(modid, "block/" + location + this.name(baseBlock)), ResourceLocation.fromNamespaceAndPath(modid, "block/" + location + this.name(topBlock)), postUsesTop, postBig, postShort, postTall, side, sideAlt, sideTall, sideTallAlt, sideShort, sideAltShort, sideTallShort, sideTallAltShort);
+        this.logWallBlockInternal(block, this.name(block), ResourceLocation.fromNamespaceAndPath(modid, "block/" + location + this.name(baseBlock)), ResourceLocation.fromNamespaceAndPath(modid, "block/" + location + this.name(topBlock) + "_top"), postUsesTop, postBig, postShort, postTall, side, sideAlt, sideTall, sideTallAlt, sideShort, sideAltShort, sideTallShort, sideTallAltShort);
     }
 
     private void logWallBlockInternal(WallBlock block, String baseName, ResourceLocation texture, ResourceLocation topTexture, boolean postUsesTop, ModelFile postBig, ModelFile postShort, ModelFile postTall, ModelFile side, ModelFile sideAlt, ModelFile sideTall, ModelFile sideTallAlt, ModelFile sideShort, ModelFile sideAltShort, ModelFile sideTallShort, ModelFile sideTallAltShort) {
