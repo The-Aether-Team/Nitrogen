@@ -95,7 +95,7 @@ public interface BossMob<T extends Mob & BossMob<T>> {
         this.setBossFight(input.getBooleanOr("BossFight", false));
         input.read("Dungeon", BossRoomTracker.CODEC).ifPresent(this::setDungeon);
     }
-    
+
     default void writeBossSpawnData(RegistryFriendlyByteBuf buffer) {
         buffer.writeOptional(Optional.ofNullable(this.getBossName()), (buf, val) -> buf.writeJsonWithCodec(ComponentSerialization.CODEC, val));
         buffer.writeBoolean(this.isBossFight());
