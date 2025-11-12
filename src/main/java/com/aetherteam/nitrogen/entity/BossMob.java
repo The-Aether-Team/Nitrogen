@@ -1,5 +1,6 @@
 package com.aetherteam.nitrogen.entity;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,6 +12,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 public interface BossMob<T extends Mob & BossMob<T>> {
     TargetingConditions NON_COMBAT = TargetingConditions.forNonCombat();
@@ -92,6 +94,18 @@ public interface BossMob<T extends Mob & BossMob<T>> {
         input.read("BossName", ComponentSerialization.CODEC).ifPresent(this::setBossName);
         this.setBossFight(input.getBooleanOr("BossFight", false));
         input.read("Dungeon", BossRoomTracker.CODEC).ifPresent(this::setDungeon);
+    }
+    
+    default void writeBossSpawnData(RegistryFriendlyByteBuf buffer) {
+        buffer.writeOptional(Optional.ofNullable(this.getBossName()), (buf, val) -> buf.writeJsonWithCodec(ComponentSerialization.CODEC, val));
+        buffer.writeBoolean(this.isBossFight());
+        buffer.writeOptional(Optional.ofNullable(this.getDungeon()), (buf, val) -> buf.writeJsonWithCodec(BossRoomTracker.CODEC, val));
+    }
+
+    default void readBossSpawnData(RegistryFriendlyByteBuf buffer) {
+        buffer.readOptional((buf) -> buf.readLenientJsonWithCodec(ComponentSerialization.CODEC)).ifPresent(this::setBossName);
+        this.setBossFight(buffer.readBoolean());
+        buffer.readOptional((buf) -> buf.readLenientJsonWithCodec(BossRoomTracker.CODEC)).ifPresent(this::setDungeon);
     }
 }
 
