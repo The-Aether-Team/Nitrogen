@@ -35,8 +35,6 @@ public interface BossMob<T extends Mob & BossMob<T>> {
 
     void setDungeon(@Nullable BossRoomTracker dungeon);
 
-    int getDeathScore();
-
     /**
      * Should be called from {@link Mob#customServerAiStep()}.<br>
      * This is used to track the contents of the dungeon room.
