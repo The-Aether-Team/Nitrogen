@@ -2,23 +2,23 @@ package com.aetherteam.nitrogen;
 
 import com.aetherteam.nitrogen.api.users.User;
 import com.aetherteam.nitrogen.api.users.UserData;
-import com.aetherteam.nitrogen.data.NitrogenDataGenerators;
+import com.aetherteam.nitrogen.fabric.DataMapAPISetup;
+import com.aetherteam.nitrogen.fabric.loot.LootTableModificationAPI;
+import com.aetherteam.nitrogen.fabric.registries.DeferredRegister;
+import com.aetherteam.nitrogen.fabric.world.biome.BiomeModificationDataRegistries;
+import com.aetherteam.nitrogen.loot.modifiers.NitrogenLootModifiers;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.aetherteam.nitrogen.network.packet.serverbound.TriggerUpdateInfoPacket;
+import com.aetherteam.nitrogen.world.biomemodifier.NitrogenBiomeModifierSerializers;
 import com.aetherteam.nitrogen.world.foliageplacer.NitrogenFoliagePlacerTypes;
 import com.aetherteam.nitrogen.world.trunkplacer.NitrogenTrunkPlacerTypes;
 import com.mojang.logging.LogUtils;
-import dev.architectury.event.events.common.LootEvent;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.biome.v1.BiomeModification;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -57,6 +57,21 @@ public class Nitrogen implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> SERVER_INSTANCE = server);
 
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> SERVER_INSTANCE = null);
+
+        DataMapAPISetup.init();
+
+        BiomeModificationDataRegistries.init();
+
+        LootTableModificationAPI.init();
+
+        DeferredRegister<?>[] registers = {
+            NitrogenLootModifiers.GLOBAL_LOOT_MODIFIERS,
+            NitrogenBiomeModifierSerializers.BIOME_MODIFIER_SERIALIZERS
+        };
+
+        for (DeferredRegister<?> register : registers) {
+            register.addEntriesToRegistry();
+        }
     }
 
     public static ResourceLocation id(String path) {
