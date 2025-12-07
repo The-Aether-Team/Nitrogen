@@ -10,6 +10,7 @@ import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditionType;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.fabricmc.fabric.impl.resource.conditions.DefaultResourceConditionTypes;
 import net.fabricmc.fabric.impl.resource.conditions.conditions.AllModsLoadedResourceCondition;
+import net.fabricmc.fabric.impl.resource.conditions.conditions.NotResourceCondition;
 import net.fabricmc.fabric.impl.resource.conditions.conditions.RegistryContainsResourceCondition;
 import net.fabricmc.fabric.impl.resource.conditions.conditions.TagsPopulatedResourceCondition;
 import net.minecraft.Optionull;
@@ -56,7 +57,8 @@ public class NeoConditionConversion {
         }
     }
 
-    private static final Codec<ResourceConditionType<?>> TYPE_CODEC_WITH_FALLBACK = ResourceLocation.CODEC.comapFlatMap(id -> {
+    private static final Codec<ResourceConditionType<?>> TYPE_CODEC_WITH_FALLBACK = ResourceLocation.CODEC.comapFlatMap(
+        id -> {
             var conditionType = ResourceConditions.getConditionType(id);
 
             if (conditionType == null) {
@@ -99,7 +101,8 @@ public class NeoConditionConversion {
                 builder -> builder
                     .group(
                         ResourceLocation.CODEC.xmap(loc -> TagKey.create(Registries.ITEM, loc), TagKey::location).fieldOf("tag").forGetter(resourceCondition -> TagKey.create(Registries.ITEM, resourceCondition.tags().getFirst())))
-                    .apply(builder, itemTagKey -> (TagsPopulatedResourceCondition) ResourceConditions.tagsPopulated(itemTagKey)));
+                    .apply(builder, itemTagKey -> (TagsPopulatedResourceCondition) ResourceConditions.tagsPopulated(itemTagKey))
+            ).xmap(condition -> ResourceConditions.not(condition), condition -> (TagsPopulatedResourceCondition) ((NotResourceCondition) condition).condition());
         });
         registerConversion(neo("item_exists"), () -> DefaultResourceConditionTypes.REGISTRY_CONTAINS, codec -> {
             return RecordCodecBuilder.<RegistryContainsResourceCondition>mapCodec(
