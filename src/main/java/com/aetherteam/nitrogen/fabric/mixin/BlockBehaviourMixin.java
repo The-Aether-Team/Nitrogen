@@ -1,6 +1,6 @@
 package com.aetherteam.nitrogen.fabric.mixin;
 
-import com.aetherteam.aether.block.natural.BerryBushBlock;
+import com.aetherteam.nitrogen.fabric.pond.BlockExtension;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -17,10 +17,8 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class BlockBehaviourMixin {
     @WrapOperation(method = "onExplosionHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/Block;wasExploded(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/Explosion;)V"))
     private void nitrogen_fabric$onExplosion(Block instance, Level level, BlockPos pos, Explosion explosion, Operation<Void> original, @Local(argsOnly = true) BlockState state) {
-        if (instance instanceof BerryBushBlock berryBushBlock) {
-            berryBushBlock.onBlockExploded(state, level, pos, explosion);
-        } else {
-            original.call(instance, level, pos, explosion);
-        }
+        if (instance instanceof BlockExtension ext && ext.nitrogen_fabric$onBlockExploded(state, level, pos, explosion)) return;
+
+        original.call(instance, level, pos, explosion);
     }
 }

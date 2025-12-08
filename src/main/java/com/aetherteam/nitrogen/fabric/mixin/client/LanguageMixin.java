@@ -15,12 +15,12 @@ public abstract class LanguageMixin implements LanguageExtension {
     private Map<String, String> languageData = new HashMap<>();
 
     @Override
-    public Map<String, String> getLanguageData() {
+    public Map<String, String> nitrogen_fabric$getLanguageData() {
         return Collections.unmodifiableMap(languageData);
     }
 
     @Override
-    public void setLanguageData(Map<String, String> data) {
+    public void nitrogen_fabric$setLanguageData(Map<String, String> data) {
         this.languageData = data;
     }
 }

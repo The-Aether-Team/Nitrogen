@@ -16,10 +16,10 @@ public abstract class ClientLanguageMixin implements LanguageExtension {
     private Map<String, String> storage;
 
     @Override
-    public void setLanguageData(Map<String, String> data) { /* NO-OP */ }
+    public void nitrogen_fabric$setLanguageData(Map<String, String> data) { /* NO-OP */ }
 
     @Override
-    public Map<String, String> getLanguageData() {
+    public Map<String, String> nitrogen_fabric$getLanguageData() {
         return Collections.unmodifiableMap(this.storage);
     }
 }

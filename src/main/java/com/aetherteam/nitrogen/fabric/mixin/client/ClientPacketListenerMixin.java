@@ -1,6 +1,7 @@
 package com.aetherteam.nitrogen.fabric.mixin.client;
 
-import com.aetherteam.nitrogen.fabric.client.ClientDimUtils;
+import com.aetherteam.nitrogen.fabric.client.dim.ClientDimensionUtils;
+import com.aetherteam.nitrogen.fabric.client.events.ClientDimensionEvents;
 import com.aetherteam.nitrogen.fabric.client.events.ClientPlayerEvents;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -63,7 +64,7 @@ public abstract class ClientPacketListenerMixin {
 
         if (dims == null) dims = Pair.of(null, null);
 
-        var alternativeConstructor = ClientDimUtils.getScreen(dims.getFirst(), dims.getSecond());
+        var alternativeConstructor = ClientDimensionEvents.ON_LEVEL_TRANSITION_SCREEN.invoker().getAlternativeScreen(dims.getFirst(), dims.getSecond());
 
         return alternativeConstructor != null ? alternativeConstructor.create(levelReceived, reason) : original.call(levelReceived, reason);
     }

@@ -14,7 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import org.slf4j.Logger;
 
-public class AetherFabricClient {
+public class NitrogenFabricClient {
 
     public static final Logger LOGGER = LogUtils.getLogger();
 
@@ -23,7 +23,7 @@ public class AetherFabricClient {
         ClientPlayNetworking.registerGlobalReceiver(RegistryDataMapSyncPayload.TYPE, ClientRegistryManager::handleDataMapSync);
         ClientConfigurationNetworking.registerGlobalReceiver(KnownRegistryDataMapsPayload.TYPE, ClientRegistryManager::handleKnownDataMaps);
         //--
-        ClientPlayNetworking.registerGlobalReceiver(AdvancedAddEntityPayload.TYPE, AetherFabricClient::handle);
+        ClientPlayNetworking.registerGlobalReceiver(AdvancedAddEntityPayload.TYPE, NitrogenFabricClient::handle);
     }
 
     public static void handle(AdvancedAddEntityPayload advancedAddEntityPayload, ClientPlayNetworking.Context context) {

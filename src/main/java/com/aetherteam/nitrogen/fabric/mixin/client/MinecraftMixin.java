@@ -1,6 +1,6 @@
 package com.aetherteam.nitrogen.fabric.mixin.client;
 
-import com.aetherteam.nitrogen.fabric.client.ClientDimUtils;
+import com.aetherteam.nitrogen.fabric.client.dim.ClientDimensionUtils;
 import com.aetherteam.nitrogen.fabric.events.AddPackFindersEvent;
 import com.aetherteam.nitrogen.fabric.events.LevelEvents;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -48,7 +48,7 @@ public abstract class MinecraftMixin {
 
     @WrapOperation(method = "setLevel", at = @At(value = "NEW", target = "(Ljava/util/function/BooleanSupplier;Lnet/minecraft/client/gui/screens/ReceivingLevelScreen$Reason;)Lnet/minecraft/client/gui/screens/ReceivingLevelScreen;"))
     private ReceivingLevelScreen nitrogen_fabric$adjustLevelTransition(BooleanSupplier levelReceived, ReceivingLevelScreen.Reason reason, Operation<ReceivingLevelScreen> original, @Local(argsOnly = true) ClientLevel level) {
-        var alternativeConstructor = ClientDimUtils.getScreenFromLevel(level, this.level);
+        var alternativeConstructor = ClientDimensionUtils.getScreenFromLevel(level, this.level);
 
         return alternativeConstructor != null ? alternativeConstructor.create(levelReceived, reason) : original.call(levelReceived, reason);
     }

@@ -1,9 +1,9 @@
 package com.aetherteam.nitrogen.fabric.mixin;
 
-import com.aetherteam.aether.event.listeners.DimensionListener;
 import com.aetherteam.nitrogen.fabric.events.BlockEvents;
 import com.aetherteam.nitrogen.fabric.events.CancellableCallbackImpl;
 import com.aetherteam.nitrogen.fabric.events.EntityTickEvents;
+import com.aetherteam.nitrogen.fabric.events.LevelEvents;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.BlockPos;
@@ -58,11 +58,7 @@ public abstract class ServerLevelMixin extends Level {
         var minTime = this.getDayTime();
         var newTime = new MutableLong(time);
 
-        DimensionListener.onSleepFinish(instance, newTime, newTimeIn -> {
-            if (minTime > newTimeIn) return false;
-            newTime.setValue(newTimeIn);
-            return true;
-        });
+        LevelEvents.ON_TIME_UPDATE.invoker().updateTime(minTime, newTime);
 
         original.call(instance, newTime.getValue());
     }

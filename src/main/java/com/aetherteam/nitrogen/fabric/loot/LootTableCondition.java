@@ -29,7 +29,7 @@ public record LootTableCondition(ResourceLocation lootTableId) implements LootIt
 
     @Override
     public boolean test(LootContext context) {
-        return Objects.equals(((LootContextExtension) context).getTableId(), lootTableId);
+        return Objects.equals(((LootContextExtension) context).nitrogen_fabric$getTableId(), lootTableId);
     }
 
     public static Builder builder(ResourceLocation lootTableId) {

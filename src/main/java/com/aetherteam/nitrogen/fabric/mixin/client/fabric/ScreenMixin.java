@@ -29,7 +29,7 @@ public abstract class ScreenMixin implements ScreenExtension {
     private ButtonList nitrogen_fabric$addScreenForEventHook(List drawables, List selectables, List children, Operation<ButtonList> original) {
         var list = original.call(drawables, selectables, children);
 
-        ((ButtonListExtension) (Object) list).setScreen((Screen) (Object) this);
+        ((ButtonListExtension) (Object) list).nitrogen_fabric$setScreen((Screen) (Object) this);
 
         return list;
     }

@@ -1,6 +1,6 @@
 package com.aetherteam.nitrogen.fabric.mixin;
 
-import com.aetherteam.aether.event.listeners.abilities.ToolAbilityListener;
+import com.aetherteam.nitrogen.fabric.events.ActionEvents;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -30,7 +30,7 @@ public abstract class AxeItemMixin {
     @WrapOperation(method = "evaluateNewBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/AxeItem;getStripped(Lnet/minecraft/world/level/block/state/BlockState;)Ljava/util/Optional;"))
     private Optional<BlockState> nitrogen_fabric$onLogStripping(AxeItem instance, BlockState unstrippedState, Operation<Optional<BlockState>> original, @Local(argsOnly = true) Level level) {
         if (nitrogen_fabric$context != null) {
-            ToolAbilityListener.doGoldenOakStripping(level, unstrippedState, nitrogen_fabric$context.getItemInHand(), nitrogen_fabric$context);
+            ActionEvents.ON_BLOCK_STRIP.invoker().onStrip(level, unstrippedState, nitrogen_fabric$context.getItemInHand(), nitrogen_fabric$context);
 
             nitrogen_fabric$context = null;
         }

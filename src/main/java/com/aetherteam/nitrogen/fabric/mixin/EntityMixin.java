@@ -1,6 +1,5 @@
 package com.aetherteam.nitrogen.fabric.mixin;
 
-import com.aetherteam.aether.attachment.AetherDataAttachments;
 import com.aetherteam.nitrogen.fabric.entity.IEntityWithComplexSpawn;
 import com.aetherteam.nitrogen.fabric.events.CancellableCallbackImpl;
 import com.aetherteam.nitrogen.fabric.events.EntityEvents;
@@ -104,8 +103,6 @@ public abstract class EntityMixin implements EntityExtension {
 
     @Inject(method = "spawnAtLocation(Lnet/minecraft/world/item/ItemStack;F)Lnet/minecraft/world/entity/item/ItemEntity;", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z"))
     private void nitrogen_fabric$captureDroppedStack(ItemStack stack, float offsetY, CallbackInfoReturnable<ItemEntity> cir, @Local() ItemEntity itemEntity) {
-        if ((Entity) (Object) this instanceof Player player) {
-            itemEntity.getAttachedOrCreate(AetherDataAttachments.DROPPED_ITEM).setOwner(player);
-        }
+        EntityEvents.ON_SPAWNED_ITEM_STACK.invoker().onSpawn((Entity) (Object) this, stack, itemEntity);
     }
 }

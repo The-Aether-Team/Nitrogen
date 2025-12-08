@@ -1,6 +1,6 @@
 package com.aetherteam.nitrogen.fabric.mixin;
 
-import com.aetherteam.aether.block.construction.AetherFarmBlock;
+import com.aetherteam.nitrogen.fabric.pond.FarmBlockExtension;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -17,8 +17,8 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class BushBlockMixin {
     @WrapOperation(method = "canSurvive", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/BushBlock;mayPlaceOn(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)Z"))
     private boolean nitrogen_fabric$checkCropSurvival(BushBlock instance, BlockState state, BlockGetter level, BlockPos pos, Operation<Boolean> original, @Local(argsOnly = true) BlockPos plantPos, @Local(argsOnly = true) BlockState plantState) {
-        if (state.getBlock() instanceof AetherFarmBlock aetherFarmBlock) {
-            var result = aetherFarmBlock.canSustainPlant(state, level, pos, Direction.DOWN, plantState);
+        if (state.getBlock() instanceof FarmBlockExtension extension) {
+            var result = extension.nitrogen_fabric$canSustainPlant(state, level, pos, Direction.DOWN, plantState);
 
             if (result != TriState.DEFAULT) return result.get();
         }
