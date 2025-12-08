@@ -29,7 +29,8 @@
     ]
   },
   "mixins": [
-    "${mod_id}.mixins.json"
+    "${mod_id}.mixins.json",
+    "${mod_id}-fabric.mixins.json"
   ],
   "depends": {
     "fabricloader": "${fabric_loader_version_range}",
@@ -37,6 +38,7 @@
     "java": ">=21",
     "fabric-api": "${fabric_version_range}"
   },
+  "accessWidener": "${mod_id}.accesswidener",
   "custom": {
     "loom:injected_interfaces": {
       "net/minecraft/class_6880": [
