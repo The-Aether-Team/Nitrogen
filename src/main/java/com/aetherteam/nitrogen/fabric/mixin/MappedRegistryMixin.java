@@ -21,13 +21,13 @@ public abstract class MappedRegistryMixin<T> implements FullDataMapAccess<T>{
     private final Map<DataMapType<T, ?>, Map<ResourceKey<T>, ?>> dataMaps = new IdentityHashMap<>();
 
     @Override
-    public void setDataMaps(Map<DataMapType<T, ?>, Map<ResourceKey<T>, ?>> dataMaps) {
+    public void nitrogen_fabric$setDataMaps(Map<DataMapType<T, ?>, Map<ResourceKey<T>, ?>> dataMaps) {
         this.dataMaps.clear();
         this.dataMaps.putAll(dataMaps);
     }
 
     @Override
-    public Map<DataMapType<T, ?>, Map<ResourceKey<T>, ?>> getDataMaps() {
+    public Map<DataMapType<T, ?>, Map<ResourceKey<T>, ?>> nitrogen_fabric$getDataMaps() {
         return Collections.unmodifiableMap(this.dataMaps);
     }
 

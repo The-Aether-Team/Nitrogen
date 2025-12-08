@@ -60,7 +60,7 @@ public class DataMapLoader implements PreparableReloadListener, IdentifiableReso
     }
 
     private static <T> void apply(MappedRegistry<T> registry, LoadResult<T> result, RegistryAccess registryAccess) {
-        ((FullDataMapAccess<T>)registry).setDataMaps(dataMaps -> {
+        ((FullDataMapAccess<T>)registry).nitrogen_fabric$setDataMaps(dataMaps -> {
             result.results().forEach((key, entries) -> dataMaps.put(key, buildDataMap(registry, key, (List) entries)));
         });
 
@@ -131,7 +131,8 @@ public class DataMapLoader implements PreparableReloadListener, IdentifiableReso
                 final ResourceLocation attachmentId = fileToId.fileToId(key);
                 final var attachment = RegistryManager.getDataMap((ResourceKey) registryKey, attachmentId);
                 if (attachment == null) {
-                    LOGGER.warn("Found data map file for non-existent data map type '{}' on registry '{}'.", attachmentId, registryKey.location());
+                    // TODO: POSSIBLY ADD TOGGLE BUT THIS MAKES SENSE WHEN NOT USING NITROGEN AND SOME OTHER IMPLEMENTATION OF NEO API
+                    //LOGGER.warn("Found data map file for non-existent data map type '{}' on registry '{}'.", attachmentId, registryKey.location());
                     continue;
                 }
                 profiler.popPush("registry_data_maps/" + registryKey.location() + "/" + attachmentId + "/loading");

@@ -6,9 +6,9 @@ import org.jetbrains.annotations.Nullable;
 public interface LootContextExtension {
 
     @Nullable
-    ResourceLocation getTableId();
+    ResourceLocation nitrogen_fabric$getTableId();
 
-    void pushTableId(ResourceLocation tableId);
+    void nitrogen_fabric$pushTableId(ResourceLocation tableId);
 
-    void popTableId();
+    void nitrogen_fabric$popTableId();
 }

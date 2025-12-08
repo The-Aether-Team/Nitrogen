@@ -40,7 +40,7 @@ public interface ScreenExtension {
     ///
     /// Method invoked within [ButtonListMixin]
     ///
-    default AbstractWidget onScreensWidgetAdd(AbstractWidget abstractWidget) {
+    default AbstractWidget nitrogen_fabric$onScreensWidgetAdd(AbstractWidget abstractWidget) {
         return abstractWidget;
     }
 }

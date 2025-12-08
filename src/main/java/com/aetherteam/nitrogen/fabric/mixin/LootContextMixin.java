@@ -17,19 +17,19 @@ public abstract class LootContextMixin implements LootContextExtension {
     private Deque<ResourceLocation> nitrogen_fabric$tableId = new ArrayDeque<>();
 
     @Override
-    public @Nullable ResourceLocation getTableId() {
+    public @Nullable ResourceLocation nitrogen_fabric$getTableId() {
         if (this.nitrogen_fabric$tableId.isEmpty()) return null;
 
         return this.nitrogen_fabric$tableId.peek();
     }
 
     @Override
-    public void pushTableId(ResourceLocation tableId) {
+    public void nitrogen_fabric$pushTableId(ResourceLocation tableId) {
         this.nitrogen_fabric$tableId.push(tableId);
     }
 
     @Override
-    public void popTableId() {
+    public void nitrogen_fabric$popTableId() {
         this.nitrogen_fabric$tableId.pop();
     }
 }

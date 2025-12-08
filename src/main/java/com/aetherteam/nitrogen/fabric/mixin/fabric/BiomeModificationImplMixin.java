@@ -27,7 +27,7 @@ public abstract class BiomeModificationImplMixin {
                 return;
             }
 
-            BiomeModifications.create(ref.aetherFabric$getKey().location())
+            BiomeModifications.create(ref.nitrogen_fabric$getKey().location())
                     .add(modificationData.phase(), modificationData.selector(), modificationData::modify);
         });
     }

@@ -34,7 +34,7 @@ public class ClientRegistryManager {
             var regAccess = Minecraft.getInstance().level.registryAccess();
             final FullDataMapAccess<R> registry = (FullDataMapAccess<R>) regAccess.registryOrThrow(payload.registryKey());
 
-            registry.setDataMaps(dataMaps -> payload.dataMaps().forEach((attachKey, maps) -> dataMaps.put(RegistryManager.getDataMap(payload.registryKey(), attachKey), Collections.unmodifiableMap(maps))));
+            registry.nitrogen_fabric$setDataMaps(dataMaps -> payload.dataMaps().forEach((attachKey, maps) -> dataMaps.put(RegistryManager.getDataMap(payload.registryKey(), attachKey), Collections.unmodifiableMap(maps))));
 
             DataMapsUpdatedEvent.EVENT.invoker().onUpdate(new DataMapsUpdatedEvent(regAccess, regAccess.registryOrThrow(payload.registryKey()), DataMapsUpdatedEvent.UpdateCause.CLIENT_SYNC));
         } catch (Throwable t) {

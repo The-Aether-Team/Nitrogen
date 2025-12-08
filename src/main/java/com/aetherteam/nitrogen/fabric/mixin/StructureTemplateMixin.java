@@ -79,7 +79,7 @@ public abstract class StructureTemplateMixin {
         entityProcessOccurred.set(false);
 
         if (!isPortingLibLoaded) {
-            StructurePlaceSettings settings = Objects.requireNonNull(capturedSettings.get(), "[AetherFabric] Unable to get the StructurePlaceSettings to process the given StructureEntityInfo");
+            StructurePlaceSettings settings = Objects.requireNonNull(capturedSettings.get(), "[NitrogenFabric] Unable to get the StructurePlaceSettings to process the given StructureEntityInfo");
 
             var entityProcessors = settings.getProcessors().stream()
                 .map(structureProcessor -> structureProcessor instanceof EntityStructureProcessor entityStructureProcessor ? entityStructureProcessor : null)

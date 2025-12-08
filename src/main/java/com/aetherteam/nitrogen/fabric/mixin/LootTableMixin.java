@@ -1,7 +1,7 @@
 package com.aetherteam.nitrogen.fabric.mixin;
 
-import com.aetherteam.aether.Aether;
-import com.aetherteam.aether.loot.modifiers.AetherLootTableModifications;
+import com.aetherteam.nitrogen.Nitrogen;
+import com.aetherteam.nitrogen.fabric.loot.LootTableModificationAPI;
 import com.aetherteam.nitrogen.fabric.pond.LootContextExtension;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -15,13 +15,12 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
 @Mixin(LootTable.class)
 public abstract class LootTableMixin {
     @Unique
-    private static final ResourceLocation UNKNOWN_TABLE_ID = ResourceLocation.fromNamespaceAndPath(Aether.MODID, "unknown");
+    private static final ResourceLocation UNKNOWN_TABLE_ID = ResourceLocation.fromNamespaceAndPath(Nitrogen.MODID, "unknown");
 
     @WrapMethod(method = "getRandomItemsRaw(Lnet/minecraft/world/level/storage/loot/LootContext;Ljava/util/function/Consumer;)V")
     private void finishCollectingLoot(LootContext context, Consumer<ItemStack> consumer, Operation<Void> original) {
@@ -36,12 +35,12 @@ public abstract class LootTableMixin {
 
         // Handles case where the given loot table is Unknown at all meaning an unknown location is pushed to the top.
         // Typically, occurs when the table is a nested one or injected in manor where its it not registered
-        ext.pushTableId(lootTableId.orElse(UNKNOWN_TABLE_ID));
+        ext.nitrogen_fabric$pushTableId(lootTableId.orElse(UNKNOWN_TABLE_ID));
 
         ObjectArrayList<ItemStack> stacks = new ObjectArrayList<>();
         original.call(context, (Consumer<ItemStack>) stacks::add);
-        AetherLootTableModifications.apply(stacks, context).forEach(consumer);
+        LootTableModificationAPI.apply(stacks, context).forEach(consumer);
 
-        ext.popTableId();
+        ext.nitrogen_fabric$popTableId();
     }
 }

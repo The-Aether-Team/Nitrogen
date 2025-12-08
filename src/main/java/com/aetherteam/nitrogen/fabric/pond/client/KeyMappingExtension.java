@@ -11,7 +11,7 @@ public interface KeyMappingExtension {
     /**
      * {@return true if the key conflict context and modifier are active and the keyCode matches this binding, false otherwise}
      */
-    default boolean isActiveAndMatches(InputConstants.Key keyCode) {
+    default boolean nitrogen_fabric$isActiveAndMatches(InputConstants.Key keyCode) {
         return keyCode != InputConstants.UNKNOWN && keyCode.equals(nitrogen_fabric$getKey());
     }
 

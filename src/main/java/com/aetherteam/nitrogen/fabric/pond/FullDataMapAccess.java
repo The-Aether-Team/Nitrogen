@@ -11,15 +11,15 @@ import java.util.function.Consumer;
 @ApiStatus.Internal
 public interface FullDataMapAccess<T> {
 
-    default void setDataMaps(Consumer<Map<DataMapType<T, ?>, Map<ResourceKey<T>, ?>>> builder) {
-        Map<DataMapType<T, ?>, Map<ResourceKey<T>, ?>> dataMaps = new IdentityHashMap<>();
+    default void nitrogen_fabric$setDataMaps(Consumer<Map<DataMapType<T, ?>, Map<ResourceKey<T>, ?>>> builder) {
+        var dataMaps = new IdentityHashMap<DataMapType<T, ?>, Map<ResourceKey<T>, ?>>();
 
         builder.accept(dataMaps);
 
-        this.setDataMaps(dataMaps);
+        this.nitrogen_fabric$setDataMaps(dataMaps);
     }
 
-    void setDataMaps(Map<DataMapType<T, ?>, Map<ResourceKey<T>, ?>> dataMaps);
+    void nitrogen_fabric$setDataMaps(Map<DataMapType<T, ?>, Map<ResourceKey<T>, ?>> dataMaps);
 
-    Map<DataMapType<T, ?>, Map<ResourceKey<T>, ?>> getDataMaps();
+    Map<DataMapType<T, ?>, Map<ResourceKey<T>, ?>> nitrogen_fabric$getDataMaps();
 }
