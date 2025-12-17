@@ -1,5 +1,6 @@
 package com.aetherteam.nitrogen.entity;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -7,6 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -80,7 +82,7 @@ public interface BossMob<T extends Mob & BossMob<T>> {
     void openRoom();
 
     @Nullable
-    BlockState convertBlock(BlockState state);
+    BlockState convertBlock(Level level, BlockPos blockPos, BlockState oldState);
 
     default void addBossSaveData(ValueOutput output) {
         output.storeNullable("BossName", ComponentSerialization.CODEC, this.getBossName());

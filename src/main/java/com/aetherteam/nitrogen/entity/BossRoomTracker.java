@@ -15,6 +15,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
@@ -25,7 +26,7 @@ public record BossRoomTracker(Vec3 originCoordinates, Vec3 minBounds, Vec3 maxBo
         Vec3.CODEC.fieldOf("min_bounds").forGetter(BossRoomTracker::minBounds),
         Vec3.CODEC.fieldOf("max_bounds").forGetter(BossRoomTracker::maxBounds),
         UUIDUtil.CODEC.listOf().fieldOf("dungeon_players").forGetter(BossRoomTracker::dungeonPlayers)
-    ).apply(instance, BossRoomTracker::new));
+    ).apply(instance, (a, b, c, d) -> new BossRoomTracker(a, b, c, new ArrayList<>(d))));
 
     /**
      * @return Whether the dungeon boss is within the room bounds, as a {@link Boolean}.
@@ -121,13 +122,13 @@ public record BossRoomTracker(Vec3 originCoordinates, Vec3 minBounds, Vec3 maxBo
      *
      * @param function A {@link Function} of two {@link BlockState}s, used to modify blocks within the room.
      */
-    public <T extends Mob & BossMob<T>> void modifyRoom(@Nullable T boss, Function<BlockState, BlockState> function) {
+    public <T extends Mob & BossMob<T>> void modifyRoom(@Nullable T boss, ModifyPosition function) {
         if (boss != null) {
             AABB bounds = this.roomBounds();
             Level level = boss.level();
             for (BlockPos pos : BlockPos.betweenClosed((int) bounds.minX, (int) bounds.minY, (int) bounds.minZ, (int) bounds.maxX, (int) bounds.maxY, (int) bounds.maxZ)) {
                 BlockState state = level.getBlockState(pos);
-                BlockState newState = function.apply(state);
+                BlockState newState = function.convertBlock(level, pos, state);
                 if (newState != null) {
                     level.setBlock(pos, newState, 1 | 2);
                 }
@@ -137,6 +138,11 @@ public record BossRoomTracker(Vec3 originCoordinates, Vec3 minBounds, Vec3 maxBo
 
     public AABB roomBounds() {
         return new AABB(this.minBounds(), this.maxBounds());
+    }
+
+    @FunctionalInterface
+    public interface ModifyPosition {
+        BlockState convertBlock(Level level, BlockPos blockPos, BlockState oldState);
     }
 }
 

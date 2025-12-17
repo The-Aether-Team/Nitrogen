@@ -21,7 +21,7 @@ public final class UserSavedData extends SavedData { //TODO VERIFY
         "nitrogen_users",
         UserSavedData::new,
         ctx -> RecordCodecBuilder.create(instance -> instance.group(
-            Codec.unboundedMap(UUIDUtil.CODEC, User.CODEC).fieldOf("stored_users").forGetter(UserSavedData::getStoredUsers)
+            Codec.unboundedMap(UUIDUtil.STRING_CODEC, User.CODEC).fieldOf("stored_users").forGetter(UserSavedData::getStoredUsers)
         ).apply(instance, UserSavedData::new))
     );
     private Map<UUID, User> storedUsers;
