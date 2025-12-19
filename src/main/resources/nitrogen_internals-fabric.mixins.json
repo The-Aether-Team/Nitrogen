@@ -73,6 +73,7 @@
     "client.FaviconTextureMixin",
     "client.FogRendererMixin",
     "client.KeyboardHandlerMixin",
+    "client.KeyMappingMixin",
     "client.LanguageMixin",
     "client.LivingEntityRendererMixin",
     "client.MinecraftMixin",
