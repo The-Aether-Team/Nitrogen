@@ -6,7 +6,6 @@
 package com.aetherteam.nitrogen.fabric.loot;
 
 import com.aetherteam.nitrogen.Nitrogen;
-import com.aetherteam.nitrogen.fabric.loot.IGlobalLootModifier;
 import com.google.gson.*;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
@@ -19,6 +18,8 @@ import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -66,6 +67,8 @@ public abstract class LootTableModificationAPI {
 
     public static void init() {
         ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(LISTENER_ID, ReloadListener::new);
+
+        Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE, ResourceLocation.fromNamespaceAndPath("neoforge", "loot_table_id"), LootTableCondition.TYPE);
     }
 
     public static ObjectArrayList<ItemStack> apply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
