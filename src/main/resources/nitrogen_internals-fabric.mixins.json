@@ -76,6 +76,7 @@
     "client.KeyMappingMixin",
     "client.LanguageMixin",
     "client.LivingEntityRendererMixin",
+    "client.NetworkRegisterHelperMixin",
     "client.MinecraftMixin",
     "client.PlayerRendererMixin",
     "client.RecipeBookCategoriesMixin",
