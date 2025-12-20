@@ -88,7 +88,7 @@ public abstract class LootTableModificationAPI {
             var location = entry.getKey();
             var json = entry.getValue();
 
-            IGlobalLootModifier.DIRECT_CODEC.parse(JsonOps.INSTANCE, json)
+            IGlobalLootModifier.DIRECT_CODEC.parse(provider.createSerializationContext(JsonOps.INSTANCE), json)
                 .resultOrPartial(errorMsg -> LOGGER.warn("Could not decode GlobalLootModifier with json id {} - error: {}", location, errorMsg))
                 .ifPresent(modifier -> CACHED_LOOT_MODIFIERS.put(location, modifier));
         }
