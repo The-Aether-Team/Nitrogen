@@ -26,7 +26,7 @@ public class HookedFoliagePlacer extends FoliagePlacer {
 
     @Override
     protected FoliagePlacerType<?> type() {
-        return NitrogenFoliagePlacerTypes.HOOKED_FOLIAGE_PLACER.get();
+        return NitrogenFoliagePlacerTypes.HOOKED_FOLIAGE_PLACER.value();
     }
 
     @Override

@@ -27,7 +27,7 @@ public class HookedTrunkPlacer extends BaseHookedTrunkPlacer {
 
     @Override
     protected TrunkPlacerType<?> type() {
-        return NitrogenTrunkPlacerTypes.HOOKED_TRUNK_PLACER.get();
+        return NitrogenTrunkPlacerTypes.HOOKED_TRUNK_PLACER.value();
     }
 
     @Override

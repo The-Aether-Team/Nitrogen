@@ -1,6 +1,7 @@
-package com.aetherteam.nitrogen.attachment;
-
+//package com.aetherteam.nitrogen.attachment;
+//
 //import com.aetherteam.nitrogen.network.packet.SyncLevelPacket;
+//import net.fabricmc.fabric.api.attachment.v1.AttachmentTarget;
 //import net.minecraft.client.Minecraft;
 //import net.minecraft.world.entity.player.Player;
 //import net.minecraft.world.level.Level;
@@ -18,6 +19,6 @@ package com.aetherteam.nitrogen.attachment;
 //     */
 //    public static void syncLevelCapability(SyncLevelPacket<?> syncLevelPacket, Player playerEntity, String key, Object value, boolean isClientSide) {
 //        Level level = isClientSide ? Minecraft.getInstance().level : playerEntity.level();
-//        level.getData(syncLevelPacket.getAttachment()).getSynchableFunctions().get(key).getMiddle().accept(value);
+//        ((AttachmentTarget)level).getAttachedOrCreate(syncLevelPacket.getAttachment().get()).getSynchableFunctions().get(key).getMiddle().accept(value);
 //    }
 //}

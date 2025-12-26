@@ -1,10 +1,12 @@
-package com.aetherteam.nitrogen.integration.jei;
-
+//package com.aetherteam.nitrogen.integration.jei;
+//
+//import com.aetherteam.nitrogen.Nitrogen;
 //import com.mojang.blaze3d.systems.RenderSystem;
 //import com.mojang.blaze3d.vertex.BufferBuilder;
 //import com.mojang.blaze3d.vertex.PoseStack;
 //import com.mojang.blaze3d.vertex.Tesselator;
 //import com.mojang.math.Axis;
+//import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
 //import mezz.jei.api.ingredients.IIngredientRenderer;
 //import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 //import mezz.jei.common.platform.IPlatformFluidHelperInternal;
@@ -28,12 +30,11 @@ package com.aetherteam.nitrogen.integration.jei;
 //import net.minecraft.world.level.material.Fluid;
 //import net.minecraft.world.level.material.FluidState;
 //import net.minecraft.world.level.material.Fluids;
-//import net.neoforged.neoforge.fluids.FluidStack;
 //import org.joml.Matrix4fStack;
 //
 //import java.util.ArrayList;
 //import java.util.List;
-
+//
 //public record FluidStateRenderer<T>(IPlatformFluidHelperInternal<T> fluidHelper) implements IIngredientRenderer<T> {
 //    @Override
 //    public void render(GuiGraphics guiGraphics, T ingredient) {
@@ -72,8 +73,8 @@ package com.aetherteam.nitrogen.integration.jei;
 //    @Override
 //    public List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag) {
 //        List<Component> components = new ArrayList<>();
-//        if (ingredient instanceof FluidStack fluidStack) {
-//            Fluid fluid = fluidStack.getFluid();
+//        if (ingredient instanceof IJeiFluidIngredient fluidStack) {
+//            Fluid fluid = fluidStack.getFluidVariant().getFluid();
 //            if (fluid.isSame(Fluids.EMPTY)) {
 //                return List.of();
 //            }

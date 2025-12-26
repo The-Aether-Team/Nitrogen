@@ -2,11 +2,15 @@ package com.aetherteam.nitrogen.data.generators;
 
 import com.aetherteam.nitrogen.Nitrogen;
 import com.aetherteam.nitrogen.data.providers.NitrogenLanguageProvider;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 
+import java.util.concurrent.CompletableFuture;
+
 public class NitrogenLanguageData extends NitrogenLanguageProvider {
-    public NitrogenLanguageData(PackOutput output) {
-        super(output, Nitrogen.MODID);
+    public NitrogenLanguageData(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registryLookup) {
+        super(output, registryLookup);
     }
 
     @Override

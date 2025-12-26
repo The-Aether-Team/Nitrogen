@@ -3,7 +3,8 @@ package com.aetherteam.nitrogen.integration.jei.categories.block;
 //import com.aetherteam.nitrogen.integration.jei.BlockStateRenderer;
 //import com.aetherteam.nitrogen.integration.jei.FluidStateRenderer;
 //import com.aetherteam.nitrogen.integration.jei.categories.AbstractRecipeCategory;
-//import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
+//import com.aetherteam.nitrogen.mixin.mixins.LiquidBlockAccessor;
+import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
 //import com.aetherteam.nitrogen.recipe.BlockStateIngredient;
 //import com.aetherteam.nitrogen.recipe.BlockStateRecipeUtil;
 //import com.aetherteam.nitrogen.recipe.recipes.AbstractBlockStateRecipe;
@@ -49,7 +50,7 @@ package com.aetherteam.nitrogen.integration.jei.categories.block;
 //            List<Object> inputIngredients = new ArrayList<>();
 //            for (BlockPropertyPair pair : pairs) {
 //                if (pair.block() instanceof LiquidBlock liquidBlock) {
-//                    inputIngredients.add(this.fluidHelper.create(liquidBlock.fluid.builtInRegistryHolder(), 1000));
+//                    inputIngredients.add(this.fluidHelper.create(((LiquidBlockAccessor) liquidBlock).fluid().builtInRegistryHolder(), 1000));
 //                } else {
 //                    inputIngredients.add(this.setupIngredient(pair));
 //                }
@@ -60,7 +61,7 @@ package com.aetherteam.nitrogen.integration.jei.categories.block;
 //            // Sets up output slots.
 //            Object outputIngredient;
 //            if (recipeResult.block() instanceof LiquidBlock liquidBlock) {
-//                outputIngredient = this.fluidHelper.create(liquidBlock.fluid.builtInRegistryHolder(), 1000);
+//                outputIngredient = this.fluidHelper.create(((LiquidBlockAccessor) liquidBlock).fluid().builtInRegistryHolder(), 1000);
 //            } else {
 //                outputIngredient = this.setupIngredient(recipeResult);
 //            }

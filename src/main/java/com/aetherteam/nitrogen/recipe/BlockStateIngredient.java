@@ -1,9 +1,7 @@
 package com.aetherteam.nitrogen.recipe;
 
 import com.mojang.datafixers.util.Either;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.core.Holder;
@@ -17,9 +15,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -192,7 +189,7 @@ public class BlockStateIngredient implements Predicate<BlockState> {
     }
 
     public interface Value {
-        MapCodec<BlockStateIngredient.Value> MAP_CODEC = NeoForgeExtraCodecs.xor(BlockStateIngredient.BlockStateValue.MAP_CODEC, BlockStateIngredient.TagValue.MAP_CODEC)
+        MapCodec<BlockStateIngredient.Value> MAP_CODEC = new XorMapCodec<>(BlockStateIngredient.BlockStateValue.MAP_CODEC, BlockStateIngredient.TagValue.MAP_CODEC)
             .xmap(either -> either.map(blockState -> blockState, tag -> tag), value -> {
                 if (value instanceof BlockStateIngredient.TagValue tagValue) {
                     return Either.right(tagValue);
@@ -205,5 +202,50 @@ public class BlockStateIngredient implements Predicate<BlockState> {
         Codec<BlockStateIngredient.Value> CODEC = MAP_CODEC.codec();
 
         Collection<BlockPropertyPair> getPairs();
+    }
+
+    private static final class XorMapCodec<F, S> extends MapCodec<Either<F, S>> {
+        private final MapCodec<F> first;
+        private final MapCodec<S> second;
+
+        private XorMapCodec(MapCodec<F> first, MapCodec<S> second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        @Override
+        public <T> Stream<T> keys(DynamicOps<T> ops) {
+            return Stream.concat(first.keys(ops), second.keys(ops)).distinct();
+        }
+
+        @Override
+        public <T> DataResult<Either<F, S>> decode(DynamicOps<T> ops, MapLike<T> input) {
+            DataResult<Either<F, S>> firstResult = first.decode(ops, input).map(Either::left);
+            DataResult<Either<F, S>> secondResult = second.decode(ops, input).map(Either::right);
+            var firstValue = firstResult.result();
+            var secondValue = secondResult.result();
+            if (firstValue.isPresent() && secondValue.isPresent()) {
+                return DataResult.error(
+                    () -> "Both alternatives read successfully, cannot pick the correct one; first: " + firstValue.get() + " second: "
+                        + secondValue.get(),
+                    firstValue.get());
+            } else if (firstValue.isPresent()) {
+                return firstResult;
+            } else if (secondValue.isPresent()) {
+                return secondResult;
+            } else {
+                return firstResult.apply2((x, y) -> y, secondResult);
+            }
+        }
+
+        @Override
+        public <T> RecordBuilder<T> encode(Either<F, S> input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
+            return input.map(x -> first.encode(x, ops, prefix), x -> second.encode(x, ops, prefix));
+        }
+
+        @Override
+        public String toString() {
+            return "XorMapCodec[" + first + ", " + second + "]";
+        }
     }
 }

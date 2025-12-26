@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": [
+    "${mod_authors}"
+  ],
+  "contributors": [
+    "${mod_credits}"
+  ],
+  "contact": {
+    "sources": "${mod_url}",
+    "issues": "${mod_tracker}"
+  },
+  "license": "${mod_license}",
+  "icon": "${mod_id}.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.aetherteam.nitrogen.Nitrogen"
+    ],
+    "client": [
+      "com.aetherteam.nitrogen.client.NitrogenClient"
+    ],
+    "fabric-datagen": [
+      "com.aetherteam.nitrogen.data.NitrogenDataGenerators"
+    ]
+  },
+  "mixins": [
+    "${mod_id}.mixins.json",
+    "${mod_id}-fabric.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": "${fabric_loader_version_range}",
+    "minecraft": "${minecraft_version_range}",
+    "java": ">=21",
+    "fabric-api": "${fabric_version_range}"
+  },
+  "accessWidener": "${mod_id}.accesswidener",
+  "custom": {
+    "loom:injected_interfaces": {
+      "net/minecraft/class_6880": [
+        "com/aetherteam/nitrogen/fabric/pond/IHolderExtension<TT;>",
+        "com/aetherteam/nitrogen/fabric/pond/IWithData<TT;>"
+      ],
+      "net/minecraft/class_2378": [
+        "com/aetherteam/nitrogen/fabric/pond/IRegistryExtension<TT;>"
+      ],
+      "net/minecraft/class_1937": [
+        "net/fabricmc/fabric/api/attachment/v1/AttachmentTarget"
+      ],
+      "net/minecraft/class_1799": [
+        "net/fabricmc/fabric/api/item/v1/FabricItemStack",
+        "com/aetherteam/nitrogen/fabric/pond/ItemStackExtension"
+      ],
+      "net/minecraft/class_8610": [
+        "net/fabricmc/fabric/api/networking/v1/FabricServerConfigurationNetworkHandler"
+      ],
+      "net/minecraft/class_7225\u0024class_7874": [
+        "com/aetherteam/nitrogen/fabric/pond/IHolderLookupProviderExtension"
+      ],
+      "net/minecraft/class_1297": [
+        "com/aetherteam/nitrogen/fabric/pond/EntityExtension"
+      ],
+      "net/minecraft/class_437": [
+        "com/aetherteam/nitrogen/fabric/pond/client/ScreenExtension"
+      ],
+      "net/minecraft/class_2680": [
+        "com/aetherteam/nitrogen/fabric/pond/BlockStateExtension"
+      ],
+      "net/minecraft/class_2248": [
+        "com/aetherteam/nitrogen/fabric/pond/BlockExtension"
+      ],
+      "net/minecraft/class_304": [
+        "com/aetherteam/nitrogen/fabric/pond/client/KeyMappingExtension"
+      ],
+      "net/minecraft/class_2586": [
+        "com/aetherteam/nitrogen/fabric/pond/BlockEntityExtension"
+      ],
+      "net/minecraft/class_7225\u0024class_7226": [
+        "com/aetherteam/nitrogen/fabric/pond/RegistryLookupExtension<TT;>"
+      ]
+    }
+  }
+}

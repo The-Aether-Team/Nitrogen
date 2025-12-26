@@ -1,5 +1,7 @@
 package com.aetherteam.nitrogen.loot.modifiers;
 
+import com.aetherteam.nitrogen.fabric.loot.IGlobalLootModifier;
+import com.aetherteam.nitrogen.fabric.loot.LootModifier;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
@@ -12,8 +14,6 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
-import net.neoforged.neoforge.common.loot.LootModifier;
 
 import java.util.List;
 

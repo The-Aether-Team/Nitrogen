@@ -1,0 +1,27 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
+package com.aetherteam.nitrogen.fabric.pond;
+
+import com.aetherteam.nitrogen.fabric.registries.datamaps.DataMapType;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * Represents a registry object (usually a {@link net.minecraft.core.Holder}) that has data maps.
+ *
+ * @param <R> the type of the object
+ */
+public interface IWithData<R> {
+    /**
+     * {@return the data of the given type that is attached to this object, or {@code null} if one isn't}
+     *
+     * @param type the data type
+     * @param <T>  the type of the data
+     */
+    @Nullable
+    default <T> T nitrogen_fabric$getData(DataMapType<R, T> type) {
+        return null;
+    }
+}

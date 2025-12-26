@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 import java.util.UUID;
 
@@ -39,7 +39,7 @@ public record TriggerUpdateInfoPacket(int playerID) implements CustomPacketPaylo
         return TYPE;
     }
 
-    public static void execute(TriggerUpdateInfoPacket payload, IPayloadContext context) {
+    public static void execute(TriggerUpdateInfoPacket payload, ServerPlayNetworking.Context context) {
         Player player = context.player();
         if (player.getServer() != null && player.level().getEntity(payload.playerID()) instanceof ServerPlayer serverPlayer) {
             UserData.Server.sendUserRequest(serverPlayer.getServer(), serverPlayer, serverPlayer.getGameProfile().getId());

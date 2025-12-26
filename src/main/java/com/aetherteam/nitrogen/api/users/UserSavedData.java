@@ -124,7 +124,7 @@ public final class UserSavedData extends SavedData { //TODO VERIFY
 //     * @return The {@link UserSavedData} corresponding to the data file.
 //     */
 //    public static UserSavedData compute(DimensionDataStorage dataStorage) {
-//        return dataStorage.computeIfAbsent(new SavedData.Factory<>(UserSavedData::new, (compoundTag, provider) -> UserSavedData.load(compoundTag)), FILE_NAME);
+//        return dataStorage.computeIfAbsent(new SavedData.Factory<>(UserSavedData::new, (compoundTag, provider) -> UserSavedData.load(compoundTag), null), FILE_NAME);
 //    }
 
     /**
