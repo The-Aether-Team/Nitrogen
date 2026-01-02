@@ -44,7 +44,7 @@ public class RegisterDataMapTypesEvent {
     public <T, R> void register(DataMapType<R, T> type) {
         final var registry = type.registryKey();
         if (DynamicRegistries.getDynamicRegistries().stream().anyMatch(data -> data.key().equals(registry))) {
-            if (type.networkCodec() != null && !RegistrySynchronization.NETWORKABLE_REGISTRIES.contains(registry)) {
+            if (type.networkCodec() != null && !RegistrySynchronization.isNetworkable(registry)) {
                 throw new UnsupportedOperationException("Cannot register synced data map " + type.id() + " for datapack registry " + registry.location() + " that is not synced!");
             }
         }

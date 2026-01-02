@@ -38,7 +38,7 @@
     "java": ">=21",
     "fabric-api": "${fabric_version_range}"
   },
-  "accessWidener": "${mod_id}.accesswidener",
+  "#accessWidener": "${mod_id}.accesswidener",
   "custom": {
     "loom:injected_interfaces": {
       "net/minecraft/class_6880": [

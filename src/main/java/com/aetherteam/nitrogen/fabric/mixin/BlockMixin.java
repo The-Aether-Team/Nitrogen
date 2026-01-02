@@ -14,8 +14,10 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(Block.class)
 public abstract class BlockMixin implements BlockExtension {
-    @WrapOperation(method = "shouldRenderFace", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;skipRendering(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/Direction;)Z"))
-    private static boolean nitrogen_fabric$supportFaceHiding(BlockState instance, BlockState state, Direction direction, Operation<Boolean> original, @Local(argsOnly = true) BlockGetter level, @Local(argsOnly = true) Direction face, @Local(argsOnly = true, ordinal = 1) BlockPos pos) {
-        return original.call(instance, state, direction) || (state.nitrogen_fabric$hidesNeighborFace(level, pos, instance, face) && instance.nitrogen_fabric$supportsExternalFaceHiding());
-    }
+    // TODO: NOT REQUIRED FOR AETHER 2 but is needed for the first
+//    @WrapOperation(method = "shouldRenderFace", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;skipRendering(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/Direction;)Z"))
+//    private static boolean nitrogen_fabric$supportFaceHiding(BlockState instance, BlockState state, Direction direction, Operation<Boolean> original, @Local(argsOnly = true) BlockGetter level, @Local(argsOnly = true) Direction face, @Local(argsOnly = true, ordinal = 1) BlockPos pos) {
+//        return original.call(instance, state, direction)
+//            || (state.nitrogen_fabric$hidesNeighborFace(level, pos, instance, face) && instance.nitrogen_fabric$supportsExternalFaceHiding());
+//    }
 }

@@ -39,6 +39,6 @@ public abstract class NitrogenBlockLootSubProvider extends BlockLootSubProvider 
     }
 
     public LootTable.Builder createForgeSilkTouchOrShearsDispatchTable(HolderGetter<Item> holderGetter, Block block, LootPoolEntryContainer.Builder<?> builder) {
-        return createSelfDropDispatchTable(block, MatchTool.toolMatches(ItemPredicate.Builder.item().of(holderGetter, ConventionalItemTags.TOOLS_SHEAR)).or(this.hasSilkTouch()), builder);
+        return createSelfDropDispatchTable(block, MatchTool.toolMatches(ItemPredicate.Builder.item().of(holderGetter, ConventionalItemTags.SHEARS_TOOLS)).or(this.hasSilkTouch()), builder);
     }
 }

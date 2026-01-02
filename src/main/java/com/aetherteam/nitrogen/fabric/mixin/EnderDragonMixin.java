@@ -5,6 +5,7 @@ import com.aetherteam.nitrogen.fabric.events.LivingEntityEvents;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -22,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class EnderDragonMixin extends Mob {
     @Nullable
     @Unique
-    private Player unlimitedLastHurtByPlayer = null;
+    private EntityReference<Player> unlimitedLastHurtByPlayer = null;
 
     protected EnderDragonMixin(EntityType<? extends Mob> entityType, Level level) {
         super(entityType, level);
@@ -32,14 +33,18 @@ public abstract class EnderDragonMixin extends Mob {
     private void nitrogen_fabric$capturePlayerBetter(CallbackInfo ci) {
         // lastHurtByPlayer is cleared after 100 ticks, capture it indefinitely in unlimitedLastHurtByPlayer for LivingExperienceDropEvent
         if (this.lastHurtByPlayer != null) this.unlimitedLastHurtByPlayer = lastHurtByPlayer;
-        if (this.unlimitedLastHurtByPlayer != null && this.unlimitedLastHurtByPlayer.isRemoved()) this.unlimitedLastHurtByPlayer = null;
+        if (this.unlimitedLastHurtByPlayer != null) {
+            var entity = this.unlimitedLastHurtByPlayer.getEntity(this.level(), Player.class);
+
+            if (entity != null && entity.isRemoved()) this.unlimitedLastHurtByPlayer = null;
+        }
     }
 
     @WrapOperation(method = "tickDeath", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ExperienceOrb;award(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;I)V"))
     private void nitrogen_fabric$adjustExperienceAmount(ServerLevel level, Vec3 pos, int amount, Operation<Void> original) {
         var helper = new ExperienceDropHelper(amount);
 
-        LivingEntityEvents.ON_EXPERIENCE_DROP.invoker().onExperienceDrop(this, this.unlimitedLastHurtByPlayer, helper);
+        LivingEntityEvents.ON_EXPERIENCE_DROP.invoker().onExperienceDrop(this, this.unlimitedLastHurtByPlayer.getEntity(level, Player.class), helper);
 
         original.call(level, pos, helper.getFinalExperienceAmount());
     }

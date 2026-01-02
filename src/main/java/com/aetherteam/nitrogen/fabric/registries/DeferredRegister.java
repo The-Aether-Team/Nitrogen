@@ -597,7 +597,7 @@ public class DeferredRegister<T> {
         public @Nullable Registry<V> get() {
             // Keep looking up the registry until it's not null
             if (this.registry == null)
-                this.registry = (Registry<V>) BuiltInRegistries.REGISTRY.get(this.registryKey.location());
+                this.registry = (Registry<V>) BuiltInRegistries.REGISTRY.getValue(this.registryKey.location());
 
             return this.registry;
         }

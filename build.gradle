@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'fabric-loom' version '1.7-SNAPSHOT'
+    id 'fabric-loom' version '1.14-SNAPSHOT'
     id 'com.matthewprenger.cursegradle' version '[1.4,1.5)'
     id 'com.modrinth.minotaur' version '[2,3)'
 }
@@ -22,7 +22,7 @@ base {
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 loom {
-    accessWidenerPath = file("src/main/resources/${mod_id}.accesswidener")
+    //accessWidenerPath = file("src/main/resources/${mod_id}.accesswidener")
 
     mods {
         "${mod_id}" {
@@ -34,13 +34,6 @@ loom {
 fabricApi {
     configureDataGeneration {
         modId = mod_id
-    }
-}
-
-    mods {
-        "${mod_id}" {
-            sourceSet(sourceSets.main)
-        }
     }
 }
 
@@ -61,7 +54,7 @@ dependencies {
 
     mappings loom.layered() {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${project.property("neogradle.subsystems.parchment.minecraftVersion")}:${project.property("neogradle.subsystems.parchment.mappingsVersion")}@zip")
+        parchment("org.parchmentmc.data:parchment-${project.property("parchment_minecraft")}:${project.property("parchment_version")}@zip")
     }
 
     modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
@@ -70,15 +63,14 @@ dependencies {
     //modCompileOnly "mezz.jei:jei-${project.minecraft_version}-common:${project.jei_version}"
     //modCompileOnly "mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}"
 
-    modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+    modCompileOnly ("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}") { exclude group: "net.fabricmc.fabric-api" }
+    modCompileOnly ("me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}") { exclude group: "net.fabricmc.fabric-api" }
+    modCompileOnly ("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${project.rei_version}") { exclude group: "net.fabricmc.fabric-api" }
 
-    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}"
-    modCompileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${project.rei_version}"
+    modCompileOnly ("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") { exclude group: "net.fabricmc.fabric-api" }
+    modCompileOnly ("dev.architectury:architectury-fabric:${project.architectury_version}") { exclude group: "net.fabricmc.fabric-api" }
 
-    modCompileOnly "me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}"
-    modCompileOnly "dev.architectury:architectury-fabric:${project.architectury_version}"
-
-    modCompileOnly "io.wispforest:accessories-fabric:${project.accessories_version}"
+    include(implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.3.7-beta.1")))
 }
 
 repositories {
@@ -89,9 +81,10 @@ repositories {
     maven { url = 'https://maven.wispforest.io/releases' }
     maven { url = 'https://maven.su5ed.dev/releases' }
     maven { url = 'https://maven.fabricmc.net' }
+    maven { url = "https://maven.bawnorton.com/releases" }
 }
 
-var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+tasks.withType(ProcessResources).configureEach {
     var replaceProperties = [
         mod_id                 : mod_id,
         mod_name               : mod_name,
@@ -114,8 +107,6 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
         expand replaceProperties
     }
 }
-sourceSets.main.resources.srcDir generateModMetadata
-neoForge.ideSyncTask generateModMetadata
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
@@ -142,7 +133,7 @@ java {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId project.archivesBaseName
+            artifactId project.base.archivesName.get()
             from components.java
         }
     }

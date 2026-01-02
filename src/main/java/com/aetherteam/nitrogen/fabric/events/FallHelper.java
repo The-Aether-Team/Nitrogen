@@ -2,19 +2,19 @@ package com.aetherteam.nitrogen.fabric.events;
 
 public class FallHelper extends CancellableCallbackImpl {
 
-    private float distance;
+    private double distance;
     private float damageMultiplier;
 
-    public FallHelper(float distance, float damageMultiplier) {
+    public FallHelper(double distance, float damageMultiplier) {
         this.setDistance(distance);
         this.setDamageMultiplier(damageMultiplier);
     }
 
-    public float getDistance() {
+    public double getDistance() {
         return distance;
     }
 
-    public void setDistance(float distance) {
+    public void setDistance(double distance) {
         this.distance = distance;
     }
 

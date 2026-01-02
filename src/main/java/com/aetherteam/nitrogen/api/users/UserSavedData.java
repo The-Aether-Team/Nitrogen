@@ -22,7 +22,8 @@ public final class UserSavedData extends SavedData { //TODO VERIFY
         UserSavedData::new,
         ctx -> RecordCodecBuilder.create(instance -> instance.group(
             Codec.unboundedMap(UUIDUtil.STRING_CODEC, User.CODEC).fieldOf("stored_users").forGetter(UserSavedData::getStoredUsers)
-        ).apply(instance, UserSavedData::new))
+        ).apply(instance, UserSavedData::new)),
+        null // Object builder API 12.1.0 and later makes this a no-op
     );
     private Map<UUID, User> storedUsers;
 

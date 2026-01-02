@@ -17,6 +17,8 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.util.random.Weighted;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.Biome;
@@ -30,7 +32,6 @@ import java.util.function.Function;
 
 import static net.minecraft.world.level.biome.MobSpawnSettings.MobSpawnCost;
 import static net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
-import static net.minecraft.world.level.levelgen.GenerationStep.Carving;
 import static net.minecraft.world.level.levelgen.GenerationStep.Decoration;
 
 public class BiomeModificationImpls {
@@ -178,7 +179,7 @@ public class BiomeModificationImpls {
      * @param biomes   Biomes to add mob spawns to.
      * @param spawners List of Weighted SpawnerDatas specifying EntityType, weight, and pack size.
      */
-    public record AddSpawnsBiomeModification(HolderSet<Biome> biomes, List<SpawnerData> spawners) implements BiomesModificationData {
+    public record AddSpawnsBiomeModification(HolderSet<Biome> biomes, WeightedList<SpawnerData> spawners) implements BiomesModificationData {
 
         public static final MapCodec<AddSpawnsBiomeModification> CODEC = RecordCodecBuilder.mapCodec(
                 builder -> builder
@@ -186,9 +187,9 @@ public class BiomeModificationImpls {
                                 Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddSpawnsBiomeModification::biomes),
                                 // Allow either a list or single spawner, attempting to decode the list format first.
                                 // Uses the better EitherCodec that logs both errors if both formats fail to parse.
-                                Codec.either(SpawnerData.CODEC.listOf(), SpawnerData.CODEC).xmap(
-                                        either -> either.map(Function.identity(), List::of), // convert list/singleton to list when decoding
-                                        list -> list.size() == 1 ? Either.right(list.get(0)) : Either.left(list) // convert list to singleton/list when encoding
+                                Codec.either(WeightedList.codec(SpawnerData.CODEC), Weighted.codec(SpawnerData.CODEC)).xmap(
+                                    either -> either.map(Function.identity(), WeightedList::<SpawnerData>of), // convert list/singleton to list when decoding
+                                    list -> list.unwrap().size() == 1 ? Either.right(list.unwrap().get(0)) : Either.left(list) // convert list to singleton/list when encoding
                                 ).fieldOf("spawners").forGetter(AddSpawnsBiomeModification::spawners))
                         .apply(builder, AddSpawnsBiomeModification::new));
 
@@ -200,15 +201,15 @@ public class BiomeModificationImpls {
          * @return AddSpawnsBiomeModifier that adds a single spawn entry to the specified biomes.
          */
         public static AddSpawnsBiomeModification singleSpawn(HolderSet<Biome> biomes, SpawnerData spawner) {
-            return new AddSpawnsBiomeModification(biomes, List.of(spawner));
+            return new AddSpawnsBiomeModification(biomes, WeightedList.of(spawner));
         }
 
         @Override
         public void modify(BiomeSelectionContext selectionContext, BiomeModificationContext modificationContext) {
             var spawns = modificationContext.getSpawnSettings();
-            for (SpawnerData spawner : this.spawners) {
-                EntityType<?> type = spawner.type;
-                spawns.addSpawn(type.getCategory(), spawner);
+            for (Weighted<SpawnerData> spawner : this.spawners.unwrap()) {
+                EntityType<?> type = spawner.value().type();
+                spawns.addSpawn(type.getCategory(), spawner.value(), spawner.weight());
             }
         }
 
@@ -250,7 +251,7 @@ public class BiomeModificationImpls {
         public void modify(BiomeSelectionContext selectionContext, BiomeModificationContext modificationContext) {
             for (MobCategory category : MobCategory.values()) {
                 modificationContext.getSpawnSettings().removeSpawns(
-                        (mobCategory, spawnerData) -> mobCategory.equals(category) && this.entityTypes.contains(BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(spawnerData.type))
+                        (mobCategory, spawnerData) -> mobCategory.equals(category) && this.entityTypes.contains(BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(spawnerData.type()))
                 );
             }
         }
@@ -281,18 +282,17 @@ public class BiomeModificationImpls {
      * @param biomes  Biomes to add features to.
      * @param carvers ConfiguredWorldCarvers to add to biomes.
      */
-    public record AddCarversBiomeModification(HolderSet<Biome> biomes, HolderSet<ConfiguredWorldCarver<?>> carvers, Carving step) implements BiomesModificationData {
+    public record AddCarversBiomeModification(HolderSet<Biome> biomes, HolderSet<ConfiguredWorldCarver<?>> carvers) implements BiomesModificationData {
         public static final MapCodec<AddCarversBiomeModification> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
                 Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddCarversBiomeModification::biomes),
-                ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(AddCarversBiomeModification::carvers),
-                Carving.CODEC.fieldOf("step").forGetter(AddCarversBiomeModification::step)
+                ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(AddCarversBiomeModification::carvers)
         ).apply(builder, AddCarversBiomeModification::new));
 
         @Override
         public void modify(BiomeSelectionContext selectionContext, BiomeModificationContext modificationContext) {
             var generationSettings = modificationContext.getGenerationSettings();
             for (Holder<ConfiguredWorldCarver<?>> carver : this.carvers) {
-                generationSettings.removeCarver(step, carver.nitrogen_fabric$getKey());
+                generationSettings.addCarver(carver.nitrogen_fabric$getKey());
             }
         }
 
@@ -322,23 +322,18 @@ public class BiomeModificationImpls {
      * @param biomes  Biomes to remove carvers from.
      * @param carvers ConfiguredWorldCarvers to remove from biomes.
      */
-    public record RemoveCarversBiomeModification(HolderSet<Biome> biomes, HolderSet<ConfiguredWorldCarver<?>> carvers, Set<Carving> steps) implements BiomesModificationData {
+    public record RemoveCarversBiomeModification(HolderSet<Biome> biomes, HolderSet<ConfiguredWorldCarver<?>> carvers) implements BiomesModificationData {
 
         public static final MapCodec<RemoveCarversBiomeModification> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
                         Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveCarversBiomeModification::biomes),
-                        ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(RemoveCarversBiomeModification::carvers),
-                        Codec.either(Carving.CODEC.listOf(), Carving.CODEC).xmap(
-                                either -> either.map(Set::copyOf, Set::of),
-                                set -> set.size() == 1 ? Either.right(set.toArray(Carving[]::new)[0]) : Either.left(List.copyOf(set))).optionalFieldOf("steps", EnumSet.allOf(Carving.class)).forGetter(RemoveCarversBiomeModification::steps))
-                .apply(builder, RemoveCarversBiomeModification::new));
+                        ConfiguredWorldCarver.LIST_CODEC.fieldOf("carvers").forGetter(RemoveCarversBiomeModification::carvers)
+            ).apply(builder, RemoveCarversBiomeModification::new));
 
         @Override
         public void modify(BiomeSelectionContext selectionContext, BiomeModificationContext modificationContext) {
             var generationSettings = modificationContext.getGenerationSettings();
-            for (Carving step : steps) {
-                for (Holder<ConfiguredWorldCarver<?>> carver : this.carvers) {
-                    generationSettings.removeCarver(step, carver.nitrogen_fabric$getKey());
-                }
+            for (Holder<ConfiguredWorldCarver<?>> carver : this.carvers) {
+                generationSettings.removeCarver(carver.nitrogen_fabric$getKey());
             }
         }
 

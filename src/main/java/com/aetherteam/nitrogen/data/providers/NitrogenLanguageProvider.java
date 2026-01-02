@@ -66,7 +66,7 @@ public abstract class NitrogenLanguageProvider extends FabricLanguageProvider {
     }
 
     public void add(ItemStack key, String name) {
-        builderInstance.add(key.getDescriptionId(), name);
+        builderInstance.add(key.getItem().getDescriptionId(), name);
     }
 
     public void addEffect(Supplier<? extends MobEffect> key, String name) {

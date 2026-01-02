@@ -10,6 +10,7 @@ import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Mirror;
@@ -61,11 +62,11 @@ public abstract class StructureTemplateMixin {
             : original.call(instance, level, offset, pos, blockInfo, relativeBlockInfo, settings);
     }
 
-    @WrapOperation(method = "placeInWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate;placeEntities(Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Mirror;Lnet/minecraft/world/level/block/Rotation;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/levelgen/structure/BoundingBox;Z)V"))
-    private void nitrogen_fabric$captureSettings(StructureTemplate instance, ServerLevelAccessor serverLevel, BlockPos pos, Mirror mirror, Rotation rotation, BlockPos offset, BoundingBox boundingBox, boolean withEntities, Operation<Void> original, @Local(argsOnly = true) StructurePlaceSettings settings) {
+    @WrapOperation(method = "placeInWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate;placeEntities(Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Mirror;Lnet/minecraft/world/level/block/Rotation;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/levelgen/structure/BoundingBox;ZLnet/minecraft/util/ProblemReporter;)V"))
+    private void nitrogen_fabric$captureSettings(StructureTemplate instance, ServerLevelAccessor level, BlockPos pos, Mirror mirror, Rotation rotation, BlockPos offset, BoundingBox boundingBox, boolean finalize, ProblemReporter problemReporter, Operation<Void> original, @Local(argsOnly = true) StructurePlaceSettings settings) {
         if (!isPortingLibLoaded) capturedSettings.set(settings);
 
-        original.call(instance, serverLevel, pos, mirror, rotation, offset, boundingBox, withEntities);
+        original.call(instance, level, pos, mirror, rotation, offset, boundingBox, finalize, problemReporter);
     }
 
     @WrapOperation(method = "placeEntities", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;"))

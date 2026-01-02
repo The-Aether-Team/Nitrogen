@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class BiomeModificationImplMixin {
     @Inject(method = "finalizeWorldGen", at = @At(value = "INVOKE", target = "Lnet/fabricmc/fabric/impl/biome/modification/BiomeModificationMarker;fabric_markModified()V", shift = At.Shift.AFTER))
     private void loadDataDrivenBiomeModifications(RegistryAccess impl, CallbackInfo ci) {
-        impl.registryOrThrow(BiomeModificationDataRegistries.BIOME_MODIFIERS_KEY).holders().forEach(ref -> {
+        impl.lookupOrThrow(BiomeModificationDataRegistries.BIOME_MODIFIERS_KEY).listElements().forEach(ref -> {
             var modificationData = ref.value();
             var phase = modificationData.phase();
 

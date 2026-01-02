@@ -17,6 +17,7 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.slf4j.Logger;
 
@@ -44,16 +45,16 @@ public class DataMapLoader implements PreparableReloadListener, IdentifiableReso
     }
 
     @Override
-    public CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
-        return this.load(resourceManager, backgroundExecutor, preparationsProfiler)
-            .thenCompose(preparationBarrier::wait)
+    public CompletableFuture<Void> reload(PreparationBarrier barrier, ResourceManager manager, Executor backgroundExecutor, Executor gameExecutor) {
+        return this.load(manager, backgroundExecutor, Profiler.get())
+            .thenCompose(barrier::wait)
             .thenAcceptAsync(values -> this.results = values, gameExecutor);
     }
 
     public static void apply(RegistryAccess registryAccess) {
         if (results == null) return;
 
-        results.forEach((key, result) -> apply((MappedRegistry) registryAccess.registryOrThrow(key), result, registryAccess));
+        results.forEach((key, result) -> apply((MappedRegistry) registryAccess.lookupOrThrow(key), result, registryAccess));
 
         // Clear the intermediary maps and objects
         results = null;
@@ -70,7 +71,7 @@ public class DataMapLoader implements PreparableReloadListener, IdentifiableReso
     private static <T, R> Map<ResourceKey<R>, T> buildDataMap(Registry<R> registry, DataMapType<R, T> attachment, List<DataMapFile<T, R>> entries) {
         record WithSource<T, R>(T attachment, Either<TagKey<R>, ResourceKey<R>> source) {}
         final Map<ResourceKey<R>, WithSource<T, R>> result = new IdentityHashMap<>();
-        final BiConsumer<Either<TagKey<R>, ResourceKey<R>>, Consumer<Holder<R>>> valueResolver = (key, cons) -> key.ifLeft(tag -> registry.getTagOrEmpty(tag).forEach(cons)).ifRight(k -> cons.accept(registry.getHolderOrThrow(k)));
+        final BiConsumer<Either<TagKey<R>, ResourceKey<R>>, Consumer<Holder<R>>> valueResolver = (key, cons) -> key.ifLeft(tag -> registry.getTagOrEmpty(tag).forEach(cons)).ifRight(k -> cons.accept(registry.getOrThrow(k)));
         final DataMapValueMerger<R, T> merger = attachment instanceof AdvancedDataMapType<R, T, ?> adv ? adv.merger() : DataMapValueMerger.defaultMerger();
         entries.forEach(entry -> {
             if (entry.replace()) {
@@ -123,7 +124,8 @@ public class DataMapLoader implements PreparableReloadListener, IdentifiableReso
         final RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, access);
 
         final Map<ResourceKey<? extends Registry<?>>, LoadResult<?>> values = new HashMap<>();
-        access.listRegistries().forEach(registryKey -> {
+        access.listRegistries().forEach(lookup -> {
+            var registryKey = lookup.key();
             profiler.push("registry_data_maps/" + registryKey.location() + "/locating");
             final var fileToId = FileToIdConverter.json(PATH + "/" + getFolderLocation(registryKey.location()));
             for (Map.Entry<ResourceLocation, List<Resource>> entry : fileToId.listMatchingResourceStacks(manager).entrySet()) {

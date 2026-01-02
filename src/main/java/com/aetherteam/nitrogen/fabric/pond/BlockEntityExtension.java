@@ -4,9 +4,10 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.storage.ValueInput;
 
 public interface BlockEntityExtension {
-    default boolean nitrogen_fabric$handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+    default boolean nitrogen_fabric$handleUpdateTag(ValueInput tag) {
         return false;
     }
 

@@ -21,7 +21,7 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.registry.FuelRegistry;
+import net.fabricmc.fabric.api.registry.FuelRegistryEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -67,7 +67,7 @@ public class DataMapAPISetup {
 
         ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> {
             RegistryManager.getDataMaps().forEach((registry, values) -> {
-                final var regOpt = player.getServer().overworld().registryAccess().registry(registry);
+                final var regOpt = player.level().getServer().overworld().registryAccess().lookup(registry);
                 if (regOpt.isEmpty()) return;
                 if (!ServerPlayNetworking.canSend(player, RegistryDataMapSyncPayload.TYPE)) return;
                 var connection = ((ServerCommonPacketListenerImplAccessor) player.connection).nitrogen_fabric$connection();
@@ -89,27 +89,14 @@ public class DataMapAPISetup {
 
         PayloadTypeRegistry.playS2C().register(AdvancedAddEntityPayload.TYPE, AdvancedAddEntityPayload.STREAM_CODEC);
 
-        DataMapsUpdatedEvent.EVENT.register(new FurnaceFuelCallback());
+        FuelRegistryEvents.EXCLUSIONS.register((builder, context) -> {
+            var registry = BuiltInRegistries.ITEM;
+            ((IRegistryExtension<Item>) registry).nitrogen_fabric$getDataMap(FURNACE_FUELS)
+                .forEach((itemResourceKey, furnaceFuel) -> {
+                    builder.add(registry.getValue(itemResourceKey), furnaceFuel.burnTime());
+                });
+        });
         DataMapsUpdatedEvent.EVENT.register(new CompostableFuelCallback());
-    }
-
-    public static class FurnaceFuelCallback implements DataMapsUpdatedEvent.CallBack {
-
-        private final Set<ResourceKey<Item>> addedEntries = new HashSet<>();
-
-        @Override
-        public void onUpdate(DataMapsUpdatedEvent event) {
-            addedEntries.forEach(addedEntry -> FuelRegistry.INSTANCE.clear(BuiltInRegistries.ITEM.get(addedEntry)));
-
-            event.ifRegistry(Registries.ITEM, registry -> {
-                ((IRegistryExtension<Item>) registry).nitrogen_fabric$getDataMap(FURNACE_FUELS)
-                    .forEach((itemResourceKey, furnaceFuel) -> {
-                        addedEntries.add(itemResourceKey);
-
-                        FuelRegistry.INSTANCE.add(registry.get(itemResourceKey), furnaceFuel.burnTime());
-                    });
-            });
-        }
     }
 
     public static class CompostableFuelCallback implements DataMapsUpdatedEvent.CallBack {
@@ -122,10 +109,10 @@ public class DataMapAPISetup {
 
             event.ifRegistry(Registries.ITEM, registry -> {
                 ((IRegistryExtension<Item>) registry).nitrogen_fabric$getDataMap(COMPOSTABLES)
-                    .forEach((itemResourceKey, furnaceFuel) -> {
+                    .forEach((itemResourceKey, compostable) -> {
                         addedEntries.add(itemResourceKey);
 
-                        ComposterBlock.COMPOSTABLES.put(registry.get(itemResourceKey), furnaceFuel.chance());
+                        ComposterBlock.COMPOSTABLES.put(registry.getValue(itemResourceKey), compostable.chance());
                     });
             });
         }

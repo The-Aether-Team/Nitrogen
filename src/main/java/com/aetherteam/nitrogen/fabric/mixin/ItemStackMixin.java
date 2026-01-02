@@ -14,6 +14,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.enchantment.Enchantment;
+import org.apache.commons.lang3.function.TriConsumer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -27,23 +28,16 @@ public abstract class ItemStackMixin implements ItemStackExtension {
         at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/component/ItemAttributeModifiers;forEach(Lnet/minecraft/world/entity/EquipmentSlot;Ljava/util/function/BiConsumer;)V")
     )
     private void nitrogen_fabric$modifyAttributeEvent_1(ItemAttributeModifiers instance, EquipmentSlot equipmentSlot, BiConsumer<Holder<Attribute>, AttributeModifier> action, Operation<Void> original) {
-        var event = ItemAttributeModifierHelper.invokeEvent((ItemStack) (Object) this, instance);
-
-        instance = new ItemAttributeModifiers(event.getModifiers(), instance.showInTooltip());
-
-        original.call(instance, equipmentSlot, action);
+        original.call(ItemAttributeModifierHelper.invokeEvent((ItemStack) (Object) this, instance).toRecord(), equipmentSlot, action);
     }
 
+
     @WrapOperation(
-        method = "forEachModifier(Lnet/minecraft/world/entity/EquipmentSlotGroup;Ljava/util/function/BiConsumer;)V",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/component/ItemAttributeModifiers;forEach(Lnet/minecraft/world/entity/EquipmentSlotGroup;Ljava/util/function/BiConsumer;)V")
+        method = "forEachModifier(Lnet/minecraft/world/entity/EquipmentSlotGroup;Lorg/apache/commons/lang3/function/TriConsumer;)V",
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/component/ItemAttributeModifiers;forEach(Lnet/minecraft/world/entity/EquipmentSlotGroup;Lorg/apache/commons/lang3/function/TriConsumer;)V")
     )
-    private void nitrogen_fabric$modifyAttributeEvent_2(ItemAttributeModifiers instance, EquipmentSlotGroup slotGroup, BiConsumer<Holder<Attribute>, AttributeModifier> action, Operation<Void> original) {
-        var event = ItemAttributeModifierHelper.invokeEvent((ItemStack) (Object) this, instance);
-
-        instance = new ItemAttributeModifiers(event.getModifiers(), instance.showInTooltip());
-
-        original.call(instance, slotGroup, action);
+    private void nitrogen_fabric$modifyAttributeEvent_2(ItemAttributeModifiers instance, EquipmentSlotGroup slotGroup, TriConsumer<Holder<Attribute>, AttributeModifier, ItemAttributeModifiers.Display> action, Operation<Void> original) {
+        original.call(ItemAttributeModifierHelper.invokeEvent((ItemStack) (Object) this, instance).toRecord(), slotGroup, action);
     }
 
     @Override

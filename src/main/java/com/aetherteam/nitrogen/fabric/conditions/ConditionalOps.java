@@ -125,7 +125,9 @@ public class ConditionalOps {
         // If this turns out to be a problem, please change it but also document it and write some test cases.
         @Override
         public <T> DataResult<Pair<Optional<WithConditions<A>>, T>> decode(DynamicOps<T> ops, T input) {
-            @Nullable var ctx = (ops instanceof RegistryOps<T> registryOps) ? ((HolderLookupAdapterAccessor)((RegistryOpsAccessor) registryOps).nitrogen_fabric$lookup()).nitrogen_fabric$lookupProvider() : null;
+            @Nullable var ctx = (ops instanceof RegistryOps<T> registryOps)
+                ? ((RegistryOpsAccessor) registryOps).nitrogen_fabric$lookup()
+                : null;
 
             if (ops.compressMaps()) {
                 // Compressing ops are not supported at the moment because they require special handling.

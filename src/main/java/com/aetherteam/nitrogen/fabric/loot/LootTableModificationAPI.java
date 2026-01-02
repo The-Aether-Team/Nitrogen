@@ -6,6 +6,7 @@
 package com.aetherteam.nitrogen.fabric.loot;
 
 import com.aetherteam.nitrogen.Nitrogen;
+import com.aetherteam.nitrogen.fabric.pond.LootContextExtension;
 import com.google.gson.*;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
@@ -14,25 +15,30 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
+import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import org.slf4j.Logger;
+import org.spongepowered.asm.mixin.Unique;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -48,6 +54,27 @@ public abstract class LootTableModificationAPI {
     private static final Map<ResourceLocation, IGlobalLootModifier> CACHED_LOOT_MODIFIERS = new LinkedHashMap<>();
 
     private static final Map<ResourceLocation, Function<HolderLookup.Provider, IGlobalLootModifier>> LOOT_MODIFIERS = new HashMap<>();
+
+    public static final ResourceLocation UNKNOWN_TABLE_ID = ResourceLocation.fromNamespaceAndPath(Nitrogen.MODID, "unknown");
+
+    static {
+        LootTableEvents.MODIFY_DROPS.register((entry, context, drops) -> {
+            var lootTableId = entry.unwrapKey().map(ResourceKey::location);
+
+            var ext = ((LootContextExtension) context);
+
+            // Handles case where the given loot table is Unknown at all meaning an unknown location is pushed to the top.
+            // Typically, occurs when the table is a nested one or injected in manor where its it not registered
+            ext.nitrogen_fabric$pushTableId(lootTableId.orElse(UNKNOWN_TABLE_ID));
+
+            var stacks = new ObjectArrayList<>(drops);
+            drops.clear();
+
+            drops.addAll(LootTableModificationAPI.apply(stacks, context));
+
+            ext.nitrogen_fabric$popTableId();
+        });
+    }
 
     //--
 
@@ -94,14 +121,14 @@ public abstract class LootTableModificationAPI {
         }
     }
 
-    public static class ReloadListener extends SimpleJsonResourceReloadListener implements IdentifiableResourceReloadListener {
+    public static class ReloadListener extends SimpleJsonResourceReloadListener<JsonElement> implements IdentifiableResourceReloadListener {
         private static final ResourceLocation LOOT_MODIFIER_CONFIG = ResourceLocation.fromNamespaceAndPath("neoforge", "loot_modifiers/global_loot_modifiers.json");
         private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
         private final HolderLookup.Provider provider;
 
         private ReloadListener(HolderLookup.Provider provider) {
-            super(GSON, "loot_modifiers");
+            super(ExtraCodecs.JSON, FileToIdConverter.json("loot_modifiers"));
 
             this.provider = provider;
         }
@@ -144,6 +171,8 @@ public abstract class LootTableModificationAPI {
 
             return validData;
         }
+
+
 
         @Override
         protected void apply(Map<ResourceLocation, JsonElement> object, ResourceManager resourceManager, ProfilerFiller profiler) {

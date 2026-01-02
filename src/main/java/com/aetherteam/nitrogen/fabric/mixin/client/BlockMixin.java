@@ -11,6 +11,6 @@ import org.spongepowered.asm.mixin.Mixin;
 public abstract class BlockMixin implements BlockExtension {
     @Override
     public boolean nitrogen_fabric$supportsExternalFaceHiding(BlockState state) {
-        return ItemBlockRenderTypes.getRenderType(state, false).equals(RenderType.solid());
+        return ItemBlockRenderTypes.getRenderType(state).equals(RenderType.solid());
     }
 }

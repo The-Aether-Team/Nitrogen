@@ -15,4 +15,16 @@ public class ScreenKeyboardEventsExtension {
     public static boolean getPressedResult(Screen screen)  {
         return SCREEN_TO_PRESSED_RESULT.getOrDefault(screen, false);
     }
+
+    //--
+
+    private static final Map<Screen, Boolean> SCREEN_TO_RELEASED_RESULT = new MapMaker().weakKeys().makeMap();
+
+    public static void setReleasedResult(Screen screen, boolean released) {
+        SCREEN_TO_PRESSED_RESULT.put(screen, released);
+    }
+
+    public static boolean getReleasedResult(Screen screen)  {
+        return SCREEN_TO_PRESSED_RESULT.getOrDefault(screen, false);
+    }
 }

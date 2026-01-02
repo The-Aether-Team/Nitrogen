@@ -25,7 +25,7 @@ public class Utils {
             }
 
             if ((flags & 1) != 0) {
-                level.blockUpdated(pos, oldState.getBlock());
+                level.updateNeighborsAt(pos, oldState.getBlock());
                 if (!level.isClientSide && newState.hasAnalogOutputSignal()) {
                     level.updateNeighbourForOutputSignal(pos, block);
                 }
@@ -38,7 +38,7 @@ public class Utils {
                 newState.updateIndirectNeighbourShapes(level, pos, i, recursionLeft - 1);
             }
 
-            level.onBlockStateChange(pos, oldState, blockstate1);
+            level.updatePOIOnBlockStateChange(pos, oldState, blockstate1);
         }
     }
 

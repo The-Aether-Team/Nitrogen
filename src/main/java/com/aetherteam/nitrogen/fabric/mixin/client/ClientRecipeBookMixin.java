@@ -1,21 +1,24 @@
 package com.aetherteam.nitrogen.fabric.mixin.client;
 
 import com.aetherteam.nitrogen.fabric.events.RecipeBookCategoriesHelper;
-import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.ClientRecipeBook;
-import net.minecraft.client.RecipeBookCategories;
-import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
+import net.minecraft.world.item.crafting.ExtendedRecipeBookCategory;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.List;
+import java.util.Map;
 
 @Mixin(ClientRecipeBook.class)
 public abstract class ClientRecipeBookMixin {
-    @WrapMethod(method = "getCategory")
-    private static RecipeBookCategories nitrogen_fabric$lookupAlternative(RecipeHolder<?> recipe, Operation<RecipeBookCategories> original) {
-        var recipeType = recipe.value().getType();
-
-        var lookup = RecipeBookCategoriesHelper.INSTANCE.recipeCategoryLookups.get(recipeType);
-
-        return lookup != null ? lookup.apply(recipe) : original.call(recipe);
+    @Inject(method = "rebuildCollections", at = @At(value = "INVOKE", target = "Ljava/util/Map;copyOf(Ljava/util/Map;)Ljava/util/Map;"))
+    private static void nitrogen_fabric$addToLookup(CallbackInfo ci, @Local(ordinal = 1) Map<ExtendedRecipeBookCategory, List<RecipeCollection>> map) {
+        RecipeBookCategoriesHelper.INSTANCE.getSearchCategories().forEach((extendedCategory, categories) -> {
+            map.put(extendedCategory, categories.stream().flatMap(category -> map.getOrDefault(category, List.of()).stream()).toList());
+        });
     }
 }

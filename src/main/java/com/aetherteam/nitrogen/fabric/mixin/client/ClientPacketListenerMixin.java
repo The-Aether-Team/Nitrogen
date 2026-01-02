@@ -1,6 +1,5 @@
 package com.aetherteam.nitrogen.fabric.mixin.client;
 
-import com.aetherteam.nitrogen.fabric.client.dim.ClientDimensionUtils;
 import com.aetherteam.nitrogen.fabric.client.events.ClientDimensionEvents;
 import com.aetherteam.nitrogen.fabric.client.events.ClientPlayerEvents;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;

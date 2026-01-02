@@ -1,13 +1,10 @@
 package com.aetherteam.nitrogen.fabric.mixin.client;
 
-import com.aetherteam.nitrogen.fabric.client.dim.ClientDimensionUtils;
 import com.aetherteam.nitrogen.fabric.events.AddPackFindersEvent;
 import com.aetherteam.nitrogen.fabric.events.LevelEvents;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.client.main.GameConfig;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.server.packs.PackType;
@@ -44,12 +41,5 @@ public abstract class MinecraftMixin {
     @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;reload()V"))
     private void nitrogen_fabric$addClientPackResources(GameConfig gameConfig, CallbackInfo ci) {
         AddPackFindersEvent.invokeEvent(PackType.CLIENT_RESOURCES, this.resourcePackRepository);
-    }
-
-    @WrapOperation(method = "setLevel", at = @At(value = "NEW", target = "(Ljava/util/function/BooleanSupplier;Lnet/minecraft/client/gui/screens/ReceivingLevelScreen$Reason;)Lnet/minecraft/client/gui/screens/ReceivingLevelScreen;"))
-    private ReceivingLevelScreen nitrogen_fabric$adjustLevelTransition(BooleanSupplier levelReceived, ReceivingLevelScreen.Reason reason, Operation<ReceivingLevelScreen> original, @Local(argsOnly = true) ClientLevel level) {
-        var alternativeConstructor = ClientDimensionUtils.getScreenFromLevel(level, this.level);
-
-        return alternativeConstructor != null ? alternativeConstructor.create(levelReceived, reason) : original.call(levelReceived, reason);
     }
 }

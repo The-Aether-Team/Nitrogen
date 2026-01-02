@@ -13,16 +13,16 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -51,8 +51,8 @@ public abstract class EntityMixin implements EntityExtension {
         EntityTickEvents.AFTER.invoker().afterTick(instance);
     }
 
-    @Inject(method = "changeDimension", at = @At("HEAD"))
-    private void nitrogen_fabric$beforeDimensionChange(DimensionTransition transition, CallbackInfoReturnable<Entity> cir) {
+    @Inject(method = "teleport", at = @At("HEAD"))
+    private void nitrogen_fabric$beforeDimensionChange(TeleportTransition transition, CallbackInfoReturnable<Entity> cir) {
         EntityEvents.BEFORE_DIMENSION_CHANGE.invoker().beforeChange((Entity) (Object) this, transition.newLevel().dimension());
     }
 
@@ -89,7 +89,7 @@ public abstract class EntityMixin implements EntityExtension {
 
         if (!callback.isCanceled()) return true;
 
-        entityMounting.absMoveTo(entityMounting.getX(), entityMounting.getY(), entityMounting.getZ(), entityMounting.yRotO, entityMounting.xRotO);
+        entityMounting.absSnapTo(entityMounting.getX(), entityMounting.getY(), entityMounting.getZ(), entityMounting.yRotO, entityMounting.xRotO);
 
         return false;
     }
@@ -101,8 +101,8 @@ public abstract class EntityMixin implements EntityExtension {
         }
     }
 
-    @Inject(method = "spawnAtLocation(Lnet/minecraft/world/item/ItemStack;F)Lnet/minecraft/world/entity/item/ItemEntity;", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z"))
-    private void nitrogen_fabric$captureDroppedStack(ItemStack stack, float offsetY, CallbackInfoReturnable<ItemEntity> cir, @Local() ItemEntity itemEntity) {
+    @Inject(method = "spawnAtLocation(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/entity/item/ItemEntity;", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z"))
+    private void nitrogen_fabric$captureDroppedStack(ServerLevel level, ItemStack stack, Vec3 offset, CallbackInfoReturnable<ItemEntity> cir, @Local() ItemEntity itemEntity) {
         EntityEvents.ON_SPAWNED_ITEM_STACK.invoker().onSpawn((Entity) (Object) this, stack, itemEntity);
     }
 }

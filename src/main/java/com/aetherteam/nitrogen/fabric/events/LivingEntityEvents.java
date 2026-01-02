@@ -69,7 +69,7 @@ public class LivingEntityEvents {
     }
 
     public interface ShieldBlock {
-        void onBlock(DamageSource damageSource, CancellableCallback callback);
+        void onBlock(LivingEntity blocker, ShieldBlockHelper event);
     }
 
     public interface Fall {

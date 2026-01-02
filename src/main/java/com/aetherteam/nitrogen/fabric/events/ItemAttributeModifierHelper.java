@@ -43,6 +43,10 @@ public class ItemAttributeModifierHelper {
         void onAttributes(ItemStack stack, ItemAttributeModifierHelper event);
     }
 
+    public ItemAttributeModifiers toRecord() {
+        return new ItemAttributeModifiers(this.getModifiers());
+    }
+
     /**
      * {@return the default attribute modifiers before changes made by the event}
      */
@@ -126,7 +130,7 @@ public class ItemAttributeModifierHelper {
      * {@linkplain #getDefaultModifiers() default modifiers} if no changes were made.
      */
     public ItemAttributeModifiers build() {
-        return this.builder == null ? this.defaultModifiers : this.builder.build(this.defaultModifiers.showInTooltip());
+        return this.builder == null ? this.defaultModifiers : this.builder.build();
     }
 
     /**
@@ -236,8 +240,8 @@ public class ItemAttributeModifierHelper {
             this.entriesByKey.clear();
         }
 
-        public ItemAttributeModifiers build(boolean showInTooltip) {
-            return new ItemAttributeModifiers(ImmutableList.copyOf(this.entries), showInTooltip);
+        public ItemAttributeModifiers build() {
+            return new ItemAttributeModifiers(ImmutableList.copyOf(this.entries));
         }
 
         /**

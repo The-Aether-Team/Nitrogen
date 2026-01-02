@@ -11,31 +11,32 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(LivingEntityRenderer.class)
-public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> {
+public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extends LivingEntityRenderState, M extends EntityModel<? super S>> extends EntityRenderer<T, S>{
     protected LivingEntityRendererMixin(EntityRendererProvider.Context context) {
         super(context);
     }
 
-    @WrapMethod(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V")
-    private void nitrogen_fabric$onLivingEntityRenderer(T entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, Operation<Void> original) {
+    @WrapMethod(method = "render(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V")
+    private void nitrogen_fabric$onLivingEntityRenderer(S state, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, Operation<Void> original) {
         var callback = new CancellableCallbackImpl();
 
-        LivingEntityRenderEvents.BEFORE_RENDER.invoker().beforeRendering(entity, (LivingEntityRenderer<LivingEntity, ?>) (Object) this, partialTicks, poseStack, buffer, packedLight, callback);
+        LivingEntityRenderEvents.BEFORE_RENDER.invoker().beforeRendering((LivingEntityRenderer) (Object) this, state, poseStack, bufferSource, packedLight, callback);
 
         if (callback.isCanceled()) return;
 
-        original.call(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        original.call(state, poseStack, bufferSource, packedLight);
 
-        LivingEntityRenderEvents.AFTER_RENDER.invoker().afterRendering(entity, (LivingEntityRenderer<LivingEntity, ?>) (Object) this, partialTicks, poseStack, buffer, packedLight);
+        LivingEntityRenderEvents.AFTER_RENDER.invoker().afterRendering((LivingEntityRenderer) (Object) this, state, poseStack, bufferSource, packedLight);
     }
 
     @WrapOperation(
-        method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+        method = "extractRenderState(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;F)V",
         at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isPassenger()Z")
     )
     private boolean nitrogen_fabric$adjustPassengerCheck(LivingEntity instance, Operation<Boolean> original) {

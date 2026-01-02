@@ -32,11 +32,12 @@ public class ClientRegistryManager {
     public static <R> void handleDataMapSync(final RegistryDataMapSyncPayload<R> payload, final ClientPlayNetworking.Context context) {
         try {
             var regAccess = Minecraft.getInstance().level.registryAccess();
-            final FullDataMapAccess<R> registry = (FullDataMapAccess<R>) regAccess.registryOrThrow(payload.registryKey());
+            var registry = regAccess.lookupOrThrow(payload.registryKey());
+            var access = (FullDataMapAccess<R>) regAccess.lookupOrThrow(payload.registryKey());
 
-            registry.nitrogen_fabric$setDataMaps(dataMaps -> payload.dataMaps().forEach((attachKey, maps) -> dataMaps.put(RegistryManager.getDataMap(payload.registryKey(), attachKey), Collections.unmodifiableMap(maps))));
+            access.nitrogen_fabric$setDataMaps(dataMaps -> payload.dataMaps().forEach((attachKey, maps) -> dataMaps.put(RegistryManager.getDataMap(payload.registryKey(), attachKey), Collections.unmodifiableMap(maps))));
 
-            DataMapsUpdatedEvent.EVENT.invoker().onUpdate(new DataMapsUpdatedEvent(regAccess, regAccess.registryOrThrow(payload.registryKey()), DataMapsUpdatedEvent.UpdateCause.CLIENT_SYNC));
+            DataMapsUpdatedEvent.EVENT.invoker().onUpdate(new DataMapsUpdatedEvent(regAccess, registry, DataMapsUpdatedEvent.UpdateCause.CLIENT_SYNC));
         } catch (Throwable t) {
             LOGGER.error("Failed to handle registry data map sync: ", t);
             context.responseSender().disconnect(Component.translatable("neoforge.network.data_maps.failed", payload.registryKey().location().toString(), t.toString()));
