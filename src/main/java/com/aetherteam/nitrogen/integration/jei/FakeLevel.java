@@ -2,6 +2,7 @@ package com.aetherteam.nitrogen.integration.jei;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -41,7 +42,8 @@ public abstract class FakeLevel implements BlockAndTintGetter {
     @Override
     public int getBlockTint(BlockPos pos, ColorResolver colorResolver) {
         ClientLevel level = Minecraft.getInstance().level;
-        return level != null ? colorResolver.getColor(level.getBiome(pos).value(), 0, 0) : -1;
+        LocalPlayer player = Minecraft.getInstance().player;
+        return level != null ? colorResolver.getColor(level.getBiome(player != null ? player.blockPosition() : pos).value(), 0, 0) : -1;
     }
 
     @Override
