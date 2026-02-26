@@ -1,7 +1,9 @@
 package com.aetherteam.nitrogen.entity;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -18,14 +20,20 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
-public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3 originCoordinates, AABB roomBounds,
-                                                          List<UUID> dungeonPlayers) {
+public record BossRoomTracker(Vec3 originCoordinates, Vec3 minBounds, Vec3 maxBounds, List<UUID> dungeonPlayers) {
+    public static final Codec<BossRoomTracker> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Vec3.CODEC.fieldOf("origin_coordinates").forGetter(BossRoomTracker::originCoordinates),
+        Vec3.CODEC.fieldOf("min_bounds").forGetter(BossRoomTracker::minBounds),
+        Vec3.CODEC.fieldOf("max_bounds").forGetter(BossRoomTracker::maxBounds),
+        UUIDUtil.CODEC.listOf().fieldOf("dungeon_players").forGetter(BossRoomTracker::dungeonPlayers)
+    ).apply(instance, (a, b, c, d) -> new BossRoomTracker(a, b, c, new ArrayList<>(d))));
+
     /**
      * @return Whether the dungeon boss is within the room bounds, as a {@link Boolean}.
      */
-    public boolean isBossWithinRoom() {
-        if (this.boss() != null) {
-            return this.roomBounds().contains(this.boss().position());
+    public <T extends Mob & BossMob<T>> boolean isBossWithinRoom(@Nullable T boss) {
+        if (boss != null) {
+            return this.roomBounds().contains(boss.position());
         }
         return false;
     }
@@ -36,8 +44,8 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
      * @param entity The player {@link Entity}.
      * @return The {@link Boolean} result.
      */
-    public boolean isPlayerWithinRoom(Entity entity) {
-        if (this.boss() != null) {
+    public <T extends Mob & BossMob<T>> boolean isPlayerWithinRoom(@Nullable T boss, Entity entity) {
+        if (boss != null) {
             return this.roomBounds().contains(entity.position());
         }
         return false;
@@ -49,8 +57,8 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
      * @param entity The player {@link Entity}.
      * @return The {@link Boolean} result.
      */
-    public boolean isPlayerWithinRoomInterior(Entity entity) {
-        if (this.boss() != null) {
+    public <T extends Mob & BossMob<T>> boolean isPlayerWithinRoomInterior(@Nullable T boss, Entity entity) {
+        if (boss != null) {
             return this.roomBounds().deflate(1.0, 1.0, 1.0).contains(entity.position());
         }
         return false;
@@ -62,8 +70,8 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
      * @param player The {@link Player}.
      * @return The {@link Boolean} result.
      */
-    public boolean isPlayerTracked(Player player) {
-        if (this.boss() != null) {
+    public <T extends Mob & BossMob<T>> boolean isPlayerTracked(@Nullable T boss, Player player) {
+        if (boss != null) {
             return this.dungeonPlayers().contains(player.getUUID());
         }
         return false;
@@ -74,19 +82,19 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
      * If there are living players in the boss room, then they are tracked to {@link BossRoomTracker#dungeonPlayers()}.
      * If any players die, leave the room, or no longer exist, then they are removed from tracking.
      */
-    public void trackPlayers() {
-        if (this.boss() != null) {
-            this.boss().level().getEntities(EntityType.PLAYER, this.roomBounds(), Entity::isAlive).forEach(player -> {
-                if (!isPlayerTracked(player)) {
-                    this.boss().onDungeonPlayerAdded(player);
+    public <T extends Mob & BossMob<T>> void trackPlayers(@Nullable T boss) {
+        if (boss != null) {
+            boss.level().getEntities(EntityType.PLAYER, this.roomBounds(), Entity::isAlive).forEach(player -> {
+                if (!this.isPlayerTracked(boss, player)) {
+                    boss.onDungeonPlayerAdded(player);
                     this.dungeonPlayers().add(player.getUUID());
                 }
             });
             this.dungeonPlayers().removeIf(uuid -> {
-                Player player = this.boss().level().getPlayerByUUID(uuid);
-                boolean shouldRemove = player != null && (!this.isPlayerWithinRoom(player) || !player.isAlive());
+                Player player = boss.level().getPlayerByUUID(uuid);
+                boolean shouldRemove = player != null && (!this.isPlayerWithinRoom(boss, player) || !player.isAlive());
                 if (shouldRemove) {
-                    this.boss().onDungeonPlayerRemoved(player);
+                    boss.onDungeonPlayerRemoved(player);
                 }
                 return shouldRemove;
             });
@@ -98,12 +106,12 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
      *
      * @param damageSource The {@link DamageSource} used to kill the boss.
      */
-    public void grantAdvancements(DamageSource damageSource) {
-        if (this.boss() != null) {
+    public <T extends Mob & BossMob<T>> void grantAdvancements(@Nullable T boss, DamageSource damageSource) {
+        if (boss != null) {
             for (UUID uuid : this.dungeonPlayers()) {
-                Player player = this.boss().level().getPlayerByUUID(uuid);
+                Player player = boss.level().getPlayerByUUID(uuid);
                 if (player != null) {
-                    player.awardKillScore(this.boss(), damageSource);
+                    player.awardKillScore(boss, damageSource);
                 }
             }
         }
@@ -114,13 +122,13 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
      *
      * @param function A {@link Function} of two {@link BlockState}s, used to modify blocks within the room.
      */
-    public void modifyRoom(Function<BlockState, BlockState> function) {
-        if (this.boss() != null) {
+    public <T extends Mob & BossMob<T>> void modifyRoom(@Nullable T boss, ModifyPosition function) {
+        if (boss != null) {
             AABB bounds = this.roomBounds();
-            Level level = this.boss().level();
+            Level level = boss.level();
             for (BlockPos pos : BlockPos.betweenClosed((int) bounds.minX, (int) bounds.minY, (int) bounds.minZ, (int) bounds.maxX, (int) bounds.maxY, (int) bounds.maxZ)) {
                 BlockState state = level.getBlockState(pos);
-                BlockState newState = function.apply(state);
+                BlockState newState = function.convertBlock(level, pos, state);
                 if (newState != null) {
                     level.setBlock(pos, newState, 1 | 2);
                 }
@@ -128,48 +136,13 @@ public record BossRoomTracker<T extends Mob & BossMob<T>>(@Nullable T boss, Vec3
         }
     }
 
-    public CompoundTag addAdditionalSaveData() {
-        CompoundTag tag = new CompoundTag();
-        tag.putDouble("OriginX", this.originCoordinates().x());
-        tag.putDouble("OriginY", this.originCoordinates().y());
-        tag.putDouble("OriginZ", this.originCoordinates().z());
-
-        tag.putDouble("RoomBoundsMinX", this.roomBounds().minX);
-        tag.putDouble("RoomBoundsMinY", this.roomBounds().minY);
-        tag.putDouble("RoomBoundsMinZ", this.roomBounds().minZ);
-        tag.putDouble("RoomBoundsMaxX", this.roomBounds().maxX);
-        tag.putDouble("RoomBoundsMaxY", this.roomBounds().maxY);
-        tag.putDouble("RoomBoundsMaxZ", this.roomBounds().maxZ);
-
-        tag.putInt("DungeonPlayersSize", this.dungeonPlayers().size());
-        for (int i = 0; i < this.dungeonPlayers().size(); i++) {
-            tag.putUUID("Player" + i, this.dungeonPlayers().get(i));
-        }
-        return tag;
+    public AABB roomBounds() {
+        return new AABB(this.minBounds(), this.maxBounds());
     }
 
-    public static <T extends Mob & BossMob<T>> BossRoomTracker<T> readAdditionalSaveData(CompoundTag tag, T boss) {
-        double originX = tag.getDouble("OriginX");
-        double originY = tag.getDouble("OriginY");
-        double originZ = tag.getDouble("OriginZ");
-        Vec3 originCoordinates = new Vec3(originX, originY, originZ);
-
-        double minX = tag.getDouble("RoomBoundsMinX");
-        double minY = tag.getDouble("RoomBoundsMinY");
-        double minZ = tag.getDouble("RoomBoundsMinZ");
-        double maxX = tag.getDouble("RoomBoundsMaxX");
-        double maxY = tag.getDouble("RoomBoundsMaxY");
-        double maxZ = tag.getDouble("RoomBoundsMaxZ");
-        AABB roomBounds = new AABB(minX, minY, minZ, maxX, maxY, maxZ);
-
-        List<UUID> dungeonPlayers = new ArrayList<>();
-        int size = tag.getInt("DungeonPlayersSize");
-        for (int i = 0; i < size; i++) {
-            UUID uuid = tag.getUUID("Player" + i);
-            dungeonPlayers.add(uuid);
-        }
-
-        return new BossRoomTracker<>(boss, originCoordinates, roomBounds, dungeonPlayers);
+    @FunctionalInterface
+    public interface ModifyPosition {
+        BlockState convertBlock(Level level, BlockPos blockPos, BlockState oldState);
     }
 }
 

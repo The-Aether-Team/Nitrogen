@@ -1,15 +1,20 @@
 package com.aetherteam.nitrogen.entity;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 public interface BossMob<T extends Mob & BossMob<T>> {
     TargetingConditions NON_COMBAT = TargetingConditions.forNonCombat();
@@ -28,11 +33,9 @@ public interface BossMob<T extends Mob & BossMob<T>> {
     void setBossFight(boolean isFighting);
 
     @Nullable
-    BossRoomTracker<T> getDungeon();
+    BossRoomTracker getDungeon();
 
-    void setDungeon(@Nullable BossRoomTracker<T> dungeon);
-
-    int getDeathScore();
+    void setDungeon(@Nullable BossRoomTracker dungeon);
 
     /**
      * Should be called from {@link Mob#customServerAiStep()}.<br>
@@ -41,8 +44,8 @@ public interface BossMob<T extends Mob & BossMob<T>> {
      */
     default void trackDungeon() {
         if (this.getDungeon() != null) {
-            this.getDungeon().trackPlayers();
-            if (this.isBossFight() && (this.getDungeon().dungeonPlayers().isEmpty() || !this.getDungeon().isBossWithinRoom())) {
+            this.getDungeon().trackPlayers(this.self());
+            if (this.isBossFight() && (this.getDungeon().dungeonPlayers().isEmpty() || !this.getDungeon().isBossWithinRoom(this.self()))) {
                 this.reset();
             }
         }
@@ -70,7 +73,7 @@ public interface BossMob<T extends Mob & BossMob<T>> {
      */
     default void tearDownRoom() {
         if (this.getDungeon() != null) {
-            this.getDungeon().modifyRoom(this::convertBlock);
+            this.getDungeon().modifyRoom(this.self(), this::convertBlock);
         }
     }
 
@@ -79,29 +82,30 @@ public interface BossMob<T extends Mob & BossMob<T>> {
     void openRoom();
 
     @Nullable
-    BlockState convertBlock(BlockState state);
+    BlockState convertBlock(Level level, BlockPos blockPos, BlockState oldState);
 
-    default void addBossSaveData(CompoundTag tag, HolderLookup.Provider provider) {
-        tag.putString("BossName", Component.Serializer.toJson(this.getBossName(), provider));
-        tag.putBoolean("BossFight", this.isBossFight());
-        if (this.getDungeon() != null) {
-            tag.put("Dungeon", this.getDungeon().addAdditionalSaveData());
-        }
+    default void addBossSaveData(ValueOutput output) {
+        output.storeNullable("BossName", ComponentSerialization.CODEC, this.getBossName());
+        output.putBoolean("BossFight", this.isBossFight());
+        output.storeNullable("Dungeon", BossRoomTracker.CODEC, this.getDungeon());
     }
 
-    default void readBossSaveData(CompoundTag tag, HolderLookup.Provider provider) {
-        if (tag.contains("BossName")) {
-            Component name = Component.Serializer.fromJson(tag.getString("BossName"), provider);
-            if (name != null) {
-                this.setBossName(name);
-            }
-        }
-        if (tag.contains("BossFight")) {
-            this.setBossFight(tag.getBoolean("BossFight"));
-        }
-        if (tag.contains("Dungeon") && tag.get("Dungeon") instanceof CompoundTag dungeonTag) {
-            this.setDungeon(BossRoomTracker.readAdditionalSaveData(dungeonTag, self()));
-        }
+    default void readBossSaveData(ValueInput input) {
+        input.read("BossName", ComponentSerialization.CODEC).ifPresent(this::setBossName);
+        this.setBossFight(input.getBooleanOr("BossFight", false));
+        input.read("Dungeon", BossRoomTracker.CODEC).ifPresent(this::setDungeon);
+    }
+
+    default void writeBossSpawnData(RegistryFriendlyByteBuf buffer) {
+        buffer.writeOptional(Optional.ofNullable(this.getBossName()), (buf, val) -> buf.writeJsonWithCodec(ComponentSerialization.CODEC, val));
+        buffer.writeBoolean(this.isBossFight());
+        buffer.writeOptional(Optional.ofNullable(this.getDungeon()), (buf, val) -> buf.writeJsonWithCodec(BossRoomTracker.CODEC, val));
+    }
+
+    default void readBossSpawnData(RegistryFriendlyByteBuf buffer) {
+        buffer.readOptional((buf) -> buf.readLenientJsonWithCodec(ComponentSerialization.CODEC)).ifPresent(this::setBossName);
+        this.setBossFight(buffer.readBoolean());
+        buffer.readOptional((buf) -> buf.readLenientJsonWithCodec(BossRoomTracker.CODEC)).ifPresent(this::setDungeon);
     }
 }
 

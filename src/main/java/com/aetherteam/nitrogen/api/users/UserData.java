@@ -20,7 +20,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-public final class UserData {
+public final class UserData { //TODO VERIFY
     public static class Client {
         private static User CLIENT_USER;
 
@@ -160,7 +160,7 @@ public final class UserData {
 
                     // Create a User for the player, store the data to the server, and send it to the client.
                     if (currentTier != null || highestPastTier != null || highestGroup != null) {
-                        User user = new User(currentTier, highestPastTier, ZonedDateTime.now(ZoneId.of("UTC")).plusDays(1).format(User.DATE_FORMAT), highestGroup);
+                        User user = new User(Optional.of(currentTier), Optional.of(highestPastTier), ZonedDateTime.now(ZoneId.of("UTC")).plusDays(1).format(User.DATE_FORMAT), Optional.of(highestGroup));
                         modifySavedData(server, uuid, user);
                         STORED_USERS.put(uuid, user);
                         PacketDistributor.sendToPlayer(serverPlayer, new UpdateUserInfoPacket(user));
@@ -213,6 +213,6 @@ public final class UserData {
      * @return The {@link UserSavedData} for the "users.dat" file of the world.
      */
     private static UserSavedData getSavedData(MinecraftServer server) {
-        return UserSavedData.compute(server.overworld().getDataStorage());
+        return server.overworld().getDataStorage().computeIfAbsent(UserSavedData.TYPE);
     }
 }
