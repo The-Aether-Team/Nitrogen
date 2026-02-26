@@ -2,7 +2,11 @@ package com.aetherteam.nitrogen;
 
 import com.aetherteam.nitrogen.api.users.User;
 import com.aetherteam.nitrogen.api.users.UserData;
+import com.aetherteam.nitrogen.client.renderer.state.FluidStateRenderState;
+import com.aetherteam.nitrogen.client.renderer.FluidStateRenderer;
 import com.aetherteam.nitrogen.data.NitrogenDataGenerators;
+import com.aetherteam.nitrogen.client.renderer.state.BlockStateRenderState;
+import com.aetherteam.nitrogen.client.renderer.BlockStateRenderer;
 import com.aetherteam.nitrogen.loot.modifiers.NitrogenLootModifiers;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.aetherteam.nitrogen.network.packet.serverbound.TriggerUpdateInfoPacket;
@@ -19,6 +23,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -42,6 +47,13 @@ public class Nitrogen {
     public Nitrogen(ModContainer mod, IEventBus bus, Dist dist) {
         bus.addListener(NitrogenDataGenerators::onInitializeDataGenerator);
         bus.addListener(this::registerPackets);
+
+        if (dist.isClient()) {
+            bus.addListener(RegisterPictureInPictureRenderersEvent.class, event -> {
+                event.register(BlockStateRenderState.class, BlockStateRenderer::new);
+                event.register(FluidStateRenderState.class, FluidStateRenderer::new);
+            });
+        }
 
         DeferredRegister<?>[] registers = {
             NitrogenLootModifiers.GLOBAL_LOOT_MODIFIERS,
