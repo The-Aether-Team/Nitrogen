@@ -54,7 +54,7 @@ public abstract class AbstractBlockStateRecipeCategory<T extends AbstractBlockSt
                 }
             }
             builder.addSlot(RecipeIngredientRole.INPUT, 8, 6).setStandardSlotBackground().addIngredientsUnsafe(inputIngredients).addRichTooltipCallback((recipeSlotView, tooltip) -> this.populateAdditionalInformation(recipe, tooltip))
-                .setCustomRenderer(Services.PLATFORM.getFluidHelper().getFluidIngredientType(), new FluidStateIngredientRenderer(Services.PLATFORM.getFluidHelper())).setCustomRenderer(VanillaTypes.ITEM_STACK, new BlockStateIngredientRenderer(pairs));
+                .setCustomRenderer(VanillaTypes.ITEM_STACK, new BlockStateIngredientRenderer(pairs)); //.setCustomRenderer(Services.PLATFORM.getFluidHelper().getFluidIngredientType(), new FluidStateIngredientRenderer(Services.PLATFORM.getFluidHelper()))
 
             // Sets up output slots.
             Object outputIngredient;
@@ -64,7 +64,7 @@ public abstract class AbstractBlockStateRecipeCategory<T extends AbstractBlockSt
                 outputIngredient = this.setupIngredient(recipeResult);
             }
             builder.addSlot(RecipeIngredientRole.OUTPUT, 60, 6).setStandardSlotBackground().addIngredientsUnsafe(List.of(outputIngredient))
-                .setCustomRenderer(Services.PLATFORM.getFluidHelper().getFluidIngredientType(), new FluidStateIngredientRenderer(Services.PLATFORM.getFluidHelper())).setCustomRenderer(VanillaTypes.ITEM_STACK, new BlockStateIngredientRenderer(recipeResult));
+                .setCustomRenderer(VanillaTypes.ITEM_STACK, new BlockStateIngredientRenderer(recipeResult)); //.setCustomRenderer(Services.PLATFORM.getFluidHelper().getFluidIngredientType(), new FluidStateIngredientRenderer(Services.PLATFORM.getFluidHelper()))
         }
     }
 
