@@ -5,7 +5,7 @@ import com.aetherteam.nitrogen.api.users.UserData;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -19,7 +19,7 @@ import java.util.UUID;
  * @see UserData.Server#sendUserRequest(MinecraftServer, ServerPlayer, UUID)
  */
 public record TriggerUpdateInfoPacket(int playerID) implements CustomPacketPayload {
-    public static final Type<TriggerUpdateInfoPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Nitrogen.MODID, "trigger_patreon_info_update"));
+    public static final Type<TriggerUpdateInfoPacket> TYPE = new Type<>(Identifier.fromNamespaceAndPath(Nitrogen.MODID, "trigger_patreon_info_update"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, TriggerUpdateInfoPacket> STREAM_CODEC = CustomPacketPayload.codec(
         TriggerUpdateInfoPacket::write,
@@ -41,8 +41,8 @@ public record TriggerUpdateInfoPacket(int playerID) implements CustomPacketPaylo
 
     public static void execute(TriggerUpdateInfoPacket payload, IPayloadContext context) {
         Player player = context.player();
-        if (player.getServer() != null && player.level().getEntity(payload.playerID()) instanceof ServerPlayer serverPlayer) {
-            UserData.Server.sendUserRequest(serverPlayer.getServer(), serverPlayer, serverPlayer.getGameProfile().getId());
+        if (player.level().getServer() != null && player.level().getEntity(payload.playerID()) instanceof ServerPlayer serverPlayer) {
+            UserData.Server.sendUserRequest(serverPlayer.level().getServer(), serverPlayer, serverPlayer.getGameProfile().id());
         }
     }
 }

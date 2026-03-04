@@ -12,7 +12,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -54,7 +54,7 @@ public record FluidStateIngredientRenderer<T>(IPlatformFluidHelperInternal<T> fl
 
             if (tooltipFlag.isAdvanced()) {
                 Registry<Fluid> fluidRegistry = RegistryUtil.getRegistry(Registries.FLUID);
-                ResourceLocation resourceLocation = fluidRegistry.getKey(fluid);
+                Identifier resourceLocation = fluidRegistry.getKey(fluid);
                 if (resourceLocation != null && resourceLocation != BuiltInRegistries.FLUID.getDefaultKey()) {
                     MutableComponent advancedId = Component.literal(resourceLocation.toString())
                         .withStyle(ChatFormatting.DARK_GRAY);

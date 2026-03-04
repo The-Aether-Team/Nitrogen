@@ -18,7 +18,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -73,7 +73,7 @@ public record BlockStateIngredientRenderer(BlockPropertyPair... pairs) implement
                 MutableComponent mutablecomponent = Component.empty().append(block.getName()).withStyle(ingredient.getRarity().getStyleModifier());
                 list.add(mutablecomponent);
                 if (tooltipFlag.isAdvanced()) {
-                    ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(block);
+                    Identifier blockKey = BuiltInRegistries.BLOCK.getKey(block);
                     list.add(Component.literal(blockKey.toString()).withStyle(ChatFormatting.DARK_GRAY));
                 }
                 // Display whether this blockstate is enabled.

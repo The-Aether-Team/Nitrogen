@@ -90,18 +90,18 @@ public class Nitrogen {
     public static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         Player player = event.getEntity();
         if (player instanceof ServerPlayer serverPlayer) {
-            UUID uuid = serverPlayer.getGameProfile().getId();
+            UUID uuid = serverPlayer.getGameProfile().id();
             Map<UUID, User> userData = UserData.Server.getStoredUsers();
             User user;
             if (userData.containsKey(uuid)) {
                 user = userData.get(uuid);
                 if (user != null && user.getRenewalDate() != null && isAfterRenewalTime(user)) { // Check renewal time.
-                    UserData.Server.sendUserRequest(serverPlayer.getServer(), serverPlayer, uuid);
+                    UserData.Server.sendUserRequest(serverPlayer.level().getServer(), serverPlayer, uuid);
                 } else { // Sync to client.
                     PacketDistributor.sendToPlayer(serverPlayer, new UpdateUserInfoPacket(user));
                 }
             } else { // Query database if no User is found with the server.
-                UserData.Server.sendUserRequest(serverPlayer.getServer(), serverPlayer, uuid);
+                UserData.Server.sendUserRequest(serverPlayer.level().getServer(), serverPlayer, uuid);
             }
         }
     }

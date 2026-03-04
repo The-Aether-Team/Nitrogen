@@ -5,7 +5,7 @@ import com.aetherteam.nitrogen.recipe.BlockStateIngredient;
 import com.aetherteam.nitrogen.recipe.input.BlockStateRecipeInput;
 import net.minecraft.commands.CacheableFunction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
@@ -27,7 +27,7 @@ public interface BlockStateRecipe extends Recipe<BlockStateRecipeInput> {
 
     Optional<CacheableFunction> getFunction();
 
-    Optional<ResourceLocation> getFunctionId();
+    Optional<Identifier> getFunctionId();
 
     @Override
     default boolean matches(BlockStateRecipeInput container, Level level) {

@@ -3,17 +3,13 @@ package com.aetherteam.nitrogen.api.users;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
-import net.minecraft.world.level.storage.DimensionDataStorage;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 public final class UserSavedData extends SavedData { //TODO VERIFY
@@ -26,7 +22,7 @@ public final class UserSavedData extends SavedData { //TODO VERIFY
     );
     private Map<UUID, User> storedUsers;
 
-    private UserSavedData(SavedData.Context ctx) {
+    private UserSavedData(ServerLevel level) {
         this(new HashMap<>());
     }
 

@@ -1,12 +1,13 @@
 package com.aetherteam.nitrogen.data.providers;
 
-import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
@@ -34,7 +35,7 @@ public abstract class NitrogenBlockLootSubProvider extends BlockLootSubProvider 
     public LootTable.Builder droppingNameableBlockEntityTable(Block block) {
         return LootTable.lootTable().withPool(this.applyExplosionCondition(block, LootPool.lootPool().setRolls(ConstantValue.exactly(1))
             .add(LootItem.lootTableItem(block)
-                .apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY))))
+                .apply(CopyNameFunction.copyName(LootContext.BlockEntityTarget.BLOCK_ENTITY))))
         );
     }
 

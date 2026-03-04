@@ -7,7 +7,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -28,7 +28,7 @@ public abstract class NitrogenRecipeProvider extends RecipeProvider {
     }
 
     protected ResourceKey<Recipe<?>> name(String name) {
-        return ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath(this.id, name));
+        return ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(this.id, name));
     }
 
     protected void oreBlockStorageRecipesRecipesWithCustomUnpacking(HolderGetter<Item> holderGetter, RecipeOutput output, RecipeCategory itemCategory, ItemLike item, RecipeCategory blockCategory, ItemLike block, String itemRecipeName, String itemGroup) {

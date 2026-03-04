@@ -5,7 +5,7 @@ import com.aetherteam.nitrogen.recipe.BlockStateIngredient;
 import com.aetherteam.nitrogen.recipe.BlockStateRecipeUtil;
 import net.minecraft.commands.CacheableFunction;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,9 +19,9 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
     protected final BlockStateIngredient ingredient;
     protected final BlockPropertyPair result;
     protected final Optional<CacheableFunction> function;
-    private final Optional<ResourceLocation> functionId;
+    private final Optional<Identifier> functionId;
 
-    public AbstractBlockStateRecipe(RecipeType<? extends AbstractBlockStateRecipe> type, BlockStateIngredient ingredient, BlockPropertyPair result, Optional<ResourceLocation> functionId) {
+    public AbstractBlockStateRecipe(RecipeType<? extends AbstractBlockStateRecipe> type, BlockStateIngredient ingredient, BlockPropertyPair result, Optional<Identifier> functionId) {
         this.type = type;
         this.ingredient = ingredient;
         this.result = result;
@@ -90,12 +90,12 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
     }
 
     @Override
-    public Optional<ResourceLocation> getFunctionId() {
+    public Optional<Identifier> getFunctionId() {
         return this.functionId;
     }
 
     public interface Factory<T extends AbstractBlockStateRecipe> {
-        T create(BlockStateIngredient ingredient, BlockPropertyPair result, Optional<ResourceLocation> functionId);
+        T create(BlockStateIngredient ingredient, BlockPropertyPair result, Optional<Identifier> functionId);
     }
 }
 

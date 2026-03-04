@@ -11,8 +11,6 @@ import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.util.InclusiveRange;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
-import java.util.Optional;
-
 public class NitrogenDataGenerators {
     public static void onInitializeDataGenerator(GatherDataEvent.Client event) {
         DataGenerator generator = event.getGenerator();
@@ -22,9 +20,8 @@ public class NitrogenDataGenerators {
         generator.addProvider(true, new NitrogenLanguageData(packOutput));
 
         // pack.mcmeta
-        generator.addProvider(true, new PackMetadataGenerator(packOutput).add(PackMetadataSection.TYPE, new PackMetadataSection(
+        generator.addProvider(true, new PackMetadataGenerator(packOutput).add(PackMetadataSection.SERVER_TYPE, new PackMetadataSection(
             Component.translatable("pack.nitrogen_internals.mod.description"),
-            DetectedVersion.BUILT_IN.packVersion(PackType.SERVER_DATA),
-            Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
+            new InclusiveRange<>(DetectedVersion.BUILT_IN.packVersion(PackType.SERVER_DATA)))));
     }
 }

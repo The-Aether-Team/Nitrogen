@@ -8,7 +8,7 @@ import net.minecraft.advancements.Criterion;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
@@ -21,7 +21,7 @@ import java.util.Optional;
 public class BlockStateRecipeBuilder implements RecipeBuilder {
     private final BlockPropertyPair result;
     private final BlockStateIngredient ingredient;
-    private Optional<ResourceLocation> function = Optional.empty();
+    private Optional<Identifier> function = Optional.empty();
     private final AbstractBlockStateRecipe.Factory<?> factory;
 
     public BlockStateRecipeBuilder(BlockPropertyPair result, BlockStateIngredient ingredient, AbstractBlockStateRecipe.Factory<?> factory) {
@@ -47,7 +47,7 @@ public class BlockStateRecipeBuilder implements RecipeBuilder {
         return this;
     }
 
-    public RecipeBuilder function(Optional<ResourceLocation> function) {
+    public RecipeBuilder function(Optional<Identifier> function) {
         this.function = function;
         return this;
     }

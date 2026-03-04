@@ -9,7 +9,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 import java.util.Optional;
@@ -25,7 +25,7 @@ public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> impl
         this.mapCodec = RecordCodecBuilder.mapCodec(inst -> inst.group(
             BlockStateIngredient.CODEC.fieldOf("ingredient").forGetter(AbstractBlockStateRecipe::getIngredient),
             BlockPropertyPair.CODEC.fieldOf("result").forGetter(AbstractBlockStateRecipe::getResult),
-            ResourceLocation.CODEC.optionalFieldOf("mcfunction").forGetter(AbstractBlockStateRecipe::getFunctionId)
+            Identifier.CODEC.optionalFieldOf("mcfunction").forGetter(AbstractBlockStateRecipe::getFunctionId)
         ).apply(inst, this.factory::create));
         this.streamCodec = StreamCodec.of(this::toNetwork, this::fromNetwork);
     }
@@ -43,14 +43,14 @@ public class BlockStateRecipeSerializer<T extends AbstractBlockStateRecipe> impl
     public T fromNetwork(RegistryFriendlyByteBuf buffer) {
         BlockStateIngredient ingredient = BlockStateIngredient.CONTENTS_STREAM_CODEC.decode(buffer);
         BlockPropertyPair result = BlockStateRecipeUtil.readPair(buffer);
-        Optional<ResourceLocation> function = buffer.readOptional(FriendlyByteBuf::readResourceLocation);
+        Optional<Identifier> function = buffer.readOptional(FriendlyByteBuf::readIdentifier);
         return this.factory.create(ingredient, result, function);
     }
 
     public void toNetwork(RegistryFriendlyByteBuf  buffer, T recipe) {
         BlockStateIngredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.getIngredient());
         BlockStateRecipeUtil.writePair(buffer, recipe.getResult());
-        buffer.writeOptional(recipe.getFunctionId(), FriendlyByteBuf::writeResourceLocation);
+        buffer.writeOptional(recipe.getFunctionId(), FriendlyByteBuf::writeIdentifier);
     }
 }
 

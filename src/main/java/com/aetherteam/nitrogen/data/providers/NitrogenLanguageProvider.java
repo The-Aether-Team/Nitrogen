@@ -4,7 +4,7 @@ import com.aetherteam.nitrogen.Nitrogen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
@@ -45,19 +45,19 @@ public abstract class NitrogenLanguageProvider extends LanguageProvider {
     }
 
     public void addDimension(ResourceKey<Level> dimension, String name) {
-        this.add("dimension." + this.id + "." + dimension.location().getPath(), name);
+        this.add("dimension." + this.id + "." + dimension.identifier().getPath(), name);
     }
 
     public void addBiome(ResourceKey<Biome> biome, String name) {
-        this.add("biome." + this.id + "." + biome.location().getPath(), name);
+        this.add("biome." + this.id + "." + biome.identifier().getPath(), name);
     }
 
     public void addStructure(ResourceKey<Structure> structure, String name) {
-        this.add("structure." + this.id + "." + structure.location().getPath(), name);
+        this.add("structure." + this.id + "." + structure.identifier().getPath(), name);
     }
 
     public void addContainerType(Supplier<? extends MenuType<?>> key, String name) {
-        ResourceLocation location = BuiltInRegistries.MENU.getKey(key.get());
+        Identifier location = BuiltInRegistries.MENU.getKey(key.get());
         if (location != null) {
             this.add("menu." + location.toString().replace(":", "."), name);
         }

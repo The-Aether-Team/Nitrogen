@@ -28,7 +28,7 @@ package com.aetherteam.nitrogen.integration.rei;
 //import net.minecraft.core.registries.BuiltInRegistries;
 //import net.minecraft.network.chat.Component;
 //import net.minecraft.network.chat.MutableComponent;
-//import net.minecraft.resources.ResourceLocation;
+//import net.minecraft.resources.Identifier;
 //import net.minecraft.world.entity.player.Player;
 //import net.minecraft.world.item.ItemStack;
 //import net.minecraft.world.level.block.Block;
@@ -103,7 +103,7 @@ package com.aetherteam.nitrogen.integration.rei;
 //                MutableComponent mutablecomponent = Component.empty().append(block.getName()).withStyle(ingredient.getValue().getRarity().color());
 //                tooltip.add(mutablecomponent);
 //                if (context.getFlag().isAdvanced()) {
-//                    ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(block);
+//                    Identifier blockKey = BuiltInRegistries.BLOCK.getKey(block);
 //                    if (block.defaultBlockState().isAir()) {
 //                        tooltip.add(Component.literal(blockKey.toString()).withStyle(ChatFormatting.DARK_GRAY));
 //                    }

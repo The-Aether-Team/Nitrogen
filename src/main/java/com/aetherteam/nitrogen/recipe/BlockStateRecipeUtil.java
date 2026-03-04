@@ -16,7 +16,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
@@ -33,10 +33,10 @@ import java.util.Optional;
 
 public final class BlockStateRecipeUtil {
     public static Codec<ResourceKey<Biome>> RESOURCE_KEY_CODEC = Codec.STRING.comapFlatMap((to) -> !to.startsWith("#")
-        ? DataResult.success(ResourceKey.create(Registries.BIOME, ResourceLocation.parse(to)))
-        : DataResult.error(() -> "Value is not a resource key"), (from) -> from.location().toString());
+        ? DataResult.success(ResourceKey.create(Registries.BIOME, Identifier.parse(to)))
+        : DataResult.error(() -> "Value is not a resource key"), (from) -> from.identifier().toString());
     public static Codec<TagKey<Biome>> TAG_KEY_CODEC = Codec.STRING.comapFlatMap((to) -> to.startsWith("#")
-        ? DataResult.success(TagKey.create(Registries.BIOME, ResourceLocation.parse(to.replace("#", ""))))
+        ? DataResult.success(TagKey.create(Registries.BIOME, Identifier.parse(to.replace("#", ""))))
         : DataResult.error(() -> "Value is not a tag key"), (from) -> "#" + from.location());
     public static Codec<Either<ResourceKey<Biome>, TagKey<Biome>>> KEY_CODEC = Codec.xor(RESOURCE_KEY_CODEC, TAG_KEY_CODEC);
     public static StreamCodec<RegistryFriendlyByteBuf, Either<ResourceKey<Biome>, TagKey<Biome>>> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(KEY_CODEC);
@@ -63,12 +63,12 @@ public final class BlockStateRecipeUtil {
     }
 
     /**
-     * Builds an {@link Optional} {@link net.minecraft.commands.CacheableFunction} from an {@link Optional} {@link ResourceLocation} ID.
+     * Builds an {@link Optional} {@link net.minecraft.commands.CacheableFunction} from an {@link Optional} {@link Identifier} ID.
      *
-     * @param functionLocation The {@link Optional} {@link ResourceLocation} ID.
+     * @param functionLocation The {@link Optional} {@link Identifier} ID.
      * @return The {@link Optional} {@link net.minecraft.commands.CacheableFunction}.
      */
-    public static Optional<CacheableFunction> buildFunction(Optional<ResourceLocation> functionLocation) {
+    public static Optional<CacheableFunction> buildFunction(Optional<Identifier> functionLocation) {
         return functionLocation.map(CacheableFunction::new);
     }
 
@@ -81,7 +81,7 @@ public final class BlockStateRecipeUtil {
      * @param pair   The {@link BlockPropertyPair}.
      */
     public static void writePair(FriendlyByteBuf buffer, BlockPropertyPair pair) {
-        ResourceLocation blockLocation = BuiltInRegistries.BLOCK.getKey(pair.block());
+        Identifier blockLocation = BuiltInRegistries.BLOCK.getKey(pair.block());
         if (pair.block().defaultBlockState().isAir() && pair.properties().isEmpty()) {
             buffer.writeBoolean(false);
         } else {
@@ -113,7 +113,7 @@ public final class BlockStateRecipeUtil {
             return BlockPropertyPair.of(Blocks.AIR, Optional.empty());
         } else {
             String blockString = buffer.readUtf();
-            ResourceLocation blockLocation = ResourceLocation.parse(blockString);
+            Identifier blockLocation = Identifier.parse(blockString);
             Block block = BuiltInRegistries.BLOCK.getValue(blockLocation);
 
             Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> propertiesOptional = buffer.readOptional((friendlyByteBuf -> {
@@ -144,7 +144,7 @@ public final class BlockStateRecipeUtil {
      * @param biomeKey The {@link Biome} {@link ResourceKey}.
      */
     public static void biomeKeyToJson(JsonObject json, Optional<ResourceKey<Biome>> biomeKey) {
-        biomeKey.ifPresent((key) -> json.addProperty("biome", key.location().toString()));
+        biomeKey.ifPresent((key) -> json.addProperty("biome", key.identifier().toString()));
     }
 
     /**

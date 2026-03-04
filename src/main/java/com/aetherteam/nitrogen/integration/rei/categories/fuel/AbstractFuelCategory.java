@@ -9,26 +9,26 @@ package com.aetherteam.nitrogen.integration.rei.categories.fuel;
 //import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 //import net.minecraft.client.renderer.RenderType;
 //import net.minecraft.network.chat.Component;
-//import net.minecraft.resources.ResourceLocation;
+//import net.minecraft.resources.Identifier;
 //import org.apache.commons.lang3.mutable.MutableDouble;
 //
 //import java.util.List;
 //
 //public abstract class AbstractFuelCategory extends AbstractRecipeCategory<FuelDisplay> {
-//    private final ResourceLocation texture;
-//    private final ResourceLocation backgroundTexture;
+//    private final Identifier texture;
+//    private final Identifier backgroundTexture;
 //
-//    public AbstractFuelCategory(CategoryIdentifier<FuelDisplay> categoryIdentifier, ResourceLocation texture, ResourceLocation backgroundTexture) {
+//    public AbstractFuelCategory(CategoryIdentifier<FuelDisplay> categoryIdentifier, Identifier texture, Identifier backgroundTexture) {
 //        super("", categoryIdentifier, 140, 37, (graphics, bounds, mouseX, mouseY, delta) -> graphics.blitSprite(RenderType::guiTextured, texture, bounds.x + 1, bounds.y, 14, 14));
 //        this.texture = texture;
 //        this.backgroundTexture = backgroundTexture;
 //    }
 //
-//    public ResourceLocation getTexture() {
+//    public Identifier getTexture() {
 //        return this.texture;
 //    }
 //
-//    public ResourceLocation getBackgroundTexture() {
+//    public Identifier getBackgroundTexture() {
 //        return this.backgroundTexture;
 //    }
 //
