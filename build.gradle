@@ -19,7 +19,7 @@ base {
     archivesName = mod_id
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 neoForge {
     version = project.neo_version
@@ -61,10 +61,7 @@ neoForge {
 
 sourceSets.main.resources {
     srcDir 'src/generated/resources'
-}
-
-processResources {
-    exclude '.cache/'
+    exclude("src/generated/**/.cache") // datagen cache files
 }
 
 configurations {
@@ -72,12 +69,12 @@ configurations {
 }
 
 dependencies {
-    compileOnly "mezz.jei:jei-${project.minecraft_version}-neoforge:${project.jei_version}"
-
-    compileOnly "me.shedaniel:RoughlyEnoughItems-neoforge:${project.rei_version}"
-
-    compileOnly "me.shedaniel.cloth:cloth-config-neoforge:${project.cloth_config_version}"
-    compileOnly "dev.architectury:architectury-neoforge:${project.architectury_version}"
+//    compileOnly "mezz.jei:jei-${project.minecraft_version}-neoforge:${project.jei_version}"
+//
+//    compileOnly "me.shedaniel:RoughlyEnoughItems-neoforge:${project.rei_version}"
+//
+//    compileOnly "me.shedaniel.cloth:cloth-config-neoforge:${project.cloth_config_version}"
+//    compileOnly "dev.architectury:architectury-neoforge:${project.architectury_version}"
 }
 
 repositories {
@@ -127,10 +124,8 @@ compileJava {
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            artifactId project.archivesBaseName
-            artifact project.jar
-            artifact project.sourceJar
+        register('mavenJava', MavenPublication) {
+            from components.java
         }
     }
     repositories {
