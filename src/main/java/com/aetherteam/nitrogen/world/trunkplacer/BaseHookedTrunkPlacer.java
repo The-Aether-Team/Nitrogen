@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.LevelSimulatedReader;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,7 +26,7 @@ public abstract class BaseHookedTrunkPlacer extends TrunkPlacer {
         super(height, heightRandA, heightRandB);
     }
 
-    public List<FoliagePlacer.FoliageAttachment> placeVerticalTrunk(LevelSimulatedReader level, BiConsumer<BlockPos, BlockState> blockSetter, RandomSource random, int height, BlockPos pos, BlockStateProvider trunkProvider) {
+    public List<FoliagePlacer.FoliageAttachment> placeVerticalTrunk(WorldGenLevel level, BiConsumer<BlockPos, BlockState> blockSetter, RandomSource random, int height, BlockPos pos, BlockStateProvider trunkProvider) {
         List<FoliagePlacer.FoliageAttachment> list = Lists.newArrayList();
 
         int radius = 0;
@@ -49,7 +49,7 @@ public abstract class BaseHookedTrunkPlacer extends TrunkPlacer {
         return list;
     }
 
-    public List<FoliagePlacer.FoliageAttachment> placeBranches(LevelSimulatedReader level, BiConsumer<BlockPos, BlockState> blockSetter, RandomSource random, int height, BlockPos pos, TreeConfiguration config) {
+    public List<FoliagePlacer.FoliageAttachment> placeBranches(WorldGenLevel level, BiConsumer<BlockPos, BlockState> blockSetter, RandomSource random, int height, BlockPos pos, TreeConfiguration config) {
         List<FoliagePlacer.FoliageAttachment> list = Lists.newArrayList();
 
         int bound = 3;
@@ -85,43 +85,43 @@ public abstract class BaseHookedTrunkPlacer extends TrunkPlacer {
         return list;
     }
 
-    protected boolean placeTrunk(LevelSimulatedReader level, BiConsumer<BlockPos, BlockState> blockSetter, RandomSource random, BlockPos pos, BlockStateProvider trunkProvider) {
+    protected boolean placeTrunk(WorldGenLevel level, BiConsumer<BlockPos, BlockState> blockSetter, RandomSource random, BlockPos pos, BlockStateProvider trunkProvider) {
         return this.placeTrunk(level, blockSetter, random, pos, Function.identity(), trunkProvider);
     }
 
-    protected boolean placeTrunk(LevelSimulatedReader level, BiConsumer<BlockPos, BlockState> blockSetter, RandomSource random, BlockPos pos, Function<BlockState, BlockState> propertySetter, BlockStateProvider trunkProvider) {
+    protected boolean placeTrunk(WorldGenLevel level, BiConsumer<BlockPos, BlockState> blockSetter, RandomSource random, BlockPos pos, Function<BlockState, BlockState> propertySetter, BlockStateProvider trunkProvider) {
         if (this.validTreePos(level, pos)) {
-            blockSetter.accept(pos, propertySetter.apply(trunkProvider.getState(random, pos)));
+            blockSetter.accept(pos, propertySetter.apply(trunkProvider.getState(level, random, pos)));
             return true;
         } else {
             return false;
         }
     }
 
-    protected boolean placeBranch(LevelSimulatedReader level, BiConsumer<BlockPos, BlockState> blockSetter, RandomSource random, BlockPos pos, TreeConfiguration config) {
+    protected boolean placeBranch(WorldGenLevel level, BiConsumer<BlockPos, BlockState> blockSetter, RandomSource random, BlockPos pos, TreeConfiguration config) {
         return this.placeBranch(level, blockSetter, random, pos, config, Function.identity());
     }
 
-    protected boolean placeBranch(LevelSimulatedReader level, BiConsumer<BlockPos, BlockState> blockSetter, RandomSource random, BlockPos pos, TreeConfiguration config, Function<BlockState, BlockState> propertySetter) {
+    protected boolean placeBranch(WorldGenLevel level, BiConsumer<BlockPos, BlockState> blockSetter, RandomSource random, BlockPos pos, TreeConfiguration config, Function<BlockState, BlockState> propertySetter) {
         if (this.validBranchPos(level, pos)) {
-            blockSetter.accept(pos, propertySetter.apply(config.trunkProvider.getState(random, pos)));
+            blockSetter.accept(pos, propertySetter.apply(config.trunkProvider.getState(level, random, pos)));
             return true;
         } else {
             return false;
         }
     }
 
-    protected boolean validBranchPos(LevelSimulatedReader level, BlockPos pos) {
+    protected boolean validBranchPos(WorldGenLevel level, BlockPos pos) {
         return TreeFeature.isAirOrLeaves(level, pos) || isReplaceablePlant(level, pos) || isBlockWater(level, pos) || this.isTrunk(level, pos);
     }
 
-    private static boolean isReplaceablePlant(LevelSimulatedReader level, BlockPos pos) {
+    private static boolean isReplaceablePlant(WorldGenLevel level, BlockPos pos) {
         return level.isStateAtPosition(pos, BlockBehaviour.BlockStateBase::canBeReplaced);
     }
 
-    public static boolean isBlockWater(LevelSimulatedReader level, BlockPos pos) {
+    public static boolean isBlockWater(WorldGenLevel level, BlockPos pos) {
         return level.isStateAtPosition(pos, (state) -> state.is(Blocks.WATER));
     }
 
-    public abstract boolean isTrunk(LevelSimulatedReader level, BlockPos pos);
+    public abstract boolean isTrunk(WorldGenLevel level, BlockPos pos);
 }

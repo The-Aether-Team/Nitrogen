@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelSimulatedReader;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.levelgen.feature.foliageplacers.FoliagePlacer;
@@ -31,10 +32,10 @@ public class HookedTrunkPlacer extends BaseHookedTrunkPlacer {
     }
 
     @Override
-    public List<FoliagePlacer.FoliageAttachment> placeTrunk(LevelSimulatedReader level, BiConsumer<BlockPos, BlockState> blockSetter, RandomSource random, int height, BlockPos pos, TreeConfiguration config) {
+    public List<FoliagePlacer.FoliageAttachment> placeTrunk(WorldGenLevel level, BiConsumer<BlockPos, BlockState> blockSetter, RandomSource random, int height, BlockPos pos, TreeConfiguration config) {
         List<FoliagePlacer.FoliageAttachment> list = Lists.newArrayList();
 
-        setDirtAt(level, blockSetter, random, pos.below(), config);
+        placeBelowTrunkBlock(level, blockSetter, random, pos.below(), config);
 
         list.addAll(this.placeVerticalTrunk(level, blockSetter, random, height, pos, config.trunkProvider));
         list.addAll(this.placeBranches(level, blockSetter, random, height, pos, config));
@@ -43,7 +44,7 @@ public class HookedTrunkPlacer extends BaseHookedTrunkPlacer {
     }
 
     @Override
-    public boolean isTrunk(LevelSimulatedReader level, BlockPos pos) {
+    public boolean isTrunk(WorldGenLevel level, BlockPos pos) {
         return level.isStateAtPosition(pos, (state) -> state.is(BlockTags.LOGS));
     }
 }
