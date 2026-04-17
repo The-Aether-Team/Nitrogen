@@ -34,8 +34,8 @@ public class TooltipListeners {
             String string = stack.getItem().getDescriptionId() + "." + Nitrogen.MODID + ".ability.tooltip." + i;
             if (I18n.exists(string)) {
                 Component component = Component.translatable(string);
-                if (PREDICATES.containsKey(stack.getItemHolder())) {
-                    component = PREDICATES.get(stack.getItemHolder()).override(player, stack, components, context, component);
+                if (PREDICATES.containsKey(stack.typeHolder())) {
+                    component = PREDICATES.get(stack.typeHolder()).override(player, stack, components, context, component);
                 }
                 components.add(i, component);
             }

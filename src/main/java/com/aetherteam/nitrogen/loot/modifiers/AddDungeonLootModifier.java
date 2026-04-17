@@ -8,6 +8,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.Weighted;
 import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.util.valueproviders.IntProvider;
+import net.minecraft.util.valueproviders.IntProviders;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -23,7 +24,7 @@ import java.util.List;
 public class AddDungeonLootModifier extends LootModifier {
     public static final MapCodec<AddDungeonLootModifier> CODEC = RecordCodecBuilder.mapCodec(instance -> codecStart(instance)
         .and(Weighted.codec(ItemStack.CODEC).listOf().fieldOf("entries").forGetter(modifier -> modifier.entries))
-        .and(IntProvider.CODEC.fieldOf("rolls").forGetter(modifier -> modifier.rolls))
+        .and(IntProviders.CODEC.fieldOf("rolls").forGetter(modifier -> modifier.rolls))
         .apply(instance, AddDungeonLootModifier::new));
 
     public final List<Weighted<ItemStack>> entries;

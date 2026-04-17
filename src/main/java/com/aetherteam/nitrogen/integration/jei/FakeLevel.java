@@ -5,7 +5,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.world.level.CardinalLighting;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
@@ -19,11 +19,6 @@ import net.minecraft.world.level.material.Fluids;
  * A fake level used for rendering.
  */
 public abstract class FakeLevel implements BlockAndTintGetter {
-    @Override
-    public float getShade(Direction direction, boolean bl) {
-        return 1.0F;
-    }
-
     @Override
     public LevelLightEngine getLightEngine() {
         throw new UnsupportedOperationException();
@@ -59,6 +54,11 @@ public abstract class FakeLevel implements BlockAndTintGetter {
     @Override
     public int getMinY() {
         return 0;
+    }
+
+    @Override
+    public CardinalLighting cardinalLighting() {
+        return CardinalLighting.DEFAULT;
     }
 
     public static FakeLevel of(FluidState fluidState) {

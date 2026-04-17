@@ -4,8 +4,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
+import net.minecraft.core.Holder;
+import net.minecraft.core.TypedInstance;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -20,7 +23,7 @@ import java.util.stream.Collectors;
 /**
  * Used to store a block alongside a block's properties.
  */
-public record BlockPropertyPair(Block block, Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> properties) {
+public record BlockPropertyPair(Block block, Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> properties) implements TypedInstance<Block> {
     public static final MapCodec<BlockPropertyPair> CODEC = RawPair.CODEC.xmap(
         (rawPair) -> {
             Block rawBlock = rawPair.block();
@@ -101,6 +104,11 @@ public record BlockPropertyPair(Block block, Optional<Reference2ObjectArrayMap<P
      */
     public boolean matches(BlockState state) {
         return BlockPropertyPair.matches(state, this.block(), this.properties());
+    }
+
+    @Override
+    public Holder<Block> typeHolder() {
+        return this.block().builtInRegistryHolder();
     }
 
     public record RawPair(Block block, Optional<Map<String, String>> properties) {

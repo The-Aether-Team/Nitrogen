@@ -1,9 +1,11 @@
 package com.aetherteam.nitrogen.api.users;
 
+import com.aetherteam.nitrogen.Nitrogen;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
@@ -13,12 +15,13 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class UserSavedData extends SavedData { //TODO VERIFY
+    public static final Codec<UserSavedData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Codec.unboundedMap(UUIDUtil.STRING_CODEC, User.CODEC).fieldOf("stored_users").forGetter(UserSavedData::getStoredUsers)
+    ).apply(instance, UserSavedData::new));
     public static final SavedDataType<UserSavedData> TYPE = new SavedDataType<>(
-        "nitrogen_users",
+        Identifier.fromNamespaceAndPath(Nitrogen.MODID, "nitrogen_users"),
         UserSavedData::new,
-        ctx -> RecordCodecBuilder.create(instance -> instance.group(
-            Codec.unboundedMap(UUIDUtil.STRING_CODEC, User.CODEC).fieldOf("stored_users").forGetter(UserSavedData::getStoredUsers)
-        ).apply(instance, UserSavedData::new))
+        ctx -> CODEC
     );
     private Map<UUID, User> storedUsers;
 

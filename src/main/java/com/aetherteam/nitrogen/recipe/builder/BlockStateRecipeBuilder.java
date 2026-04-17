@@ -47,6 +47,11 @@ public class BlockStateRecipeBuilder implements RecipeBuilder {
         return this;
     }
 
+    @Override
+    public ResourceKey<Recipe<?>> defaultId() {
+        return RecipeBuilder.getDefaultRecipeId(this.result);
+    }
+
     public RecipeBuilder function(Optional<Identifier> function) {
         this.function = function;
         return this;
@@ -58,11 +63,6 @@ public class BlockStateRecipeBuilder implements RecipeBuilder {
 
     public BlockStateIngredient getIngredient() {
         return this.ingredient;
-    }
-
-    @Override
-    public Item getResult() {
-        return Items.AIR;
     }
 
     @Override
