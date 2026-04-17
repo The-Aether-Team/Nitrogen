@@ -3,10 +3,13 @@
     "description": {
       "translate": "pack.nitrogen_internals.mod.description"
     },
-    "pack_format": 81,
-    "supported_formats": [
-      0,
-      2147483647
+    "max_format": [
+      101,
+      1
+    ],
+    "min_format": [
+      101,
+      1
     ]
   }
 }

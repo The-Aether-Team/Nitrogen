@@ -62,7 +62,7 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
     public BlockState getResultState(BlockState originalState) {
         BlockState resultState = this.getResult().block().withPropertiesOf(originalState);
         if (this.getResult().properties().isPresent()) {
-            for (Map.Entry<Property<?>, Comparable<?>> propertyEntry : this.getResult().properties().get().entrySet()) {
+            for (Property.Value<?> propertyEntry : this.getResult().properties().get()) {
                 resultState = BlockStateRecipeUtil.setHelper(propertyEntry, resultState);
             }
         }

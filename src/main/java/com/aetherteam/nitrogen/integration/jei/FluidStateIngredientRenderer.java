@@ -6,7 +6,7 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -24,9 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record FluidStateIngredientRenderer<T>(IPlatformFluidHelperInternal<T> fluidHelper) implements IIngredientRenderer<T> {
-
     @Override
-    public void render(GuiGraphics graphics, @Nullable T ingredient) {
+    public void render(GuiGraphicsExtractor graphics, @Nullable T ingredient) {
         if (ingredient != null) {
             IIngredientTypeWithSubtypes<Fluid, T> type = this.fluidHelper.getFluidIngredientType();
             Fluid fluidType = type.getBase(ingredient);

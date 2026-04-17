@@ -149,7 +149,7 @@ public class BlockStateIngredient implements Predicate<BlockState> {
             );
     }
 
-    public record BlockStateValue(Block block, Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> properties) implements BlockStateIngredient.Value {
+    public record BlockStateValue(Block block, Optional<HashSet<Property.Value<?>>> properties) implements BlockStateIngredient.Value {
         public static final MapCodec<BlockStateValue> MAP_CODEC = BlockPropertyPair.CODEC.xmap(BlockStateValue::new, BlockStateValue::cast);
         public static final Codec<BlockStateValue> CODEC = MAP_CODEC.codec();
 

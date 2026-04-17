@@ -4,7 +4,6 @@ import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
 import com.aetherteam.nitrogen.recipe.BlockStateIngredient;
 import com.aetherteam.nitrogen.recipe.input.BlockStateRecipeInput;
 import net.minecraft.commands.CacheableFunction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.PlacementInfo;
@@ -35,7 +34,7 @@ public interface BlockStateRecipe extends Recipe<BlockStateRecipeInput> {
     }
 
     @Override
-    default ItemStack assemble(BlockStateRecipeInput container, HolderLookup.Provider provider) {
+    default ItemStack assemble(BlockStateRecipeInput container) {
         return ItemStack.EMPTY;
     }
 

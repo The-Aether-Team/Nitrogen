@@ -41,7 +41,7 @@ package com.aetherteam.nitrogen.integration.rei;
 //        if (Minecraft.getInstance().level != null && Minecraft.getInstance().player != null) {
 //            BlockState resultState = recipeResult.block().defaultBlockState();
 //            if (recipeResult.properties().isPresent()) {
-//                for (Map.Entry<Property<?>, Comparable<?>> propertyEntry : recipeResult.properties().get().entrySet()) {
+//                for (Property.Value<?> propertyEntry : recipeResult.properties().get().entrySet()) {
 //                    resultState = BlockStateRecipeUtil.setHelper(propertyEntry, resultState);
 //                }
 //            }

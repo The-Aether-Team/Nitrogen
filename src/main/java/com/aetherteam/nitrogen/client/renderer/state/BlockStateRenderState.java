@@ -1,7 +1,7 @@
 package com.aetherteam.nitrogen.client.renderer.state;
 
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
+import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;

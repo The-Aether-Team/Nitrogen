@@ -13,7 +13,7 @@ import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -28,23 +28,19 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public record BlockStateIngredientRenderer(BlockPropertyPair... pairs) implements IIngredientRenderer<ItemStack> {
-
     @Override
-    public void render(GuiGraphics graphics, @Nullable ItemStack ingredient) {
+    public void render(GuiGraphicsExtractor graphics, @Nullable ItemStack ingredient) {
         BlockPropertyPair pair = this.getMatchingPair(ingredient);
 
         if (pair.block() != null && Minecraft.getInstance().level != null) {
             BlockState blockState = pair.block().defaultBlockState();
             if (pair.properties().isPresent()) {
-                for (Map.Entry<Property<?>, Comparable<?>> propertyEntry : pair.properties().get().entrySet()) {
+                for (Property.Value<?> propertyEntry : pair.properties().get()) {
                     blockState = BlockStateRecipeUtil.setHelper(propertyEntry, blockState);
                 }
             }
@@ -66,7 +62,7 @@ public record BlockStateIngredientRenderer(BlockPropertyPair... pairs) implement
 
             BlockPropertyPair pair = this.getMatchingPair(ingredient);
             Block block = pair.block();
-            Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> properties = pair.properties();
+            Optional<HashSet<Property.Value<?>>> properties = pair.properties();
 
             if (block != null) {
                 // Display block name.
@@ -83,8 +79,8 @@ public record BlockStateIngredientRenderer(BlockPropertyPair... pairs) implement
                 // Display block properties.
                 if (properties.isPresent() && !properties.get().isEmpty()) {
                     list.add(Component.translatable("gui.aether.jei.properties.tooltip").withStyle(ChatFormatting.GRAY));
-                    for (Map.Entry<Property<?>, Comparable<?>> entry : properties.get().entrySet()) {
-                        list.add(Component.literal(entry.getKey().getName() + ": " + entry.getValue().toString()).withStyle(ChatFormatting.DARK_GRAY));
+                    for (Property.Value<?> entry : properties.get()) {
+                        list.add(Component.literal(entry.property().getName() + ": " + entry.valueName()).withStyle(ChatFormatting.DARK_GRAY));
                     }
                 }
             }
@@ -116,11 +112,11 @@ public record BlockStateIngredientRenderer(BlockPropertyPair... pairs) implement
     }
 
     private BlockPropertyPair getMatchingPair(ItemStack ingredient) {
-        Map<Block, Reference2ObjectArrayMap<Property<?>, Comparable<?>>> pairsMap = Stream.of(this.pairs).collect(Collectors.toMap(BlockPropertyPair::block, blockPropertyPair -> blockPropertyPair.properties().orElse(new Reference2ObjectArrayMap<>())));
+        Map<Block, HashSet<Property.Value<?>>> pairsMap = Stream.of(this.pairs).collect(Collectors.toMap(BlockPropertyPair::block, blockPropertyPair -> blockPropertyPair.properties().orElse(new HashSet<>())));
         Block block = null;
-        Reference2ObjectArrayMap<Property<?>, Comparable<?>> propertiesMap = null;
+        HashSet<Property.Value<?>> propertiesMap = null;
         if (Minecraft.getInstance().level != null) {
-            for (Map.Entry<Block, Reference2ObjectArrayMap<Property<?>, Comparable<?>>> entry : pairsMap.entrySet()) {
+            for (Map.Entry<Block, HashSet<Property.Value<?>>> entry : pairsMap.entrySet()) {
                 ItemStack stack = entry.getKey().getCloneItemStack(Minecraft.getInstance().level, BlockPos.ZERO, entry.getKey().defaultBlockState(), true, Minecraft.getInstance().player);
                 stack = stack.isEmpty() ? new ItemStack(Blocks.STONE) : stack;
                 if (stack.getItem() == ingredient.getItem()) {

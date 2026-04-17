@@ -28,6 +28,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 
@@ -89,9 +90,9 @@ public final class BlockStateRecipeUtil {
             buffer.writeUtf(blockLocation.toString());
             buffer.writeOptional(pair.properties(), ((friendlyByteBuf, propertyComparableMap) -> {
                 CompoundTag tag = new CompoundTag();
-                for (Map.Entry<Property<?>, Comparable<?>> entry : propertyComparableMap.entrySet()) {
-                    Property<?> property = entry.getKey();
-                    tag.putString(property.getName(), getName(property, entry.getValue()));
+                for (Property.Value<?> entry : propertyComparableMap) {
+                    Property<?> property = entry.property();
+                    tag.putString(property.getName(), getName(property, entry.value()));
                 }
                 friendlyByteBuf.writeNbt(tag);
             }));
@@ -116,15 +117,15 @@ public final class BlockStateRecipeUtil {
             Identifier blockLocation = Identifier.parse(blockString);
             Block block = BuiltInRegistries.BLOCK.getValue(blockLocation);
 
-            Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> propertiesOptional = buffer.readOptional((friendlyByteBuf -> {
-                Reference2ObjectArrayMap<Property<?>, Comparable<?>> properties = new Reference2ObjectArrayMap<>();
+            Optional<HashSet<Property.Value<?>>> propertiesOptional = buffer.readOptional((friendlyByteBuf -> {
+                HashSet<Property.Value<?>> properties = new HashSet<>();
                 CompoundTag tag = friendlyByteBuf.readNbt();
                 if (tag != null) {
                     for (String propertyName : tag.keySet()) {
                         Property<?> property = block.getStateDefinition().getProperty(propertyName);
                         if (property != null) {
                             Optional<Comparable<?>> comparable = (Optional<Comparable<?>>) property.getValue(propertyName);
-                            comparable.ifPresent(value -> properties.put(property, value));
+                            comparable.ifPresent(value -> properties.add(new Property.Value(property, value)));
                         }
                     }
                 }
@@ -168,8 +169,8 @@ public final class BlockStateRecipeUtil {
      * @return The {@link BlockState} with the applied property.
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Comparable<T>, V extends T> BlockState setHelper(Map.Entry<Property<?>, Comparable<?>> properties, BlockState state) {
-        return state.setValue((Property<T>) properties.getKey(), (V) properties.getValue());
+    public static <T extends Comparable<T>, V extends T> BlockState setHelper(Property.Value<?> properties, BlockState state) {
+        return state.setValue((Property<T>) properties.property(), (V) properties.value());
     }
 
     /**

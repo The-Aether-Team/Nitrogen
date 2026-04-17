@@ -73,7 +73,7 @@ public abstract class AbstractBlockStateRecipeCategory<T extends AbstractBlockSt
         if (Minecraft.getInstance().level != null) {
             BlockState resultState = recipeResult.block().defaultBlockState();
             if (recipeResult.properties().isPresent()) {
-                for (Map.Entry<Property<?>, Comparable<?>> propertyEntry : recipeResult.properties().get().entrySet()) {
+                for (Property.Value<?> propertyEntry : recipeResult.properties().get()) {
                     resultState = BlockStateRecipeUtil.setHelper(propertyEntry, resultState);
                 }
             }

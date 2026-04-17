@@ -23,25 +23,25 @@ import java.util.stream.Collectors;
 /**
  * Used to store a block alongside a block's properties.
  */
-public record BlockPropertyPair(Block block, Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> properties) implements TypedInstance<Block> {
-    public static final MapCodec<BlockPropertyPair> CODEC = RawPair.CODEC.xmap(
+public record BlockPropertyPair(Block block, Optional<HashSet<Property.Value<?>>> properties) implements TypedInstance<Block> {
+    public static final  MapCodec<BlockPropertyPair> CODEC = RawPair.CODEC.xmap(
         (rawPair) -> {
             Block rawBlock = rawPair.block();
             Optional<Map<String, String>> rawPropertiesOptional = rawPair.properties();
-            Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> propertiesOptional = Optional.empty();
+            Optional<HashSet<Property.Value<?>>> propertiesOptional = Optional.empty();
             if (rawPropertiesOptional.isPresent()) {
                 Map<String, String> rawPropertiesMap = rawPropertiesOptional.get();
                 StateDefinition<Block, BlockState> rawStateDefinition = rawBlock.getStateDefinition();
                 Collection<Property<?>> availableProperties = rawStateDefinition.getProperties();
                 Map<String, Property<?>> nameToPropertyMap = availableProperties.stream().collect(Collectors.toMap(Property::getName, (value) -> value));
-                Reference2ObjectArrayMap<Property<?>, Comparable<?>> properties = new Reference2ObjectArrayMap<>();
+                HashSet<Property.Value<?>> properties = new HashSet<>();
                 for (Map.Entry<String, String> rawPropertiesEntry : rawPropertiesMap.entrySet()) {
                     String rawPropertyName = rawPropertiesEntry.getKey();
                     if (nameToPropertyMap.containsKey(rawPropertyName)) {
                         Property<?> property = nameToPropertyMap.get(rawPropertyName);
                         if (property != null) {
                             Optional<Comparable<?>> comparableOptional = (Optional<Comparable<?>>) property.getValue(rawPropertiesEntry.getValue());
-                            comparableOptional.ifPresent(value -> properties.put(property, value));
+                            comparableOptional.ifPresent(value -> properties.add(new Property.Value(property, value)));
                         }
                     }
                 }
@@ -51,18 +51,18 @@ public record BlockPropertyPair(Block block, Optional<Reference2ObjectArrayMap<P
         },
         (blockPropertyPair) -> {
             Block block = blockPropertyPair.block();
-            Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> propertiesOptional = blockPropertyPair.properties();
+            Optional<HashSet<Property.Value<?>>> propertiesOptional = blockPropertyPair.properties();
             Optional<Map<String, String>> rawPropertiesOptional = Optional.empty();
             if (propertiesOptional.isPresent()) {
-                Map<Property<?>, Comparable<?>> properties = propertiesOptional.get();
-                Map<String, String> rawProperties = properties.entrySet().stream().collect(Collectors.toMap((entry) -> entry.getKey().getName(), (entry) -> entry.getValue().toString()));
+                HashSet<Property.Value<?>> properties = propertiesOptional.get();
+                Map<String, String> rawProperties = properties.stream().collect(Collectors.toMap((entry) -> entry.property().getName(), (entry) -> entry.value().toString()));
                 rawPropertiesOptional = Optional.of(rawProperties);
             }
             return new BlockPropertyPair.RawPair(block, rawPropertiesOptional);
         }
     );
 
-    public static BlockPropertyPair of(Block block, Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> properties) {
+    public static BlockPropertyPair of(Block block, Optional<HashSet<Property.Value<?>>> properties) {
         return new BlockPropertyPair(block, properties);
     }
 
@@ -74,7 +74,7 @@ public record BlockPropertyPair(Block block, Optional<Reference2ObjectArrayMap<P
      * @param properties The {@link Optional} {@link Map} of {@link Property} keys and {@link Comparable} values.
      * @return Whether the block and properties match the {@link BlockState}.
      */
-    public static boolean matches(BlockState state, Block block, Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> properties) {
+    public static boolean matches(BlockState state, Block block, Optional<HashSet<Property.Value<?>>> properties) {
         if (state.is(block)) {
             return propertiesMatch(state, properties);
         }
@@ -88,10 +88,13 @@ public record BlockPropertyPair(Block block, Optional<Reference2ObjectArrayMap<P
      * @param properties The {@link Optional} {@link Map} of {@link Property} keys and {@link Comparable} values.
      * @return Whether all the properties are found within the {@link BlockState}.
      */
-    public static boolean propertiesMatch(BlockState state, Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> properties) {
+    public static boolean propertiesMatch(BlockState state, Optional<HashSet<Property.Value<?>>> properties) {
         if (properties.isPresent() && !properties.get().isEmpty()) {
-            HashSet<Map.Entry<Property<?>, Comparable<?>>> stateProperties = new HashSet<>(state.getValues().entrySet());
-            return stateProperties.containsAll(properties.get().entrySet());
+//            HashSet<Property.Value<?>> stateProperties = new HashSet<>(state.getValues().entrySet());
+
+            HashSet<Property.Value<?>> stateProperties = state.getValues().collect(Collectors.toCollection(HashSet::new));
+
+            return stateProperties.containsAll(properties.get());
         }
         return true;
     }

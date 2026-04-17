@@ -58,7 +58,7 @@ package com.aetherteam.nitrogen.integration.rei;
 //        if (pair.block() != null && minecraft.level != null) {
 //            BlockState blockState = pair.block().defaultBlockState();
 //            if (pair.properties().isPresent()) {
-//                for (Map.Entry<Property<?>, Comparable<?>> propertyEntry : pair.properties().get().entrySet()) {
+//                for (Property.Value<?> propertyEntry : pair.properties().get().entrySet()) {
 //                    blockState = BlockStateRecipeUtil.setHelper(propertyEntry, blockState);
 //                }
 //            }
@@ -96,7 +96,7 @@ package com.aetherteam.nitrogen.integration.rei;
 //
 //            BlockPropertyPair pair = this.getMatchingPair(ingredient.getValue());
 //            Block block = pair.block();
-//            Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> properties = pair.properties();
+//            Optional<HashSet<Property.Value<?>>> properties = pair.properties();
 //
 //            if (block != null) {
 //                // Display block name.
@@ -115,7 +115,7 @@ package com.aetherteam.nitrogen.integration.rei;
 //                // Display block properties.
 //                if (properties.isPresent() && !properties.get().isEmpty()) {
 //                    tooltip.add(Component.translatable("gui.aether.jei.properties.tooltip").withStyle(ChatFormatting.GRAY));
-//                    for (Map.Entry<Property<?>, Comparable<?>> entry : properties.get().entrySet()) {
+//                    for (Property.Value<?> entry : properties.get().entrySet()) {
 //                        tooltip.add(Component.literal(entry.getKey().getName() + ": " + entry.getValue().toString()).withStyle(ChatFormatting.DARK_GRAY));
 //                    }
 //                }
@@ -131,11 +131,11 @@ package com.aetherteam.nitrogen.integration.rei;
 //     * Warning for "deprecation" is suppressed because the non-sensitive version of {@link net.minecraft.world.level.block.Block#getCloneItemStack(net.minecraft.world.level.LevelReader, BlockPos, BlockState)} is needed in this context.
 //     */
 //    private BlockPropertyPair getMatchingPair(ItemStack ingredient) {
-//        Map<Block, Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>>> pairsMap = Stream.of(this.pairs).collect(Collectors.toMap(BlockPropertyPair::block, BlockPropertyPair::properties));
+//        Map<Block, Optional<HashSet<Property.Value<?>>>> pairsMap = Stream.of(this.pairs).collect(Collectors.toMap(BlockPropertyPair::block, BlockPropertyPair::properties));
 //        Block block = null;
-//        Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>> propertiesMap = Optional.empty();
+//        Optional<HashSet<Property.Value<?>>> propertiesMap = Optional.empty();
 //        if (Minecraft.getInstance().level != null && Minecraft.getInstance().player != null) {
-//            for (Map.Entry<Block, Optional<Reference2ObjectArrayMap<Property<?>, Comparable<?>>>> entry : pairsMap.entrySet()) {
+//            for (Map.Entry<Block, Optional<HashSet<Property.Value<?>>>> entry : pairsMap.entrySet()) {
 //                ItemStack stack = entry.getKey().getCloneItemStack(Minecraft.getInstance().level, BlockPos.ZERO, entry.getKey().defaultBlockState(), true, Minecraft.getInstance().player);
 //                stack = stack.isEmpty() ? new ItemStack(Blocks.STONE) : stack;
 //                if (stack.getItem() == ingredient.getItem()) {
