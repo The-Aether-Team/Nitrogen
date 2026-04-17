@@ -6,7 +6,7 @@ orbs:
 jobs:
   build:
     machine:
-      image: ubuntu-2404:2024.08.1
+      image: ubuntu-2404:2025.09.1
     resource_class: medium
     environment:
       _JAVA_OPTIONS: -Xmx3200m
