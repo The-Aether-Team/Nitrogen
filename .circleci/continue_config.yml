@@ -5,9 +5,8 @@ orbs:
 
 jobs:
   build:
-    machine:
-      image: ubuntu-2404:2025.09.1
-    resource_class: medium
+    docker:
+      image: cimg/openjdk:25.0.1
     environment:
       _JAVA_OPTIONS: -Xmx3200m
       GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.logging.level=info
