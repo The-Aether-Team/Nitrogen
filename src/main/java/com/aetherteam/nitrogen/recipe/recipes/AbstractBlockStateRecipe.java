@@ -3,8 +3,14 @@ package com.aetherteam.nitrogen.recipe.recipes;
 import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
 import com.aetherteam.nitrogen.recipe.BlockStateIngredient;
 import com.aetherteam.nitrogen.recipe.BlockStateRecipeUtil;
+import com.mojang.datafixers.Products;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.commands.CacheableFunction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -12,6 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
@@ -102,6 +109,26 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
     @Override
     public String group() {
         return "";
+    }
+
+    public static <T extends AbstractBlockStateRecipe> MapCodec<T> codec(AbstractBlockStateRecipe.Factory<T> factory) {
+        return RecordCodecBuilder.mapCodec((i) -> {
+            Products.P3<RecordCodecBuilder.Mu<T>, BlockStateIngredient, BlockPropertyPair, Optional<Identifier>> var10000 = i.group(
+                BlockStateIngredient.CODEC.fieldOf("ingredient").forGetter(AbstractBlockStateRecipe::getIngredient),
+                BlockPropertyPair.CODEC.fieldOf("result").forGetter(AbstractBlockStateRecipe::getResult),
+                Identifier.CODEC.optionalFieldOf("mcfunction").forGetter(AbstractBlockStateRecipe::getFunctionId)
+            );
+            Objects.requireNonNull(factory);
+            return var10000.apply(i, factory::create);
+        });
+    }
+
+    public static <T extends AbstractBlockStateRecipe> StreamCodec<RegistryFriendlyByteBuf, T> streamCodec(AbstractBlockStateRecipe.Factory<T> factory) {
+        return StreamCodec.composite(
+            BlockStateIngredient.CONTENTS_STREAM_CODEC, AbstractBlockStateRecipe::getIngredient,
+            BlockPropertyPair.STREAM_CODEC, AbstractBlockStateRecipe::getResult,
+            ByteBufCodecs.optional(Identifier.STREAM_CODEC), AbstractBlockStateRecipe::getFunctionId,
+            factory::create);
     }
 
     public interface Factory<T extends AbstractBlockStateRecipe> {
