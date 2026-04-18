@@ -5,7 +5,6 @@ import com.aetherteam.nitrogen.client.renderer.state.BlockStateRenderState;
 import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
 import com.aetherteam.nitrogen.recipe.BlockStateRecipeUtil;
 import com.google.common.collect.Lists;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;

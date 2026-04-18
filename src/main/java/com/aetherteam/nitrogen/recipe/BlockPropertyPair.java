@@ -3,12 +3,12 @@ package com.aetherteam.nitrogen.recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.TypedInstance;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * Used to store a block alongside a block's properties.
  */
 public record BlockPropertyPair(Block block, Optional<HashSet<Property.Value<?>>> properties) implements TypedInstance<Block> {
-    public static final  MapCodec<BlockPropertyPair> CODEC = RawPair.CODEC.xmap(
+    public static final MapCodec<BlockPropertyPair> CODEC = RawPair.CODEC.xmap(
         (rawPair) -> {
             Block rawBlock = rawPair.block();
             Optional<Map<String, String>> rawPropertiesOptional = rawPair.properties();
@@ -61,6 +61,7 @@ public record BlockPropertyPair(Block block, Optional<HashSet<Property.Value<?>>
             return new BlockPropertyPair.RawPair(block, rawPropertiesOptional);
         }
     );
+    public static final StreamCodec<RegistryFriendlyByteBuf, BlockPropertyPair> STREAM_CODEC = StreamCodec.of(BlockStateRecipeUtil::writePair, BlockStateRecipeUtil::readPair);
 
     public static BlockPropertyPair of(Block block, Optional<HashSet<Property.Value<?>>> properties) {
         return new BlockPropertyPair(block, properties);
@@ -90,10 +91,7 @@ public record BlockPropertyPair(Block block, Optional<HashSet<Property.Value<?>>
      */
     public static boolean propertiesMatch(BlockState state, Optional<HashSet<Property.Value<?>>> properties) {
         if (properties.isPresent() && !properties.get().isEmpty()) {
-//            HashSet<Property.Value<?>> stateProperties = new HashSet<>(state.getValues().entrySet());
-
             HashSet<Property.Value<?>> stateProperties = state.getValues().collect(Collectors.toCollection(HashSet::new));
-
             return stateProperties.containsAll(properties.get());
         }
         return true;

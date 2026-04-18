@@ -2,11 +2,11 @@ package com.aetherteam.nitrogen;
 
 import com.aetherteam.nitrogen.api.users.User;
 import com.aetherteam.nitrogen.api.users.UserData;
-import com.aetherteam.nitrogen.client.renderer.state.FluidStateRenderState;
-import com.aetherteam.nitrogen.client.renderer.FluidStateRenderer;
-import com.aetherteam.nitrogen.data.NitrogenDataGenerators;
-import com.aetherteam.nitrogen.client.renderer.state.BlockStateRenderState;
 import com.aetherteam.nitrogen.client.renderer.BlockStateRenderer;
+import com.aetherteam.nitrogen.client.renderer.FluidStateRenderer;
+import com.aetherteam.nitrogen.client.renderer.state.BlockStateRenderState;
+import com.aetherteam.nitrogen.client.renderer.state.FluidStateRenderState;
+import com.aetherteam.nitrogen.data.NitrogenDataGenerators;
 import com.aetherteam.nitrogen.loot.modifiers.NitrogenLootModifiers;
 import com.aetherteam.nitrogen.network.packet.clientbound.UpdateUserInfoPacket;
 import com.aetherteam.nitrogen.network.packet.serverbound.TriggerUpdateInfoPacket;

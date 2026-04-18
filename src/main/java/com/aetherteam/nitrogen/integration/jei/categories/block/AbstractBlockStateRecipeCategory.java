@@ -1,7 +1,6 @@
 package com.aetherteam.nitrogen.integration.jei.categories.block;
 
 import com.aetherteam.nitrogen.integration.jei.BlockStateIngredientRenderer;
-import com.aetherteam.nitrogen.integration.jei.FluidStateIngredientRenderer;
 import com.aetherteam.nitrogen.recipe.BlockPropertyPair;
 import com.aetherteam.nitrogen.recipe.BlockStateIngredient;
 import com.aetherteam.nitrogen.recipe.BlockStateRecipeUtil;
@@ -16,7 +15,6 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
-import mezz.jei.common.platform.Services;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -28,7 +26,6 @@ import net.minecraft.world.level.block.state.properties.Property;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public abstract class AbstractBlockStateRecipeCategory<T extends AbstractBlockStateRecipe> extends AbstractRecipeCategory<T> {
     protected final IPlatformFluidHelper<?> fluidHelper;
