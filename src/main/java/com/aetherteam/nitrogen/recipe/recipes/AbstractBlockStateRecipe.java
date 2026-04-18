@@ -94,6 +94,16 @@ public abstract class AbstractBlockStateRecipe implements BlockStateRecipe {
         return this.functionId;
     }
 
+    @Override
+    public boolean showNotification() {
+        return false;
+    }
+
+    @Override
+    public String group() {
+        return "";
+    }
+
     public interface Factory<T extends AbstractBlockStateRecipe> {
         T create(BlockStateIngredient ingredient, BlockPropertyPair result, Optional<Identifier> functionId);
     }
