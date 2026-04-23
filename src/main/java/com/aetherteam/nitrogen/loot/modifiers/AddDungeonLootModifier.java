@@ -30,8 +30,8 @@ public class AddDungeonLootModifier extends LootModifier {
     public final List<Weighted<ItemStack>> entries;
     public final IntProvider rolls;
 
-    public AddDungeonLootModifier(LootItemCondition[] conditionsIn, List<Weighted<ItemStack>> entries, IntProvider rolls) {
-        super(conditionsIn);
+    public AddDungeonLootModifier(LootItemCondition[] conditionsIn, int priority, List<Weighted<ItemStack>> entries, IntProvider rolls) {
+        super(conditionsIn, priority);
         this.entries = entries;
         this.rolls = rolls;
     }

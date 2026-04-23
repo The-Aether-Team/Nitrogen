@@ -25,14 +25,15 @@ public class AddEntityDropsModifier extends LootModifier {
     public static final MapCodec<AddEntityDropsModifier> CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(
             ItemStack.CODEC.fieldOf("item").forGetter(modifier -> modifier.itemStack),
             AddEntityDropsModifier.LOOT_FUNCTIONS_CODEC.fieldOf("functions").forGetter(modifier -> modifier.functions),
+            Codec.INT.optionalFieldOf("priority", IGlobalLootModifier.DEFAULT_PRIORITY).forGetter(modifier -> modifier.priority),
             LootModifier.LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(modifier -> modifier.conditions)
     ).apply(instance, AddEntityDropsModifier::new));
 
     private final LootItemFunction[] functions;
     private final ItemStack itemStack;
 
-    public AddEntityDropsModifier(ItemStack itemStack, LootItemFunction[] functions, LootItemCondition[] conditions) {
-        super(conditions);
+    public AddEntityDropsModifier(ItemStack itemStack, LootItemFunction[] functions, int priority, LootItemCondition[] conditions) {
+        super(conditions, priority);
         this.functions = functions;
         this.itemStack = itemStack;
     }
