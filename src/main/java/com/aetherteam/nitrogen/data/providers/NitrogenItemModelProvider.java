@@ -152,14 +152,25 @@ public abstract class NitrogenItemModelProvider extends ItemModelProvider {
         this.singleTexture(this.blockName(block), new ResourceLocation(Nitrogen.MODID, BLOCK_FOLDER + "/template_translucent_wall_inventory"), "wall", this.texture(this.blockName(baseBlock), location));
     }
 
+    public void itemLogWallBlock(Block block, Block baseBlock, Block topBlock, String location, String modid) {
+        ResourceLocation baseTexture = new ResourceLocation(modid, "block/" + location + this.blockName(baseBlock));
+        ResourceLocation topTexture = new ResourceLocation(modid, "block/" + location + this.blockName(topBlock) + "_top");
+        this.itemLogWallBlock(block, baseTexture, topTexture);
+    }
+
     public void itemLogWallBlock(Block block, Block baseBlock, String location, String modid) {
         ResourceLocation baseTexture = new ResourceLocation(modid, "block/" + location + this.blockName(baseBlock));
+        ResourceLocation topTexture = new ResourceLocation(modid, "block/" + location + this.blockName(baseBlock) + "_top");
+        this.itemLogWallBlock(block, baseTexture, topTexture);
+    }
+
+    public void itemLogWallBlock(Block block, ResourceLocation baseTexture, ResourceLocation topTexture) {
         this.withExistingParent(this.blockName(block), this.mcLoc("block/block"))
                 .transforms()
                 .transform(ItemDisplayContext.GUI).rotation(30.0F, 135.0F, 0.0F).translation(0.0F, 0.0F, 0.0F).scale(0.625F, 0.625F, 0.625F).end()
                 .transform(ItemDisplayContext.FIXED).rotation(0.0F, 90.0F, 0.0F).translation(0.0F, 0.0F, 0.0F).scale(0.5F, 0.5F, 0.5F).end()
                 .end()
-                .texture("top", baseTexture + "_top").texture("side", baseTexture)
+                .texture("top", topTexture).texture("side", baseTexture)
                 .element().from(4.0F, 0.0F, 4.0F).to(12.0F, 16.0F, 12.0F)
                 .face(Direction.DOWN).uvs(4.0F, 4.0F, 12.0F, 12.0F).texture("#top").cullface(Direction.DOWN).end()
                 .face(Direction.UP).uvs(4.0F, 4.0F, 12.0F, 12.0F).texture("#top").end()
